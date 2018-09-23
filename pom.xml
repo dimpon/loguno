@@ -14,5 +14,4 @@
         <module>loguno-processor</module>
         <module>loguno-test</module>
     </modules>
-
 </project>
