@@ -1,10 +1,13 @@
 package org.loguno.processor.handlers;
 
+import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import lombok.SneakyThrows;
 import org.reflections.Reflections;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Function;
@@ -17,33 +20,36 @@ public final class HandlersProvider {
 
     private final Map<Class<? extends Element>, Map<Class<? extends Annotation>, List<AnnotationHandler<? extends Annotation, ? extends Element>>>> handlers;
 
-    private final Set<Class<? extends Annotation>> supportedAnnotationsClasses;
+    private final Set<Class<? extends Annotation>> supportedAnnotations;
 
-    public static HandlersProvider create() {
-        return new HandlersProvider();
+    public static HandlersProvider create(JavacProcessingEnvironment environment) {
+        return new HandlersProvider(environment);
     }
 
-    private HandlersProvider() {
+    private HandlersProvider(JavacProcessingEnvironment environment) {
 
         List<Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>> allHandlersClasses =
                 getAnnotationHandlersClasses().collect(Collectors.toList());
 
 
+
+
         this.handlers = allHandlersClasses.stream()
-                .map(this::create)
+                .map(c -> create(c, environment))
                 .collect(Collectors.groupingBy(AnnotationHandler::getElementClass,
                         Collectors.groupingBy(AnnotationHandler::getAnnotationClass)));
 
 
-        this.supportedAnnotationsClasses = allHandlersClasses.stream()
-                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
-                .map(this::create).map((Function<AnnotationHandler, Class<? extends Annotation>>) AnnotationHandler::getAnnotationClass).collect(Collectors.toSet());
+        this.supportedAnnotations = allHandlersClasses.stream()
+                .map(c -> create(c, environment))
+                .map((Function<AnnotationHandler, Class<? extends Annotation>>) AnnotationHandler::getAnnotationClass)
+                .collect(Collectors.toSet());
 
     }
 
-    @SneakyThrows({InstantiationException.class, IllegalAccessException.class})
-    private AnnotationHandler<?, ?> create(Class<? extends AnnotationHandler<?, ?>> clazz) {
-        return clazz.newInstance();
+    @SneakyThrows({InstantiationException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class})
+    private AnnotationHandler<?, ?> create(Class<? extends AnnotationHandler<?, ?>> clazz, JavacProcessingEnvironment environment) {
+        return clazz.getConstructor(JavacProcessingEnvironment.class).newInstance(environment);
     }
 
     @SuppressWarnings("unchecked")
@@ -77,7 +83,7 @@ public final class HandlersProvider {
     }
 
     public Set<Class<? extends Annotation>> supportedAnnotations() {
-        return this.supportedAnnotationsClasses;
+        return this.supportedAnnotations;
     }
 
     private static boolean isElementChild(Class<?> clazz) {

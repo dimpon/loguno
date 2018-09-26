@@ -20,11 +20,15 @@ import java.lang.annotation.Annotation;
 @Order(0)
 public class AnnotationHandlerSlf4j extends AnnotationHandlerBase<Loguno.Slf4j, TypeElement> {
 
-    @Override
-    public void processTree(Loguno.Slf4j annotation, TypeElement typeElement, JavacProcessingEnvironment env) {
+    public AnnotationHandlerSlf4j(JavacProcessingEnvironment environment) {
+        super(environment);
+    }
 
-        Trees trees = Trees.instance(env);
-        Context context = env.getContext();
+    @Override
+    public void processTree(Loguno.Slf4j annotation, TypeElement typeElement, ActionsRecorder recorder) {
+
+        Trees trees = Trees.instance(environment);
+        Context context = environment.getContext();
         TreeMaker factory = TreeMaker.instance(context);
         Names names = Names.instance(context);
 

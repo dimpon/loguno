@@ -8,6 +8,7 @@ import com.sun.tools.javac.model.JavacTypes;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
+import org.loguno.processor.handlers.ActionsRecorder;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -26,7 +27,7 @@ public class LogunoProcessor extends AbstractProcessor {
     private JavacElements elementUtils;*/
 
     //LogunoScanner scanner = new LogunoScanner();
-    private LogunoElementVisitor visitor = new LogunoElementVisitor();
+    private LogunoElementVisitor visitor;
     //LogunoTranslator translator = new LogunoTranslator();
     private JavacProcessingEnvironment javacProcessingEnvironment;
 
@@ -35,12 +36,15 @@ public class LogunoProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         this.javacProcessingEnvironment = (JavacProcessingEnvironment) processingEnv;
+        this.visitor = new LogunoElementVisitor(javacProcessingEnvironment);
+
         /*this.trees = Trees.instance(javacProcessingEnvironment);
         this.typeUtils = javacProcessingEnvironment.getTypeUtils();
         this.elementUtils = javacProcessingEnvironment.getElementUtils();
         this.treeMaker = TreeMaker.instance(javacProcessingEnvironment.getContext());
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "LogunoProcessor.Init..." + Thread.currentThread());
-*/    }
+*/
+    }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
@@ -54,8 +58,13 @@ public class LogunoProcessor extends AbstractProcessor {
         elements.forEach(element -> {
             //messager.printMessage(Diagnostic.Kind.NOTE, "Simple Name: "+element);
             //System.out.println("Simple Name: " + element);
-            element.accept(visitor, javacProcessingEnvironment);
-           // JCTree tree = (JCTree) trees.getTree(element);
+
+            ActionsRecorder recorder = new ActionsRecorder();
+            System.out.println("recorder forward:" + recorder);
+            ActionsRecorder accept = element.accept(visitor, recorder);
+
+            System.out.println("recorder back:" + accept);
+            // JCTree tree = (JCTree) trees.getTree(element);
             //tree.accept(scanner);
             //tree.accept(translator);
         });

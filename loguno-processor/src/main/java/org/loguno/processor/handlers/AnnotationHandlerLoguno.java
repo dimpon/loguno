@@ -23,11 +23,16 @@ import java.util.stream.Stream;
 
 @Order
 public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, ExecutableElement> {
-    @Override
-    public void processTree(Loguno annotation, ExecutableElement element, JavacProcessingEnvironment env) {
 
-        Trees trees = Trees.instance(env);
-        Context context = env.getContext();
+    public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {
+        super(environment);
+    }
+
+    @Override
+    public void processTree(Loguno annotation, ExecutableElement element, ActionsRecorder recorder) {
+
+        Trees trees = Trees.instance(environment);
+        Context context = environment.getContext();
         TreeMaker factory = TreeMaker.instance(context);
         Names names = Names.instance(context);
 
@@ -67,7 +72,6 @@ public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, Execu
         JCTree.JCBlock body = (JCTree.JCBlock) method.getBody();
         body.stats = body.stats.prepend(callInfoMethodCall);
     }
-
 
 
 }

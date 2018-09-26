@@ -11,12 +11,16 @@ import javax.lang.model.element.TypeElement;
 @Order(1)
 public class AnnotationHandlerSlf4j2 extends AnnotationHandlerBase<Loguno.Slf4j, TypeElement> {
 
+    public AnnotationHandlerSlf4j2(JavacProcessingEnvironment environment) {
+        super(environment);
+    }
+
     @Override
-    public void processTree(Loguno.Slf4j annotation, TypeElement typeElement, JavacProcessingEnvironment env) {
+    public void processTree(Loguno.Slf4j annotation, TypeElement typeElement, ActionsRecorder recorder) {
 
         System.out.println("AnnotationHandlerSlf4j2: " + annotation.value());
 
     }
 
-    
+
 }

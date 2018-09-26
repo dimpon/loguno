@@ -1,6 +1,7 @@
 package org.loguno.processor;
 
 import org.loguno.Loguno;
+import org.loguno.processor.handlers.ActionsRecorder;
 import org.loguno.processor.handlers.AnnotationHandler;
 import org.loguno.processor.handlers.HandlersProvider;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
@@ -13,46 +14,47 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class LogunoElementVisitor extends ElementScanner8<Void, JavacProcessingEnvironment> {
+public class LogunoElementVisitor extends ElementScanner8<ActionsRecorder, ActionsRecorder> {
 
-    private HandlersProvider handlersProvider = HandlersProvider.create();
+    private HandlersProvider handlersProvider;
 
-    public LogunoElementVisitor() {
+    LogunoElementVisitor(JavacProcessingEnvironment environment) {
         super();
+        handlersProvider = HandlersProvider.create(environment);
     }
 
     @Override
-    public Void visitPackage(PackageElement e, JavacProcessingEnvironment env) {
-        processHandlers(e, env);
-        return super.visitPackage(e, env);
+    public ActionsRecorder visitPackage(PackageElement e, ActionsRecorder recorder) {
+        processHandlers(e, recorder);
+        return super.visitPackage(e, recorder);
     }
 
     @Override
-    public Void visitType(TypeElement e, JavacProcessingEnvironment env) {
-        processHandlers(e, env);
-        return super.visitType(e, env);
+    public ActionsRecorder visitType(TypeElement e, ActionsRecorder recorder) {
+        processHandlers(e, recorder);
+        return super.visitType(e, recorder);
     }
 
     @Override
-    public Void visitVariable(VariableElement e, JavacProcessingEnvironment env) {
-        processHandlers(e, env);
-        return super.visitVariable(e, env);
+    public ActionsRecorder visitVariable(VariableElement e, ActionsRecorder recorder) {
+        processHandlers(e, recorder);
+        return super.visitVariable(e, recorder);
     }
 
     @Override
-    public Void visitExecutable(ExecutableElement e, JavacProcessingEnvironment env) {
-        processHandlers(e, env);
-        return super.visitExecutable(e, env);
+    public ActionsRecorder visitExecutable(ExecutableElement e, ActionsRecorder recorder) {
+        processHandlers(e, recorder);
+        return super.visitExecutable(e, recorder);
     }
 
     @Override
-    public Void visitTypeParameter(TypeParameterElement e, JavacProcessingEnvironment env) {
-        processHandlers(e, env);
-        return super.visitTypeParameter(e, env);
+    public ActionsRecorder visitTypeParameter(TypeParameterElement e, ActionsRecorder recorder) {
+        processHandlers(e, recorder);
+        return super.visitTypeParameter(e, recorder);
     }
 
 
-    private <T extends Element> void processHandlers(T e, JavacProcessingEnvironment env) {
+    private <T extends Element> void processHandlers(T e, ActionsRecorder recorder) {
 
         handlersProvider
                 .supportedAnnotations()
@@ -61,7 +63,7 @@ public class LogunoElementVisitor extends ElementScanner8<Void, JavacProcessingE
                             .forEach(ann -> {
                                 handlersProvider
                                         .getHandlersByElementAndAnnotation(annClass, e)
-                                        .forEach(handler -> handler.process(ann, e, env));
+                                        .forEach(handler -> handler.process(ann, e, recorder));
                             });
                 });
     }
