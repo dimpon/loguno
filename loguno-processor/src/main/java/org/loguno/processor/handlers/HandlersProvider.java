@@ -25,17 +25,17 @@ public final class HandlersProvider {
 
     private HandlersProvider() {
 
-        List<Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>> handlerClasses =
+        List<Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>> allHandlersClasses =
                 getAnnotationHandlersClasses().collect(Collectors.toList());
 
 
-        this.handlers = handlerClasses.stream()
+        this.handlers = allHandlersClasses.stream()
                 .map(this::create)
                 .collect(Collectors.groupingBy(AnnotationHandler::getElementClass,
                         Collectors.groupingBy(AnnotationHandler::getAnnotationClass)));
 
 
-        this.supportedAnnotationsClasses = handlerClasses.stream()
+        this.supportedAnnotationsClasses = allHandlersClasses.stream()
                 .filter(c -> !Modifier.isAbstract(c.getModifiers()))
                 .map(this::create).map((Function<AnnotationHandler, Class<? extends Annotation>>) AnnotationHandler::getAnnotationClass).collect(Collectors.toSet());
 

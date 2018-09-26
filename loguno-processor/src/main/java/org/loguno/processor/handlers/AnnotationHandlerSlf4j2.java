@@ -9,7 +9,7 @@ import javax.lang.model.element.TypeElement;
  * @author Dmitrii Ponomarev
  */
 @Order(1)
-public class AnnotationHandlerSlf4j2 implements AnnotationHandler<Loguno.Slf4j, TypeElement> {
+public class AnnotationHandlerSlf4j2 extends AnnotationHandlerBase<Loguno.Slf4j, TypeElement> {
 
     @Override
     public void processTree(Loguno.Slf4j annotation, TypeElement typeElement, JavacProcessingEnvironment env) {
@@ -18,13 +18,5 @@ public class AnnotationHandlerSlf4j2 implements AnnotationHandler<Loguno.Slf4j, 
 
     }
 
-    @Override
-    public Class<Loguno.Slf4j> getAnnotationClass() {
-        return Loguno.Slf4j.class;
-    }
-
-    @Override
-    public Class<TypeElement> getElementClass() {
-        return TypeElement.class;
-    }
+    
 }
