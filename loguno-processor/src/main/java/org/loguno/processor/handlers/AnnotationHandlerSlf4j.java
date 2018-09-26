@@ -15,9 +15,10 @@ import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
 
 import javax.lang.model.element.TypeElement;
+import java.lang.annotation.Annotation;
 
-@Handler
-public class AnnotationHandlerSlf4j extends AnnotationHandlerBase<Loguno.Slf4j, TypeElement> {
+@Order(0)
+public class AnnotationHandlerSlf4j implements AnnotationHandler<Loguno.Slf4j, TypeElement> {
 
     @Override
     public void processTree(Loguno.Slf4j annotation, TypeElement typeElement, JavacProcessingEnvironment env) {
@@ -63,6 +64,16 @@ public class AnnotationHandlerSlf4j extends AnnotationHandlerBase<Loguno.Slf4j, 
         classDecl.defs = classDecl.defs.append(logVar);
 
         System.out.println("AnnotationHandlerSlf4j: " + annotation.value());
+    }
+
+    @Override
+    public Class<Loguno.Slf4j> getAnnotationClass() {
+        return Loguno.Slf4j.class;
+    }
+
+    @Override
+    public Class<TypeElement> getElementClass() {
+        return TypeElement.class;
     }
 
 

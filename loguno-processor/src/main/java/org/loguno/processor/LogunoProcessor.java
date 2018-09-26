@@ -1,7 +1,7 @@
 package org.loguno.processor;
 
 import org.loguno.Loguno;
-import com.google.auto.service.AutoService;
+//import com.google.auto.service.AutoService;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.model.JavacElements;
 import com.sun.tools.javac.model.JavacTypes;
@@ -17,7 +17,7 @@ import java.util.Set;
 
 @SupportedAnnotationTypes({"org.loguno.*"})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@AutoService(Processor.class)
+//@AutoService(Processor.class)
 public class LogunoProcessor extends AbstractProcessor {
 
     /*private Trees trees;

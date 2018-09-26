@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-@Handler
-public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, ExecutableElement> {
+@Order
+public class AnnotationHandlerLoguno implements AnnotationHandler<Loguno, ExecutableElement> {
     @Override
     public void processTree(Loguno annotation, ExecutableElement element, JavacProcessingEnvironment env) {
 
@@ -66,6 +66,16 @@ public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, Execu
 
         JCTree.JCBlock body = (JCTree.JCBlock) method.getBody();
         body.stats = body.stats.prepend(callInfoMethodCall);
+    }
+
+    @Override
+    public Class<Loguno> getAnnotationClass() {
+        return Loguno.class;
+    }
+
+    @Override
+    public Class<ExecutableElement> getElementClass() {
+        return ExecutableElement.class;
     }
 
 

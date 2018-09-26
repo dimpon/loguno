@@ -9,6 +9,6 @@ import static java.lang.annotation.ElementType.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(TYPE)
-public @interface Handler {
-    String value() default "";
+public @interface Order {
+    int value() default 0;
 }

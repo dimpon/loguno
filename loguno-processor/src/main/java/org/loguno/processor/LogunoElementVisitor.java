@@ -1,5 +1,6 @@
 package org.loguno.processor;
 
+import org.loguno.Loguno;
 import org.loguno.processor.handlers.AnnotationHandler;
 import org.loguno.processor.handlers.HandlersProvider;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
@@ -10,7 +11,6 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 public class LogunoElementVisitor extends ElementScanner8<Void, JavacProcessingEnvironment> {
@@ -32,13 +32,14 @@ public class LogunoElementVisitor extends ElementScanner8<Void, JavacProcessingE
         System.out.println("visitType: " + e);
 
 
-        handlersProvider.getByElement(e)
-                .orElse(Collections.emptyMap())
-                .forEach((key, value) -> {
-                    Arrays.stream(e.getAnnotationsByType(key)).forEach(annotation -> {
-                        value.forEach(annotationHandler -> annotationHandler.processTree(annotation, e, env));
-                    });
-                });
+        /*handlersProvider.supportedAnnotations().forEach(annClass -> {
+
+            Arrays.stream(e.getAnnotationsByType(annClass)).forEach(ann -> {
+
+                handlersProvider.getHandlersByElementAndAnnotation(ann, e).forEach(handler -> handler.process(ann,e,env));
+
+            });
+        });*/
 
 
         return super.visitType(e, env);
@@ -53,16 +54,19 @@ public class LogunoElementVisitor extends ElementScanner8<Void, JavacProcessingE
     @Override
     public Void visitExecutable(ExecutableElement e, JavacProcessingEnvironment env) {
 
-        System.out.println("visitExecutable: " + e);
 
 
-        handlersProvider.getByElement(e)
-                .orElse(Collections.emptyMap())
-                .forEach((key, value) -> {
-                    Arrays.stream(e.getAnnotationsByType(key)).forEach(annotation -> {
-                        value.forEach(annotationHandler -> annotationHandler.processTree(annotation, e, env));
-                    });
-                });
+        /*handlersProvider.supportedAnnotations().forEach(annClass -> {
+
+            Arrays.stream(e.getAnnotationsByType(annClass)).forEach(ann -> {
+
+                handlersProvider.getHandlersByElementAndAnnotation(ann, e).forEach(handler -> handler.process(ann,e,env));
+
+            });
+        });
+*/
+
+
 
 
         return super.visitExecutable(e, env);
