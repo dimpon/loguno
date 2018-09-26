@@ -23,58 +23,46 @@ public class LogunoElementVisitor extends ElementScanner8<Void, JavacProcessingE
 
     @Override
     public Void visitPackage(PackageElement e, JavacProcessingEnvironment env) {
-        System.out.println("visitPackage: " + e);
+        processHandlers(e, env);
         return super.visitPackage(e, env);
     }
 
     @Override
     public Void visitType(TypeElement e, JavacProcessingEnvironment env) {
-        System.out.println("visitType: " + e);
-
-
-        /*handlersProvider.supportedAnnotations().forEach(annClass -> {
-
-            Arrays.stream(e.getAnnotationsByType(annClass)).forEach(ann -> {
-
-                handlersProvider.getHandlersByElementAndAnnotation(ann, e).forEach(handler -> handler.process(ann,e,env));
-
-            });
-        });*/
-
-
+        processHandlers(e, env);
         return super.visitType(e, env);
     }
 
     @Override
     public Void visitVariable(VariableElement e, JavacProcessingEnvironment env) {
-        System.out.println("visitVariable: " + e);
+        processHandlers(e, env);
         return super.visitVariable(e, env);
     }
 
     @Override
     public Void visitExecutable(ExecutableElement e, JavacProcessingEnvironment env) {
-
-
-
-        /*handlersProvider.supportedAnnotations().forEach(annClass -> {
-
-            Arrays.stream(e.getAnnotationsByType(annClass)).forEach(ann -> {
-
-                handlersProvider.getHandlersByElementAndAnnotation(ann, e).forEach(handler -> handler.process(ann,e,env));
-
-            });
-        });
-*/
-
-
-
-
+        processHandlers(e, env);
         return super.visitExecutable(e, env);
     }
 
     @Override
     public Void visitTypeParameter(TypeParameterElement e, JavacProcessingEnvironment env) {
-        System.out.println("visitTypeParameter: " + e);
+        processHandlers(e, env);
         return super.visitTypeParameter(e, env);
+    }
+
+
+    private <T extends Element> void processHandlers(T e, JavacProcessingEnvironment env) {
+
+        handlersProvider
+                .supportedAnnotations()
+                .forEach(annClass -> {
+                    Arrays.stream(e.getAnnotationsByType(annClass))
+                            .forEach(ann -> {
+                                handlersProvider
+                                        .getHandlersByElementAndAnnotation(annClass, e)
+                                        .forEach(handler -> handler.process(ann, e, env));
+                            });
+                });
     }
 }

@@ -13,15 +13,9 @@ import java.util.stream.Stream;
 
 public final class HandlersProvider {
 
-    //private Map<Class<? extends Element>, Map<Class<? extends Annotation>, List<AnnotationHandler<? extends Annotation,? extends Element>>>> handlers;
+    private static final String HANDLERS_PACKAGE = "org.loguno.processor.handlers";
 
-    //private Map<Class<? extends Element>,  List<AnnotationHandler<? extends Annotation,? extends Element>>> handlers;
-
-    private final Map<Class<? extends Element>, List<AnnotationHandler>> handlers;
-
-    private final Map<Class<? extends Element>, Map<Class<? extends Annotation>, List<AnnotationHandler>>> handlersAnn;
-
-    private final Set<Class<? extends AnnotationHandler<?,?>>> handlerClasses;
+    private final Map<Class<? extends Element>, Map<Class<? extends Annotation>, List<AnnotationHandler<? extends Annotation, ? extends Element>>>> handlers;
 
     private final Set<Class<? extends Annotation>> supportedAnnotationsClasses;
 
@@ -31,70 +25,46 @@ public final class HandlersProvider {
 
     private HandlersProvider() {
 
-        Reflections reflections = new Reflections("org.loguno.processor.handlers");
+        List<Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>> handlerClasses =
+                getAnnotationHandlersClasses().collect(Collectors.toList());
 
 
-
-
-
-
-        Set<Class<? extends AnnotationHandler>> subTypesOf =
-                reflections.getSubTypesOf(AnnotationHandler.class);
-
-
-        handlerClasses  = Collections.emptySet();
-
-        this.handlers = this.handlerClasses.stream()
-                .map(this::create)
-                .collect(Collectors.groupingBy(AnnotationHandler::getElementClass));
-
-
-        this.handlersAnn = this.handlerClasses.stream()
+        this.handlers = handlerClasses.stream()
                 .map(this::create)
                 .collect(Collectors.groupingBy(AnnotationHandler::getElementClass,
                         Collectors.groupingBy(AnnotationHandler::getAnnotationClass)));
 
 
-        this.supportedAnnotationsClasses = this.handlerClasses.stream()
+        this.supportedAnnotationsClasses = handlerClasses.stream()
                 .filter(c -> !Modifier.isAbstract(c.getModifiers()))
                 .map(this::create).map((Function<AnnotationHandler, Class<? extends Annotation>>) AnnotationHandler::getAnnotationClass).collect(Collectors.toSet());
 
     }
 
     @SneakyThrows({InstantiationException.class, IllegalAccessException.class})
-    private AnnotationHandler<?,?> create(Class<? extends AnnotationHandler<?,?>> clazz) {
+    private AnnotationHandler<?, ?> create(Class<? extends AnnotationHandler<?, ?>> clazz) {
         return clazz.newInstance();
     }
 
+    @SuppressWarnings("unchecked")
+    private Stream<Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>> getAnnotationHandlersClasses() {
+        Reflections reflections = new Reflections(HANDLERS_PACKAGE);
+        Set<Class<? extends AnnotationHandler>> handlers = reflections.getSubTypesOf(AnnotationHandler.class);
+        return handlers.stream()
+                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
+                .map(c -> (Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>) c);
+    }
 
 
-    /*@SuppressWarnings("unchecked")
-    public <E extends Element> Stream<AnnotationHandler<?,E>> getHandlersByElement(E e) {
-
-
-
-
-        //FIXME
-        List<AnnotationHandler<?,E>> annotationHandlers = (List<AnnotationHandler<?,E>>)handlers.get(getElementInterfaceClass(e));
-
-        if (annotationHandlers == null)
-            return Stream.empty();
-
-        return null;//annotationHandlers.stream();// annotationHandlers.stream();
+    @SuppressWarnings("unchecked")
+    public <E extends Element> Stream<? extends AnnotationHandler<?, E>> getHandlersByElementAndAnnotation(Class<? extends Annotation> a, E e) {
+        return handlers
+                .getOrDefault(keyClass(e), Collections.emptyMap())
+                .getOrDefault(a, Collections.emptyList()).stream().map(h -> (AnnotationHandler<?, E>) h);
     }
 
     @SuppressWarnings("unchecked")
-    public <A extends Annotation, E extends Element> Stream<? extends AnnotationHandler<E>> getHandlersByElementAndAnnotation(A a, E e) {
-        return getHandlersByElement(e);
-
-
-                //.filter(o -> o.getAnnotationClass().equals(a.getClass()));
-    }*/
-
-
-
-    @SuppressWarnings("unchecked")
-    private Class<? extends Element> getElementInterfaceClass(Element e) {
+    private Class<? extends Element> keyClass(Element e) {
         Class<? extends Element> clazz = e.getClass();
 
         Class<?>[] interfaces = clazz.getInterfaces();
@@ -114,15 +84,4 @@ public final class HandlersProvider {
         Set<Class<?>> asSet = new HashSet<>(Arrays.asList(clazz.getInterfaces()));
         return asSet.contains(Element.class);
     }
-
-    public static void main(String[] args) {
-        HandlersProvider handlersProvider = HandlersProvider.create();
-
-
-
-        System.out.printf("");
-
-    }
-
-
 }
