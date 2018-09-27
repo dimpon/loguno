@@ -1,18 +1,12 @@
 package org.loguno.processor;
 
-import org.loguno.Loguno;
 import org.loguno.processor.handlers.ActionsRecorder;
-import org.loguno.processor.handlers.AnnotationHandler;
 import org.loguno.processor.handlers.HandlersProvider;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 
 import javax.lang.model.element.*;
 import javax.lang.model.util.ElementScanner8;
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class LogunoElementVisitor extends ElementScanner8<ActionsRecorder, ActionsRecorder> {
 
@@ -58,12 +52,12 @@ public class LogunoElementVisitor extends ElementScanner8<ActionsRecorder, Actio
 
         handlersProvider
                 .supportedAnnotations()
-                .forEach(annClass -> {
-                    Arrays.stream(e.getAnnotationsByType(annClass))
-                            .forEach(ann -> {
+                .forEach(logunoAnnClass -> {
+                    Arrays.stream(e.getAnnotationsByType(logunoAnnClass))
+                            .forEach(annFromElement -> {
                                 handlersProvider
-                                        .getHandlersByElementAndAnnotation(annClass, e)
-                                        .forEach(handler -> handler.process(ann, e, recorder));
+                                        .getHandlersByElementAndAnnotation(logunoAnnClass, e)
+                                        .forEach(handler -> handler.process(annFromElement, e, recorder));
                             });
                 });
     }
