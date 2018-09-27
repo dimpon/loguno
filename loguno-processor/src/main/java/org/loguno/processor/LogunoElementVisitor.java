@@ -1,5 +1,8 @@
 package org.loguno.processor;
 
+import com.sun.source.tree.MethodTree;
+import com.sun.source.util.Trees;
+import com.sun.tools.javac.tree.JCTree;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
@@ -11,10 +14,12 @@ import java.util.Arrays;
 public class LogunoElementVisitor extends ElementScanner8<ClassContext, ClassContext> {
 
     private HandlersProvider handlersProvider;
+    private JavacProcessingEnvironment environment;
 
     LogunoElementVisitor(JavacProcessingEnvironment environment) {
         super();
-        handlersProvider = HandlersProvider.create(environment);
+        this.handlersProvider = HandlersProvider.create(environment);
+        this.environment = environment;
     }
 
     @Override
@@ -38,6 +43,12 @@ public class LogunoElementVisitor extends ElementScanner8<ClassContext, ClassCon
     @Override
     public ClassContext visitExecutable(ExecutableElement e, ClassContext recorder) {
         processHandlers(e, recorder);
+
+        Trees trees = Trees.instance(environment);
+        MethodTree tree = trees.getTree(e);
+        JCTree.JCBlock body = (JCTree.JCBlock) tree.getBody();
+        body.accept(new LogunoScanner());
+
         return super.visitExecutable(e, recorder);
     }
 

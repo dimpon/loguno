@@ -1,6 +1,7 @@
 package org.loguno.processor.handlers;
 
 import org.loguno.Loguno;
+import org.loguno.processor.LogunoScanner;
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.configuration.ConfiguratorManager;
 import com.sun.source.tree.MethodTree;
@@ -31,18 +32,10 @@ public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, Execu
     @Override
     public void processTree(Loguno annotation, ExecutableElement element, ClassContext classContext) {
 
-        Trees trees = Trees.instance(environment);
-        Context context = environment.getContext();
-        TreeMaker factory = TreeMaker.instance(context);
-        Names names = Names.instance(context);
 
-        Symtab symtab = Symtab.instance(context);
-        Types types = Types.instance(context);
-        JavacElements elements = JavacElements.instance(context);
+        MethodTree tree = trees.getTree(element);
 
-        MethodTree method = trees.getTree(element);
-
-        JCTree.JCExpression[] idents = method.getParameters().stream()
+        JCTree.JCExpression[] idents = tree.getParameters().stream()
                 .map(param -> Stream.<JCTree.JCExpression>of(
                         factory.Literal(param.getName().toString()),
                         factory.Ident(elements.getName(param.getName()))))
@@ -53,11 +46,11 @@ public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, Execu
         String params = ConfiguratorManager.getInstance().getConfiguration().getProperty(ConfigurationKeys.METHOD_MESSAGE_PARAMS_PATTERN_DEFAULT);
 
 
-        String paramsStr = method.getParameters().stream().map(o -> params).collect(Collectors.joining(","));
+        String paramsStr = tree.getParameters().stream().map(o -> params).collect(Collectors.joining(","));
         JCTree.JCLiteral value = factory.Literal(message + paramsStr);
 
 
-        JCTree.JCLiteral methodname = factory.Literal(method.getName().toString());
+        JCTree.JCLiteral methodname = factory.Literal(tree.getName().toString());
 
         JCTree.JCLiteral classname = factory.Literal(((Symbol.MethodSymbol) element).owner.getSimpleName().toString());
 
@@ -71,8 +64,12 @@ public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, Execu
         JCTree.JCStatement callInfoMethodCall = factory.Exec(callInfoMethod);
 
 
-        JCTree.JCBlock body = (JCTree.JCBlock) method.getBody();
+        JCTree.JCBlock body = (JCTree.JCBlock) tree.getBody();
         body.stats = body.stats.prepend(callInfoMethodCall);
+
+        //tree.accept() com.sun.source.tree.TreeVisitor<R, P>
+
+
     }
 
 
