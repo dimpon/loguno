@@ -14,14 +14,13 @@ public class PlainClassWriter {
         this.processingEnv = processingEnv;
     }
 
-    void writeClass() {
+    public void writeClass() {
 
         try {
             JavaFileObject builderFile = processingEnv.getFiler()
                     .createSourceFile("com.test.PetsOwner");
             try (PrintWriter out = new PrintWriter(builderFile.openWriter())) {
                 out.print("package com.test;\n");
-                out.print("@lombok.Getter\n");
                 out.print("public class PetsOwner {\n");
                 out.print("private String namex;\n");
                 out.print("}");

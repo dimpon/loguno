@@ -13,7 +13,7 @@ public class AnnotationHandlerLog4j extends AnnotationHandlerBase<Loguno.Log4j,T
     }
 
     @Override
-    public void processTree(Loguno.Log4j annotation, TypeElement e, ActionsRecorder recorder) {
+    public void processTree(Loguno.Log4j annotation, TypeElement e, ClassContext classContext) {
         System.out.println("AnnotationHandlerLog4j: " + annotation.value());
     }
 

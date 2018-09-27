@@ -1,19 +1,14 @@
 package org.loguno.processor;
 
-import org.loguno.Loguno;
 import com.google.auto.service.AutoService;
-import com.sun.source.util.Trees;
-import com.sun.tools.javac.model.JavacElements;
-import com.sun.tools.javac.model.JavacTypes;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
-import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.TreeMaker;
-import org.loguno.processor.handlers.ActionsRecorder;
+import org.loguno.processor.handlers.ClassContext;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
 import java.util.Set;
 
 @SupportedAnnotationTypes({"org.loguno.*"})
@@ -59,15 +54,21 @@ public class LogunoProcessor extends AbstractProcessor {
             //messager.printMessage(Diagnostic.Kind.NOTE, "Simple Name: "+element);
             //System.out.println("Simple Name: " + element);
 
-            ActionsRecorder recorder = new ActionsRecorder();
+            ClassContext recorder = new ClassContext();
             System.out.println("recorder forward:" + recorder);
-            ActionsRecorder accept = element.accept(visitor, recorder);
+            ClassContext accept = element.accept(visitor, recorder);
 
             System.out.println("recorder back:" + accept);
             // JCTree tree = (JCTree) trees.getTree(element);
             //tree.accept(scanner);
             //tree.accept(translator);
         });
+
+        //processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());//crash everything
+        /*if (!roundEnvironment.processingOver()) {
+            PlainClassWriter writer = new PlainClassWriter(processingEnv);
+            writer.writeClass();
+        }*/
 
         return true;
     }

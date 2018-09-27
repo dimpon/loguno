@@ -27,7 +27,14 @@ public class PositiveDogTest {
         when(LoggerFactory.getLogger(any(Class.class))).thenReturn(log);
 
         PositiveDog dog = new PositiveDog();
+
+        System.out.println("******** dog is created");
+
+
         dog.barking("aaa", "bbb");
+
+        System.out.println("******** dog is barking");
+
         dog.miu();
         dog.miu(12);
 

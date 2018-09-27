@@ -23,7 +23,8 @@ public @interface Loguno {
     @Retention(RetentionPolicy.SOURCE)
     @Target(TYPE)
     @interface Slf4j {
-        String[] value() default "";
+        String value() default "LOG";
+        boolean lazy() default false;
     }
 
     @Documented

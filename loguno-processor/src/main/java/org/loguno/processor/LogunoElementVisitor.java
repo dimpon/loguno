@@ -1,6 +1,6 @@
 package org.loguno.processor;
 
-import org.loguno.processor.handlers.ActionsRecorder;
+import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 
@@ -8,7 +8,7 @@ import javax.lang.model.element.*;
 import javax.lang.model.util.ElementScanner8;
 import java.util.Arrays;
 
-public class LogunoElementVisitor extends ElementScanner8<ActionsRecorder, ActionsRecorder> {
+public class LogunoElementVisitor extends ElementScanner8<ClassContext, ClassContext> {
 
     private HandlersProvider handlersProvider;
 
@@ -18,37 +18,37 @@ public class LogunoElementVisitor extends ElementScanner8<ActionsRecorder, Actio
     }
 
     @Override
-    public ActionsRecorder visitPackage(PackageElement e, ActionsRecorder recorder) {
+    public ClassContext visitPackage(PackageElement e, ClassContext recorder) {
         processHandlers(e, recorder);
         return super.visitPackage(e, recorder);
     }
 
     @Override
-    public ActionsRecorder visitType(TypeElement e, ActionsRecorder recorder) {
+    public ClassContext visitType(TypeElement e, ClassContext recorder) {
         processHandlers(e, recorder);
         return super.visitType(e, recorder);
     }
 
     @Override
-    public ActionsRecorder visitVariable(VariableElement e, ActionsRecorder recorder) {
+    public ClassContext visitVariable(VariableElement e, ClassContext recorder) {
         processHandlers(e, recorder);
         return super.visitVariable(e, recorder);
     }
 
     @Override
-    public ActionsRecorder visitExecutable(ExecutableElement e, ActionsRecorder recorder) {
+    public ClassContext visitExecutable(ExecutableElement e, ClassContext recorder) {
         processHandlers(e, recorder);
         return super.visitExecutable(e, recorder);
     }
 
     @Override
-    public ActionsRecorder visitTypeParameter(TypeParameterElement e, ActionsRecorder recorder) {
+    public ClassContext visitTypeParameter(TypeParameterElement e, ClassContext recorder) {
         processHandlers(e, recorder);
         return super.visitTypeParameter(e, recorder);
     }
 
 
-    private <T extends Element> void processHandlers(T e, ActionsRecorder recorder) {
+    private <T extends Element> void processHandlers(T e, ClassContext recorder) {
 
         handlersProvider
                 .supportedAnnotations()

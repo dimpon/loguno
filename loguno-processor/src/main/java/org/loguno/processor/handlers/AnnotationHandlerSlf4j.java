@@ -15,58 +15,52 @@ import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
 
 import javax.lang.model.element.TypeElement;
-import java.lang.annotation.Annotation;
 
 @Order(0)
 public class AnnotationHandlerSlf4j extends AnnotationHandlerBase<Loguno.Slf4j, TypeElement> {
+
+    private static final String loggerClass = "org.slf4j.Logger";
+
+    private static final String factoryClassAndMethod = "org.slf4j.LoggerFactory.getLogger";
+
+    private static final String lazyFactoryClassAndMethod = "org.loguno.lazy.LazyLoggerFactorySlf4j.getLogger";
 
     public AnnotationHandlerSlf4j(JavacProcessingEnvironment environment) {
         super(environment);
     }
 
     @Override
-    public void processTree(Loguno.Slf4j annotation, TypeElement typeElement, ActionsRecorder recorder) {
-
-        Trees trees = Trees.instance(environment);
-        Context context = environment.getContext();
-        TreeMaker factory = TreeMaker.instance(context);
-        Names names = Names.instance(context);
-
-        Symtab symtab = Symtab.instance(context);
-        Types types = Types.instance(context);
-        JavacElements elements = JavacElements.instance(context);
+    public void processTree(Loguno.Slf4j annotation, TypeElement typeElement, ClassContext classContext) {
 
         ClassTree tree = trees.getTree(typeElement);
 
-
         JCTree.JCModifiers modifiers = factory.Modifiers(Flags.PRIVATE | Flags.STATIC | Flags.FINAL);
 
-        Name variableName = names.fromString("LOG");
+        Name loggerName = names.fromString(annotation.value());//takes logger name from annotation
+
 
         Name name = ((JCTree.JCClassDecl) tree).getSimpleName();
-        JCTree.JCFieldAccess aClass = factory.Select(factory.Ident(name), elements.getName("class"));
 
-        JCTree.JCExpression type = factory.Select(factory.Select(factory.Ident(elements.getName("org")),
-                elements.getName("slf4j")),
-                elements.getName("Logger"));
+        JCTree.JCFieldAccess elementTypeForPassingToLogger = factory.Select(factory.Ident(name), elements.getName("class"));
 
-        JCTree.JCExpression method = factory.Select(
-                factory.Select(
-                        factory.Select(
-                                factory.Ident(elements.getName("org")),
-                                elements.getName("slf4j")),
-                        elements.getName("LoggerFactory")),
-                elements.getName("getLogger"));
+        JCTree.JCExpression loggerType = createJCExpression(loggerClass);
+
+        String factoryClassAndMethodToCreate = (annotation.lazy())?lazyFactoryClassAndMethod:factoryClassAndMethod;
+
+        JCTree.JCExpression method = createJCExpression(factoryClassAndMethodToCreate);
 
         JCTree.JCMethodInvocation factoryMethodCall =
                 factory.Apply(com.sun.tools.javac.util.List.<JCTree.JCExpression>nil(),
-                        method, com.sun.tools.javac.util.List.<JCTree.JCExpression>of(aClass));
+                        method, com.sun.tools.javac.util.List.<JCTree.JCExpression>of(elementTypeForPassingToLogger));
 
-        JCTree.JCVariableDecl logVar = factory.at(((JCTree) tree).pos).VarDef(modifiers, variableName, type, factoryMethodCall);
+        JCTree.JCVariableDecl logVar = factory.at(((JCTree) tree).pos).VarDef(modifiers, loggerName, loggerType, factoryMethodCall);
 
         JCTree.JCClassDecl classDecl = (JCTree.JCClassDecl) tree;
         classDecl.defs = classDecl.defs.append(logVar);
 
-        System.out.println("AnnotationHandlerSlf4j: " + annotation.value());
+        classContext.setLoggerName(annotation.value());
+        classContext.setLazy(annotation.lazy());
+        classContext.setLogger(ClassContext.Logger.Slf4j);
+
     }
 }

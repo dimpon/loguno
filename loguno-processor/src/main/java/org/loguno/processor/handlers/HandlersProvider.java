@@ -62,7 +62,7 @@ public final class HandlersProvider {
         return clazz.getConstructor(JavacProcessingEnvironment.class).newInstance(environment);
     }
 
-    //todo if performance is slow try https://github.com/atteo/classindex
+    //todo if performance is slow try https://github.com/atteo/classindex  https://github.com/classgraph/classgraph
     @SuppressWarnings("unchecked")
     private Stream<Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>> getAnnotationHandlersClasses() {
         Reflections reflections = new Reflections(HANDLERS_PACKAGE);

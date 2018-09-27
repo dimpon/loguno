@@ -14,6 +14,7 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
 
+import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
@@ -30,6 +31,7 @@ abstract public class AnnotationHandlerBase<A extends Annotation, E extends Elem
     protected final Symtab symtab;
     protected final Types types;
     protected final JavacElements elements;
+    protected final Filer filer;
 
     protected AnnotationHandlerBase(JavacProcessingEnvironment environment) {
         this.environment = environment;
@@ -42,6 +44,7 @@ abstract public class AnnotationHandlerBase<A extends Annotation, E extends Elem
         this.symtab = Symtab.instance(context);
         this.types = Types.instance(context);
         this.elements = JavacElements.instance(context);
+        this.filer = environment.getFiler();
     }
 
     @Override
@@ -56,6 +59,18 @@ abstract public class AnnotationHandlerBase<A extends Annotation, E extends Elem
     public Class<E> getElementClass() {
         return (Class<E>) ((ParameterizedType) this.getClass()
                 .getGenericSuperclass()).getActualTypeArguments()[1];
+    }
+
+
+    protected JCTree.JCExpression createJCExpression(final String fullName) {
+        String[] splitted = fullName.split("\\.");
+        return doRound(splitted, (splitted.length - 1));
+    }
+
+    private JCTree.JCExpression doRound(String[] splitted, int i) {
+        if (i == 0)
+            return factory.Ident(elements.getName(splitted[i]));
+        return factory.Select(doRound(splitted, i - 1), elements.getName(splitted[i]));
     }
 
 }

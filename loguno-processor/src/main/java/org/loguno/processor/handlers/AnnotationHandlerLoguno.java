@@ -29,7 +29,7 @@ public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, Execu
     }
 
     @Override
-    public void processTree(Loguno annotation, ExecutableElement element, ActionsRecorder recorder) {
+    public void processTree(Loguno annotation, ExecutableElement element, ClassContext classContext) {
 
         Trees trees = Trees.instance(environment);
         Context context = environment.getContext();
@@ -61,9 +61,11 @@ public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, Execu
 
         JCTree.JCLiteral classname = factory.Literal(((Symbol.MethodSymbol) element).owner.getSimpleName().toString());
 
+        String loggerName = classContext.getLoggerName();
+
 
         JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
-                factory.Select(factory.Ident(elements.getName("LOG")), elements.getName("info")),
+                factory.Select(factory.Ident(elements.getName(loggerName)), elements.getName("info")),
                 com.sun.tools.javac.util.List.<JCTree.JCExpression>of(value, classname, methodname, idents));
 
         JCTree.JCStatement callInfoMethodCall = factory.Exec(callInfoMethod);

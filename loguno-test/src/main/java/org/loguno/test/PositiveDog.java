@@ -4,7 +4,7 @@ import org.loguno.Loguno;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Loguno.Slf4j("1")
+@Loguno.Slf4j(lazy = true, value = "ugly_bill")
 public class PositiveDog {
 
 
