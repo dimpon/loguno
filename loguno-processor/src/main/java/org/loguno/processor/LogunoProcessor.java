@@ -56,7 +56,7 @@ public class LogunoProcessor extends AbstractProcessor {
 
             ClassContext recorder = new ClassContext();
             System.out.println("recorder forward:" + recorder);
-            ClassContext accept = element.accept(visitor, recorder);
+            Void accept = element.accept(visitor, recorder);
 
             System.out.println("recorder back:" + accept);
             // JCTree tree = (JCTree) trees.getTree(element);

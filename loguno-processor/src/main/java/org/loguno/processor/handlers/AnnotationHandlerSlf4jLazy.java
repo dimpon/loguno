@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 /**
  * @author Dmitrii Ponomarev
  */
+@Handler
 @Order(2)
 public class AnnotationHandlerSlf4jLazy extends AnnotationHandlerBase<Loguno.Slf4j, TypeElement> {
 
@@ -43,7 +44,6 @@ public class AnnotationHandlerSlf4jLazy extends AnnotationHandlerBase<Loguno.Slf
             out.print("import org.slf4j.Logger;\n");
             out.print("import org.slf4j.LoggerFactory;\n");
             out.print("import org.slf4j.Marker;\n");
-
             out.print("public class LazyLoggerFactorySlf4j implements Logger {\n");
             out.print("private static final Function<Class<?>, Logger> $function = LoggerFactory::getLogger;\n");
             out.print("private final Class<?> clazz;\n");
@@ -51,7 +51,6 @@ public class AnnotationHandlerSlf4jLazy extends AnnotationHandlerBase<Loguno.Slf
             out.print("private Logger createLogger() { return (Logger)$function.apply(this.clazz); }\n");
             out.print("private LazyLoggerFactorySlf4j(Class<?> clazz) { this.clazz = clazz; }\n");
             out.print("public static Logger getLogger(Class<?> clazz) { return new LazyLoggerFactorySlf4j(clazz); }\n");
-
             out.print("private Logger getLogger() {\n");
             out.print("Object value = this.logger.get();\n");
             out.print("if (value == null) {\n");

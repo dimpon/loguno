@@ -9,7 +9,7 @@ import org.loguno.Loguno;
 public class PositiveCat {
 
     @Loguno
-    public String sayIt(){
+    public String sayIt(@Loguno String x){
 
         @Loguno
         final int i = 0;

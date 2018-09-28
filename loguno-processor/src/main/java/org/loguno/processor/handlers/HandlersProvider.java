@@ -69,6 +69,7 @@ public final class HandlersProvider {
         Set<Class<? extends AnnotationHandler>> handlers = reflections.getSubTypesOf(AnnotationHandler.class);
         return handlers.stream()
                 .filter(c -> !Modifier.isAbstract(c.getModifiers()))
+                .filter(c -> c.isAnnotationPresent(Handler.class))
                 .map(c -> (Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>) c);
     }
 

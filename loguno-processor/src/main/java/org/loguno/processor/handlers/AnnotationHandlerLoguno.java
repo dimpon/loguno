@@ -1,27 +1,20 @@
 package org.loguno.processor.handlers;
 
 import org.loguno.Loguno;
-import org.loguno.processor.LogunoScanner;
+
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.configuration.ConfiguratorManager;
 import com.sun.source.tree.MethodTree;
-import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.code.Symtab;
-import com.sun.tools.javac.code.Types;
-import com.sun.tools.javac.model.JavacElements;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.TreeMaker;
-import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.List;
-import com.sun.tools.javac.util.Names;
 
 import javax.lang.model.element.ExecutableElement;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
+@Handler
 @Order
 public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, ExecutableElement> {
 
@@ -42,20 +35,21 @@ public class AnnotationHandlerLoguno extends AnnotationHandlerBase<Loguno, Execu
                 .flatMap(s -> s)
                 .toArray(JCTree.JCExpression[]::new);
 
-        String message = ConfiguratorManager.getInstance().getConfiguration().getProperty(ConfigurationKeys.METHOD_MESSAGE_PATTERN_DEFAULT);
-        String params = ConfiguratorManager.getInstance().getConfiguration().getProperty(ConfigurationKeys.METHOD_MESSAGE_PARAMS_PATTERN_DEFAULT);
+        String message = conf.getProperty(ConfigurationKeys.METHOD_MESSAGE_PATTERN_DEFAULT);
+        String params = conf.getProperty(ConfigurationKeys.METHOD_MESSAGE_PARAMS_PATTERN_DEFAULT);
 
 
         String paramsStr = tree.getParameters().stream().map(o -> params).collect(Collectors.joining(","));
         JCTree.JCLiteral value = factory.Literal(message + paramsStr);
 
 
+        //method name can be taken from context
         JCTree.JCLiteral methodname = factory.Literal(tree.getName().toString());
 
+        //class name can be taken from context
         JCTree.JCLiteral classname = factory.Literal(((Symbol.MethodSymbol) element).owner.getSimpleName().toString());
 
         String loggerName = classContext.getLoggerName();
-
 
         JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
                 factory.Select(factory.Ident(elements.getName(loggerName)), elements.getName("info")),

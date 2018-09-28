@@ -13,6 +13,8 @@ import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
+import org.loguno.processor.configuration.Configuration;
+import org.loguno.processor.configuration.ConfiguratorManager;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
@@ -32,6 +34,7 @@ abstract public class AnnotationHandlerBase<A extends Annotation, E extends Elem
     protected final Types types;
     protected final JavacElements elements;
     protected final Filer filer;
+    protected Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
 
     protected AnnotationHandlerBase(JavacProcessingEnvironment environment) {
         this.environment = environment;

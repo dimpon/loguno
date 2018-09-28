@@ -5,6 +5,7 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 
 import javax.lang.model.element.TypeElement;
 
+@Handler
 @Order
 public class AnnotationHandlerLog4j extends AnnotationHandlerBase<Loguno.Log4j,TypeElement> {
 

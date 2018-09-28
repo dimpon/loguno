@@ -8,10 +8,12 @@ import org.loguno.processor.handlers.HandlersProvider;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 
 import javax.lang.model.element.*;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementScanner8;
 import java.util.Arrays;
+import java.util.List;
 
-public class LogunoElementVisitor extends ElementScanner8<ClassContext, ClassContext> {
+public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
 
     private HandlersProvider handlersProvider;
     private JavacProcessingEnvironment environment;
@@ -23,37 +25,59 @@ public class LogunoElementVisitor extends ElementScanner8<ClassContext, ClassCon
     }
 
     @Override
-    public ClassContext visitPackage(PackageElement e, ClassContext recorder) {
+    public Void visitPackage(PackageElement e, ClassContext recorder) {
         processHandlers(e, recorder);
         return super.visitPackage(e, recorder);
     }
 
     @Override
-    public ClassContext visitType(TypeElement e, ClassContext recorder) {
+    public Void visitType(TypeElement e, ClassContext recorder) {
         processHandlers(e, recorder);
         return super.visitType(e, recorder);
     }
 
     @Override
-    public ClassContext visitVariable(VariableElement e, ClassContext recorder) {
+    public Void visitVariable(VariableElement e, ClassContext recorder) {
+        //catches methods arguments only
         processHandlers(e, recorder);
         return super.visitVariable(e, recorder);
     }
 
     @Override
-    public ClassContext visitExecutable(ExecutableElement e, ClassContext recorder) {
+    public Void visitExecutable(ExecutableElement e, ClassContext recorder) {
         processHandlers(e, recorder);
 
-        Trees trees = Trees.instance(environment);
+       /* Trees trees = Trees.instance(environment);
         MethodTree tree = trees.getTree(e);
         JCTree.JCBlock body = (JCTree.JCBlock) tree.getBody();
-        body.accept(new LogunoScanner());
+        body.accept(new LogunoScanner());*/
+
+        //com.sun.source.tree.TreeVisitor<R, P>
+        List<? extends VariableElement> parameters = e.getParameters();
+        AnnotationValue defaultValue = e.getDefaultValue();
+
+        TypeMirror returnType = e.getReturnType();
+        List<? extends TypeParameterElement> typeParameters = e.getTypeParameters();
+
+        List<? extends Element> enclosedElements = e.getEnclosedElements();
+
+
+        ////
+
+
+        Trees trees = Trees.instance(environment);
+        MethodTree method = trees.getTree(e);
+
+        method.accept(new LogunoLocalVariableVisitor(),recorder);
+
+
 
         return super.visitExecutable(e, recorder);
     }
 
     @Override
-    public ClassContext visitTypeParameter(TypeParameterElement e, ClassContext recorder) {
+    public Void visitTypeParameter(TypeParameterElement e, ClassContext recorder) {
+        //catches class fields
         processHandlers(e, recorder);
         return super.visitTypeParameter(e, recorder);
     }

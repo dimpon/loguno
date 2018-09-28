@@ -16,6 +16,7 @@ import com.sun.tools.javac.util.Names;
 
 import javax.lang.model.element.TypeElement;
 
+@Handler
 @Order(0)
 public class AnnotationHandlerSlf4j extends AnnotationHandlerBase<Loguno.Slf4j, TypeElement> {
 
