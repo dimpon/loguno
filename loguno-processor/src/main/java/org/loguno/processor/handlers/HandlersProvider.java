@@ -20,7 +20,7 @@ public final class HandlersProvider {
 
     private static final String HANDLERS_PACKAGE = "org.loguno.processor.handlers";
 
-    private final Map<Class<? extends Element>, Map<Class<? extends Annotation>, List<AnnotationHandler<? extends Annotation, ? extends Element>>>> handlers;
+    private final Map<Class<? extends Element>, Map<Class<? extends Annotation>, List<AnnotationHandler>>> handlers;
 
     private final Set<Class<? extends Annotation>> supportedAnnotations;
 
@@ -30,8 +30,9 @@ public final class HandlersProvider {
 
     private HandlersProvider(JavacProcessingEnvironment environment) {
 
-        List<Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>> allHandlersClasses =
-                getAnnotationHandlersClasses().collect(Collectors.toList());
+        List<Class<? extends AnnotationHandler>> allHandlersClasses =
+                getAnnotationHandlersClasses()
+                        .collect(Collectors.toList());
 
         this.handlers = allHandlersClasses.stream()
                 .map(c -> createHandler(c, environment))
@@ -50,6 +51,7 @@ public final class HandlersProvider {
                 .getOrDefault(keyClass(e), Collections.emptyMap())
                 .getOrDefault(a, Collections.emptyList())
                 .stream()
+                .sorted(Comparator.comparing(h -> h.getClass().getAnnotation(Order.class).value()))
                 .map(h -> (AnnotationHandler<?, E>) h);
     }
 
@@ -58,19 +60,17 @@ public final class HandlersProvider {
     }
 
     @SneakyThrows({InstantiationException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class})
-    private AnnotationHandler<?, ?> createHandler(Class<? extends AnnotationHandler<?, ?>> clazz, JavacProcessingEnvironment environment) {
+    private AnnotationHandler createHandler(Class<? extends AnnotationHandler> clazz, JavacProcessingEnvironment environment) {
         return clazz.getConstructor(JavacProcessingEnvironment.class).newInstance(environment);
     }
 
     //todo if performance is slow try https://github.com/atteo/classindex  https://github.com/classgraph/classgraph
-    @SuppressWarnings("unchecked")
-    private Stream<Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>> getAnnotationHandlersClasses() {
+    private Stream<Class<? extends AnnotationHandler>> getAnnotationHandlersClasses() {
         Reflections reflections = new Reflections(HANDLERS_PACKAGE);
         Set<Class<? extends AnnotationHandler>> handlers = reflections.getSubTypesOf(AnnotationHandler.class);
         return handlers.stream()
                 .filter(c -> !Modifier.isAbstract(c.getModifiers()))
-                .filter(c -> c.isAnnotationPresent(Handler.class))
-                .map(c -> (Class<? extends AnnotationHandler<? extends Annotation, ? extends Element>>) c);
+                .filter(c -> c.isAnnotationPresent(Handler.class));
     }
 
     /**

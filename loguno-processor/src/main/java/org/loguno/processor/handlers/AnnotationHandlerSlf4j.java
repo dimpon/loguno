@@ -17,7 +17,7 @@ import com.sun.tools.javac.util.Names;
 import javax.lang.model.element.TypeElement;
 
 @Handler
-@Order(0)
+@Order(1)
 public class AnnotationHandlerSlf4j extends AnnotationHandlerBase<Loguno.Slf4j, TypeElement> {
 
     private static final String loggerClass = "org.slf4j.Logger";

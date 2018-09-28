@@ -4,11 +4,11 @@ import org.loguno.Loguno;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Loguno.Slf4j(lazy = true, value = "ugly_bill")
+@Loguno.Slf4j(lazy = true, value = "LOGGER")
 public class PositiveDog {
 
 
-   /* @Loguno("5")
+    @Loguno("5")
     public String barking(String a1111,String a2222) throws @Loguno("6") IllegalArgumentException {
 
         @Loguno("7")
@@ -38,5 +38,5 @@ public class PositiveDog {
         @Loguno
         private void doStep(){
         }
-    }*/
+    }
 }
