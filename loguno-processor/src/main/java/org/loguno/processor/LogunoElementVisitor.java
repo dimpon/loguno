@@ -53,14 +53,14 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
         body.accept(new LogunoScanner());*/
 
         //com.sun.source.tree.TreeVisitor<R, P>
-        List<? extends VariableElement> parameters = e.getParameters();
+        /*List<? extends VariableElement> parameters = e.getParameters();
         AnnotationValue defaultValue = e.getDefaultValue();
 
         TypeMirror returnType = e.getReturnType();
         List<? extends TypeParameterElement> typeParameters = e.getTypeParameters();
 
         List<? extends Element> enclosedElements = e.getEnclosedElements();
-
+*/
 
         ////
 
@@ -68,7 +68,7 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
         Trees trees = Trees.instance(environment);
         MethodTree method = trees.getTree(e);
 
-        method.accept(new LogunoLocalVariableVisitor(),recorder);
+        method.accept(new LogunoLocalVariableVisitor((JCTree.JCMethodDecl)method,environment),recorder);
 
 
 
