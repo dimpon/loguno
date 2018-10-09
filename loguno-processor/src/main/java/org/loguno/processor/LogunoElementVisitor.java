@@ -68,7 +68,9 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
         Trees trees = Trees.instance(environment);
         MethodTree method = trees.getTree(e);
 
-        method.accept(new LogunoLocalVariableVisitor((JCTree.JCMethodDecl)method,environment),recorder);
+
+
+        method.accept(new LogunoLocalVariableVisitor(environment),recorder);
 
 
 
