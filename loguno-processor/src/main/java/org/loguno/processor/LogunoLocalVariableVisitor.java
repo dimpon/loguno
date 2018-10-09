@@ -1,5 +1,7 @@
 package org.loguno.processor;
 
+import com.sun.source.tree.AnnotatedTypeTree;
+import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.MethodTree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreeScanner;
@@ -61,5 +63,17 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
         }
 
         return super.visitVariable(variableTree, classContext);
+    }
+
+
+
+    @Override
+    public Void visitAnnotation(AnnotationTree var1, ClassContext var2) {
+        return super.visitAnnotation(var1, var2);
+    }
+
+    @Override
+    public Void visitAnnotatedType(AnnotatedTypeTree var1, ClassContext var2) {
+        return super.visitAnnotatedType(var1, var2);
     }
 }

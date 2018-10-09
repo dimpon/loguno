@@ -11,7 +11,7 @@ public class PositiveCat {
     @Loguno
     public String sayIt(@Loguno String x){
 
-        @Loguno
+        @Loguno.DEBUG("zxc")
         final int i = 0;
 
         @Loguno

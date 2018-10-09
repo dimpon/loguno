@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 public class PositiveDog {
 
 
-    @Loguno("5")
+  /*  @Loguno("5")
     public String barking(String a1111,String a2222) throws @Loguno("6") IllegalArgumentException {
 
         @Loguno("7")
@@ -38,5 +38,5 @@ public class PositiveDog {
         @Loguno
         private void doStep(){
         }
-    }
+    }*/
 }
