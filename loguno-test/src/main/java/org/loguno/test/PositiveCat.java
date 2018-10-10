@@ -16,6 +16,8 @@ public class PositiveCat {
     public String sayIt(@Loguno("2") String x) throws @Loguno("3") NumberFormatException {
 
         @Loguno.DEBUG("zxc")
+        @Loguno("8")
+        @Loguno.INFO("info me")
         final int i = 0;
 
         @Loguno("4")

@@ -6,6 +6,7 @@ import org.reflections.Reflections;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -14,13 +15,13 @@ import java.util.stream.Stream;
 
 /**
  * Class scans package with annotation handlers, instanciates them, saves in {@link #handlers}
- * Returns the list of supported annotations, returns handlers by distinct Element and annotation.
+ * Returns the list of supported annotations, returns handlers by distinct Type and annotation.
  */
 public final class HandlersProvider {
 
     private static final String HANDLERS_PACKAGE = "org.loguno.processor.handlers";
 
-    private final Map<Class<? extends Element>, Map<Class<? extends Annotation>, List<AnnotationHandler>>> handlers;
+    private final Map<Class<?>, Map<Class<? extends Annotation>, List<AnnotationHandler>>> handlers;
 
     private final Set<Class<? extends Annotation>> supportedAnnotations;
 
@@ -46,7 +47,7 @@ public final class HandlersProvider {
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends Element> Stream<? extends AnnotationHandler<?, E>> getHandlersByElementAndAnnotation(Class<? extends Annotation> a, E e) {
+    public <E> Stream<? extends AnnotationHandler<?, E>> getHandlersByElementAndAnnotation(Class<? extends Annotation> a, E e) {
         return handlers
                 .getOrDefault(keyClass(e), Collections.emptyMap())
                 .getOrDefault(a, Collections.emptyList())
@@ -57,6 +58,10 @@ public final class HandlersProvider {
 
     public Set<Class<? extends Annotation>> supportedAnnotations() {
         return this.supportedAnnotations;
+    }
+
+    public Optional<Class<? extends Annotation>> getAnnotationClassByName(final String name) {
+        return this.supportedAnnotations.stream().filter(c -> c.getName().contains(name)).findAny();
     }
 
     @SneakyThrows({InstantiationException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class})
@@ -81,14 +86,14 @@ public final class HandlersProvider {
      * @return class if interface which is subtype of {@link Element}
      */
     @SuppressWarnings("unchecked")
-    private Class<? extends Element> keyClass(Element e) {
-        Class<? extends Element> clazz = e.getClass();
+    private Class<?> keyClass(Object e) {
+        Class<?> clazz = e.getClass();
         Class<?>[] interfaces = clazz.getInterfaces();
         for (Class<?> i : interfaces) {
             if (isClassSubtypeOfElement(i))
-                return (Class<? extends Element>) i;
+                return i;
         }
-        throw new RuntimeException("element doesn't implement the *Element interface");
+        return e.getClass();
     }
 
     private static boolean isClassSubtypeOfElement(Class<?> clazz) {

@@ -6,18 +6,23 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.loguno.Loguno;
+import org.loguno.processor.handlers.AnnotationHandler;
 import org.loguno.processor.handlers.ClassContext;
+import org.loguno.processor.handlers.HandlersProvider;
 import sun.reflect.annotation.AnnotationParser;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Dmitrii Ponomarev
@@ -27,6 +32,7 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
 
 
     private final JavacProcessingEnvironment environment;
+    private final HandlersProvider handlersProvider;
 
    /* @Override
     public Void visitVariable(VariableTree variableTree, ClassContext classContext) {
@@ -57,18 +63,50 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
         return super.visitVariable(variableTree, classContext);
     }*/
 
+    public Void visitVariable(VariableTree variableTree, ClassContext classContext) {
+
+        List<? extends AnnotationTree> annotations = variableTree.getModifiers().getAnnotations();
+
+        annotations.forEach(o -> {
+            Tree annotationType = o.getAnnotationType();
+            Tree.Kind kind = annotationType.getKind();
+
+            String className = annotationType.toString().replace(".", "$");
+
+
+            Optional<Class<? extends Annotation>> annClass = handlersProvider.getAnnotationClassByName(className);
+
+
+            if (annClass.isPresent()) {
+                //Class<? extends Annotation> annClass = getAnnClass(className);
+                Stream<? extends AnnotationHandler<?, VariableTree>> handlersByElementAndAnnotation = handlersProvider.getHandlersByElementAndAnnotation(annClass.get(), variableTree);
+                List<? extends AnnotationHandler<?, VariableTree>> collect = handlersByElementAndAnnotation.collect(Collectors.toList());
+                int size = collect.size();
+            }
+
+        });
+
+
+        return super.visitVariable(variableTree, classContext);
+    }
+
 
     @SneakyThrows
     @Override
     public Void visitBlock(BlockTree var1, ClassContext var2) {
 
 
-        Class<org.loguno.Loguno> aClass = (Class<org.loguno.Loguno>)this.getClass().getClassLoader().loadClass("org.loguno.Loguno");
+        Class<org.loguno.Loguno> aClass = (Class<org.loguno.Loguno>) this.getClass().getClassLoader().loadClass("org.loguno.Loguno");
 
-        Map<String,Object> values = new HashMap<>();
-        values.put("value","some");
+        Map<String, Object> values = new HashMap<>();
+        values.put("value", "some");
 
         Loguno annotationInstance = createAnnotationInstance(values, aClass);
+
+        Stream<? extends AnnotationHandler<?, BlockTree>> handlersByElementAndAnnotation = handlersProvider.getHandlersByElementAndAnnotation(aClass, var1);
+
+        handlersByElementAndAnnotation.forEach(o -> o.process(annotationInstance, var1, var2));
+
 
         return super.visitBlock(var1, var2);
     }
@@ -88,7 +126,7 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
     }
 
 
-    @Override
+  /*  @Override
     public Void visitAnnotation(AnnotationTree var1, ClassContext var2) {
         return super.visitAnnotation(var1, var2);
     }
@@ -96,7 +134,7 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
     @Override
     public Void visitAnnotatedType(AnnotatedTypeTree var1, ClassContext var2) {
         return super.visitAnnotatedType(var1, var2);
-    }
+    }*/
 
 
     @SuppressWarnings("unchecked")
@@ -114,4 +152,17 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
 
         return (A) AnnotationParser.annotationForMap(annotationType, values);
     }
+
+    //@SneakyThrows
+    @SuppressWarnings("unchecked")
+    private Class<? extends Annotation> getAnnClass(String className) {
+        try {
+            return (Class<? extends Annotation>) this.getClass().getClassLoader().loadClass(className);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

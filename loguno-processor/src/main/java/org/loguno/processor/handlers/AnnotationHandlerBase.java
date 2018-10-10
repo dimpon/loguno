@@ -13,17 +13,15 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
 import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
 import org.loguno.processor.configuration.Configuration;
 import org.loguno.processor.configuration.ConfiguratorManager;
 
 import javax.annotation.processing.Filer;
-import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 
-abstract public class AnnotationHandlerBase<A extends Annotation, E extends Element> implements AnnotationHandler<A, E> {
+abstract public class AnnotationHandlerBase<A extends Annotation, E> implements AnnotationHandler<A, E> {
 
     protected final JavacProcessingEnvironment environment;
 

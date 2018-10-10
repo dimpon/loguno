@@ -70,7 +70,7 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
 
 
 
-        method.accept(new LogunoLocalVariableVisitor(environment),recorder);
+        method.getBody().accept(new LogunoLocalVariableVisitor(environment,handlersProvider),recorder);
 
 
 
