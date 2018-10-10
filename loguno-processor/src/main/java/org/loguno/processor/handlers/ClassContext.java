@@ -1,5 +1,6 @@
 package org.loguno.processor.handlers;
 
+import com.sun.source.tree.BlockTree;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Singular;
@@ -16,13 +17,16 @@ public class ClassContext {
     private boolean lazy;
 
 
+    private BlockTree currentBlock;
+
+
     private Map<Logger, Boolean> lazyLoggerIsGenerated = new EnumMap<>(Logger.class);
 
     public boolean isLoggerGenerated(Logger logger) {
         return lazyLoggerIsGenerated.getOrDefault(logger, false);
     }
 
-    public void loggerIsGenerated(Logger logger) {
+    public void generated(Logger logger) {
         lazyLoggerIsGenerated.put(logger, true);
     }
 

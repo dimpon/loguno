@@ -1,6 +1,7 @@
 package org.loguno.test;
 
 import org.loguno.Loguno;
+import org.loguno.processor.handlers.ClassContext;
 
 import java.lang.reflect.Constructor;
 import java.util.Date;
@@ -15,13 +16,19 @@ public class PositiveCat {
     @Loguno("1")
     public String sayIt(@Loguno("2") String x) throws @Loguno("3") NumberFormatException {
 
-        @Loguno.DEBUG("zxc")
+        @Loguno.DEBUG(value = "zxc",string = "toString"/*, context = true, string = "toString()", logger = ClassContext.Logger.Slf4j*/)
         @Loguno("8")
         @Loguno.INFO("info me")
-        final int i = 0;
+        final int xx = 0;
+
+        dodo();
 
         @Loguno("4")
         Object o = new Object();
+
+        for (int i = 0; i < 10; i++) {
+            System.out.println(o.toString());
+        }
 
         @Loguno("5")
         String k = "";
@@ -30,6 +37,10 @@ public class PositiveCat {
 
         return k;
 
+    }
+
+    private void dodo() {
+        System.out.printf("dodo");
     }
 
     public static void main(String[] args) throws Exception {
@@ -41,8 +52,7 @@ public class PositiveCat {
         Loguno.DEBUG debug = clazz.newInstance();
 
 
-
-        System.out.printf(""+debug);
+        System.out.printf("" + debug);
 
 
     }

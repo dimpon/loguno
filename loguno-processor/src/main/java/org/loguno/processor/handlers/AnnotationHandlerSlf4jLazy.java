@@ -4,7 +4,6 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import lombok.SneakyThrows;
 import org.loguno.Loguno;
 
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.TypeElement;
 
 import javax.tools.JavaFileObject;
@@ -130,6 +129,6 @@ public class AnnotationHandlerSlf4jLazy extends AnnotationHandlerBase<Loguno.Slf
             out.print("}");
         }
 
-        classContext.loggerIsGenerated(ClassContext.Logger.Slf4j);
+        classContext.generated(ClassContext.Logger.Slf4j);
     }
 }

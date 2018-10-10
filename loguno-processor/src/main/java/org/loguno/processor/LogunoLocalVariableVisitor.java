@@ -17,10 +17,7 @@ import sun.reflect.annotation.AnnotationParser;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,7 +66,9 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
 
         annotations.forEach(o -> {
             Tree annotationType = o.getAnnotationType();
-            Tree.Kind kind = annotationType.getKind();
+
+
+
 
             String className = annotationType.toString().replace(".", "$");
 
@@ -79,9 +78,22 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
 
             if (annClass.isPresent()) {
                 //Class<? extends Annotation> annClass = getAnnClass(className);
-                Stream<? extends AnnotationHandler<?, VariableTree>> handlersByElementAndAnnotation = handlersProvider.getHandlersByElementAndAnnotation(annClass.get(), variableTree);
-                List<? extends AnnotationHandler<?, VariableTree>> collect = handlersByElementAndAnnotation.collect(Collectors.toList());
-                int size = collect.size();
+                Stream<? extends AnnotationHandler<?, VariableTree>> handlers = handlersProvider.getHandlersByElementAndAnnotation(annClass.get(), variableTree);
+
+
+                Map<String, Object> args = new LinkedHashMap<>();
+
+                o.getArguments().forEach(argument -> {
+                    JCTree.JCAssign aargument = (JCTree.JCAssign)argument;
+
+                    args.put(((JCTree.JCIdent)aargument.lhs).getName().toString(),((JCTree.JCLiteral)aargument.rhs).getValue()) ;
+                });
+
+                Annotation annotation = createAnnotationInstance(args, annClass.get());
+
+                handlers.forEach(handler -> {
+                    handler.process(annotation,variableTree,classContext);
+                });
             }
 
         });
@@ -91,27 +103,31 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
     }
 
 
-    @SneakyThrows
+    //@SneakyThrows
     @Override
-    public Void visitBlock(BlockTree var1, ClassContext var2) {
+    public Void visitBlock(BlockTree block, ClassContext classContext) {
 
 
-        Class<org.loguno.Loguno> aClass = (Class<org.loguno.Loguno>) this.getClass().getClassLoader().loadClass("org.loguno.Loguno");
+       /* Class<org.loguno.Loguno> aClass = (Class<org.loguno.Loguno>) this.getClass().getClassLoader().loadClass("org.loguno.Loguno");
 
         Map<String, Object> values = new HashMap<>();
         values.put("value", "some");
 
         Loguno annotationInstance = createAnnotationInstance(values, aClass);
 
-        Stream<? extends AnnotationHandler<?, BlockTree>> handlersByElementAndAnnotation = handlersProvider.getHandlersByElementAndAnnotation(aClass, var1);
+        Stream<? extends AnnotationHandler<?, BlockTree>> handlersByElementAndAnnotation = handlersProvider.getHandlersByElementAndAnnotation(aClass, block);
 
-        handlersByElementAndAnnotation.forEach(o -> o.process(annotationInstance, var1, var2));
+        handlersByElementAndAnnotation.forEach(o -> o.process(annotationInstance, block, classContext));*/
 
-
-        return super.visitBlock(var1, var2);
+        try {
+            classContext.setCurrentBlock(block);
+            return super.visitBlock(block, classContext);
+        } finally {
+            classContext.setCurrentBlock(null);
+        }
     }
 
-    @Override
+   /* @Override
     public Void visitMethod(MethodTree var1, ClassContext var2) {
         ModifiersTree modifiers = var1.getModifiers();
 
@@ -123,7 +139,7 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
         Tree body = var1.getBody();
         Tree defaultValue = var1.getDefaultValue();
         return super.visitMethod(var1, var2);
-    }
+    }*/
 
 
   /*  @Override
@@ -148,10 +164,11 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
         }
 
         //Populate required values
-        values.putAll(customValues);
+        values.putAll(new LinkedHashMap<>(customValues));
 
         return (A) AnnotationParser.annotationForMap(annotationType, values);
     }
+
 
     //@SneakyThrows
     @SuppressWarnings("unchecked")

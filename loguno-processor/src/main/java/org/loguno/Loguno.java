@@ -1,5 +1,7 @@
 package org.loguno;
 
+import org.loguno.processor.handlers.ClassContext;
+
 import java.lang.annotation.*;
 
 import static java.lang.annotation.ElementType.*;
@@ -145,6 +147,10 @@ public @interface Loguno {
     @Target({METHOD, TYPE, LOCAL_VARIABLE, PARAMETER, TYPE_PARAMETER, TYPE_USE})
     @interface DEBUG {
         String[] value() default "";
+        String string() default "";
+        /*
+        boolean context() default false;
+        ClassContext.Logger logger() default ClassContext.Logger.Log4j;*/
     }
     @Documented
     @Retention(RetentionPolicy.SOURCE)

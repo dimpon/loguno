@@ -19,6 +19,11 @@ public class AnnotationHandlerJCVariableDeclLogunoDEBUG extends AnnotationHandle
     @Override
     public void processTree(Loguno.DEBUG annotation, JCTree.JCVariableDecl element, ClassContext classContext) {
 
+        String value = annotation.string();
+        /*String string = annotation.string();
+        boolean context = annotation.context();
+        ClassContext.Logger logger = annotation.logger();*/
+
         JCTree.JCModifiers modifiers = element.getModifiers();
 
     }
