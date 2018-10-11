@@ -2,6 +2,7 @@ package org.loguno.processor.configuration;
 
 import lombok.Cleanup;
 import lombok.SneakyThrows;
+import org.reflections.Reflections;
 
 import java.io.InputStream;
 
@@ -9,6 +10,8 @@ import java.util.Properties;
 
 public class ConfigurationImpl implements Configuration {
     private static final String propFileName= "loguno_internal.properties";
+
+    private static final String propAltFileName= "loguno.properties";
 
     private Properties properties = new Properties();
 
@@ -18,6 +21,8 @@ public class ConfigurationImpl implements Configuration {
         @Cleanup
         InputStream input = getClass().getClassLoader().getResourceAsStream(propFileName);
         properties.load(input);
+
+
     }
 
     @Override
