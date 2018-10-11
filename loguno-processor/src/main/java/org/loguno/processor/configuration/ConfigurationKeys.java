@@ -13,4 +13,11 @@ public class ConfigurationKeys {
 
     public final ConfigurationKey<String> LOCVAR_MESSAGE_PARAMS_PATTERN_DEFAULT =
             ConfigurationKey.<String>of("loguno.localvar.message.default", "Default message for logging one local variable");
+
+
+    public final ConfigurationKey<String> LOG_METHOD_DEFAULT =
+            ConfigurationKey.<String>of("loguno.log.method.default", "Default log method");
+
+    public final ConfigurationKey<String> ERR_METHOD_DEFAULT =
+            ConfigurationKey.<String>of("loguno.err.method.default", "Default err method");
 }
