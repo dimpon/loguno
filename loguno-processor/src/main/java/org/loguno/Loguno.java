@@ -26,6 +26,7 @@ public @interface Loguno {
     @Target(TYPE)
     @interface Slf4j {
         String value() default "LOG";
+
         boolean lazy() default false;
     }
 
@@ -44,12 +45,12 @@ public @interface Loguno {
     }
 
 
-
     @Documented
     @Retention(RetentionPolicy.SOURCE)
     @Target(LOCAL_VARIABLE)
     @interface Catch {
         String[] value() default "";
+
         Class<? extends Throwable>[] exception() default {Throwable.class};
 
         @Documented
@@ -57,6 +58,7 @@ public @interface Loguno {
         @Target(LOCAL_VARIABLE)
         @interface TRACE {
             String[] value() default "";
+
             Class<? extends Throwable>[] exception() default {Throwable.class};
         }
 
@@ -65,6 +67,7 @@ public @interface Loguno {
         @Target(LOCAL_VARIABLE)
         @interface DEBUG {
             String[] value() default "";
+
             Class<? extends Throwable>[] exception() default {Throwable.class};
         }
 
@@ -73,6 +76,7 @@ public @interface Loguno {
         @Target(LOCAL_VARIABLE)
         @interface INFO {
             String[] value() default "";
+
             Class<? extends Throwable>[] exception() default {Throwable.class};
         }
 
@@ -81,6 +85,7 @@ public @interface Loguno {
         @Target(LOCAL_VARIABLE)
         @interface WARN {
             String[] value() default "";
+
             Class<? extends Throwable>[] exception() default {Throwable.class};
         }
 
@@ -89,6 +94,7 @@ public @interface Loguno {
         @Target(LOCAL_VARIABLE)
         @interface ERROR {
             String[] value() default "";
+
             Class<? extends Throwable>[] exception() default {Throwable.class};
         }
     }
@@ -142,28 +148,35 @@ public @interface Loguno {
     @interface TRACE {
         String[] value() default "";
     }
+
     @Documented
     @Retention(RetentionPolicy.SOURCE)
     @Target({METHOD, TYPE, LOCAL_VARIABLE, PARAMETER, TYPE_PARAMETER, TYPE_USE})
     @interface DEBUG {
         String[] value() default "";
         String string() default "";
-        /*
+        Class<?> clazz() default Object.class;
+        int num() default 0;
         boolean context() default false;
-        ClassContext.Logger logger() default ClassContext.Logger.Log4j;*/
+        ClassContext.Logger logger() default ClassContext.Logger.Log4j;
+        Class<? extends Annotation>[] aaaa() default Annotation.class;
+        int[] iii() default 0;
     }
+
     @Documented
     @Retention(RetentionPolicy.SOURCE)
     @Target({METHOD, TYPE, LOCAL_VARIABLE, PARAMETER, TYPE_PARAMETER, TYPE_USE})
     @interface INFO {
         String[] value() default "";
     }
+
     @Documented
     @Retention(RetentionPolicy.SOURCE)
     @Target({METHOD, TYPE, LOCAL_VARIABLE, PARAMETER, TYPE_PARAMETER, TYPE_USE})
     @interface WARN {
         String[] value() default "";
     }
+
     @Documented
     @Retention(RetentionPolicy.SOURCE)
     @Target({METHOD, TYPE, LOCAL_VARIABLE, PARAMETER, TYPE_PARAMETER, TYPE_USE})

@@ -16,6 +16,7 @@ import org.loguno.processor.handlers.HandlersProvider;
 import sun.reflect.annotation.AnnotationParser;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ import java.util.stream.Stream;
 public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> {
 
 
-    private final JavacProcessingEnvironment environment;
+    //private final JavacProcessingEnvironment environment;
     private final HandlersProvider handlersProvider;
 
    /* @Override
@@ -68,8 +69,6 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
             Tree annotationType = o.getAnnotationType();
 
 
-
-
             String className = annotationType.toString().replace(".", "$");
 
 
@@ -81,25 +80,90 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
                 Stream<? extends AnnotationHandler<?, VariableTree>> handlers = handlersProvider.getHandlersByElementAndAnnotation(annClass.get(), variableTree);
 
 
-                Map<String, Object> args = new LinkedHashMap<>();
+                //Map<String, Object> args = new LinkedHashMap<>();
 
-                o.getArguments().forEach(argument -> {
-                    JCTree.JCAssign aargument = (JCTree.JCAssign)argument;
+                System.out.println("o=" + o);
 
-                    args.put(((JCTree.JCIdent)aargument.lhs).getName().toString(),((JCTree.JCLiteral)aargument.rhs).getValue()) ;
-                });
+                Map<String, String[]> args = createArgs(o);
 
+                /*o.getArguments().forEach(argument -> {
+
+                    System.out.println("argument=" + argument);
+
+                    JCTree.JCAssign aargument = (JCTree.JCAssign) argument;
+                    args.put(((JCTree.JCIdent) aargument.lhs).getName().toString(), ((JCTree.JCLiteral) aargument.rhs).getValue());
+                });*/
                 Annotation annotation = createAnnotationInstance(args, annClass.get());
-
                 handlers.forEach(handler -> {
-                    handler.process(annotation,variableTree,classContext);
+                    handler.process(annotation, variableTree, classContext);
                 });
             }
-
         });
-
-
         return super.visitVariable(variableTree, classContext);
+    }
+
+
+    private Map<String, String[]> createArgs(AnnotationTree annotation) {
+        List<? extends ExpressionTree> arguments = annotation.getArguments();
+
+        Map<String, String[]> values = new LinkedHashMap<>();
+
+        for (ExpressionTree argument : arguments) {
+
+            if (argument instanceof JCTree.JCLiteral) {
+                JCTree.JCLiteral aArgument = (JCTree.JCLiteral) argument;
+                values.put("value", new String[]{aArgument.getValue().toString()});
+
+            } else if (argument instanceof JCTree.JCFieldAccess) {
+                JCTree.JCFieldAccess aArgument = (JCTree.JCFieldAccess) argument;
+                values.put("value", new String[]{aArgument.toString()});
+
+            } else if (argument instanceof JCTree.JCNewArray) {
+                JCTree.JCNewArray aArgument = (JCTree.JCNewArray) argument;
+                String[] objects = aArgument.elems.stream().map(e -> {
+
+                    if (e instanceof JCTree.JCFieldAccess)
+                        return ((JCTree.JCFieldAccess) e).toString();
+
+                    if (e instanceof JCTree.JCLiteral)
+                        return ((JCTree.JCLiteral) e).getValue().toString();
+
+                    return "";
+
+                }).toArray(String[]::new);
+                values.put("value", objects);
+
+            } else if (argument instanceof JCTree.JCAssign) {
+                JCTree.JCAssign aArgument = (JCTree.JCAssign) argument;
+                String name = ((JCTree.JCIdent) aArgument.lhs).getName().toString();
+
+                if (aArgument.rhs instanceof JCTree.JCLiteral) {
+                    JCTree.JCLiteral val = (JCTree.JCLiteral) aArgument.rhs;
+                    values.put(name, new String[]{val.getValue().toString()});
+
+                } else if (aArgument.rhs instanceof JCTree.JCFieldAccess) {
+                    JCTree.JCFieldAccess val = (JCTree.JCFieldAccess) aArgument.rhs;
+                    values.put(name, new String[]{val.toString()});
+
+                } else if (aArgument.rhs instanceof JCTree.JCNewArray) {
+                    JCTree.JCNewArray val = (JCTree.JCNewArray) aArgument.rhs;
+                    String[] objects = val.elems.stream().map(e -> {
+
+                        if (e instanceof JCTree.JCFieldAccess)
+                            return ((JCTree.JCFieldAccess) e).toString();
+
+                        if (e instanceof JCTree.JCLiteral)
+                            return ((JCTree.JCLiteral) e).getValue().toString();
+
+                        return "";
+
+                    }).toArray(String[]::new);
+                    values.put(name, objects);
+                }
+            }
+        }
+
+        return values;
     }
 
 
@@ -127,46 +191,85 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
         }
     }
 
-   /* @Override
-    public Void visitMethod(MethodTree var1, ClassContext var2) {
-        ModifiersTree modifiers = var1.getModifiers();
-
-        Tree returnType = var1.getReturnType();
-        Iterable typeParameters = var1.getTypeParameters();
-        Iterable parameters = var1.getParameters();
-        Tree receiverParameter = var1.getReceiverParameter();
-        Iterable aThrows = var1.getThrows();
-        Tree body = var1.getBody();
-        Tree defaultValue = var1.getDefaultValue();
-        return super.visitMethod(var1, var2);
-    }*/
-
-
-  /*  @Override
-    public Void visitAnnotation(AnnotationTree var1, ClassContext var2) {
-        return super.visitAnnotation(var1, var2);
-    }
-
-    @Override
-    public Void visitAnnotatedType(AnnotatedTypeTree var1, ClassContext var2) {
-        return super.visitAnnotatedType(var1, var2);
-    }*/
-
 
     @SuppressWarnings("unchecked")
-    private static <A extends Annotation> A createAnnotationInstance(Map<String, Object> customValues, Class<A> annotationType) {
+    private <A extends Annotation> A createAnnotationInstance(Map<String, String[]> customValues, Class<A> annotationType) {
 
-        Map<String, Object> values = new HashMap<>();
+        Map<String, Object> values = new LinkedHashMap<>();
 
         //Extract default values from annotation
         for (Method method : annotationType.getDeclaredMethods()) {
             values.put(method.getName(), method.getDefaultValue());
+            Class<?> type = method.getReturnType();
+
+
+            System.out.println("type=" + type);
+
+            if (customValues.containsKey(method.getName())) {
+                //values.put(method.getName(), returnType.cast(customValues.get(method.getName())));
+
+                Object o = castValue(type, customValues.get(method.getName()));
+                values.put(method.getName(), o);
+            }
         }
 
         //Populate required values
-        values.putAll(new LinkedHashMap<>(customValues));
+        //values.putAll(customValues);
 
         return (A) AnnotationParser.annotationForMap(annotationType, values);
+    }
+
+    @SneakyThrows
+    private Object castValue(Class<?> clazz, String... value) {
+
+        if (clazz.isPrimitive()) {
+
+            switch (clazz.getName()) {
+
+                case "boolean":
+                    return Boolean.valueOf(value[0]);
+
+                case "int":
+                    return Integer.valueOf(value[0]);
+
+                case "long":
+                    return Long.valueOf(value[0]);
+
+                case "double":
+                    return Double.valueOf(value[0]);
+
+                case "float":
+                    return Float.valueOf(value[0]);
+
+                case "byte":
+                    return Byte.valueOf(value[0]);
+
+            }
+        }
+
+        if (clazz.isEnum()) {
+            String enumPath = value[0];
+
+            String fieldName = enumPath.substring(enumPath.lastIndexOf(".") + 1);
+
+            String className = enumPath.substring(0, enumPath.lastIndexOf(".")).replace(".", "$");
+
+
+
+            Class<?> aClass = this.getClass().getClassLoader().loadClass(className);
+
+            return Arrays.stream(aClass.getEnumConstants()).filter(o -> o.toString().equals(fieldName)).findAny().get();
+        }
+
+        if (clazz.isArray()) {
+            int length = value.length;
+
+        }
+
+        if (clazz.isLocalClass()) {
+            return this.getClass().getClassLoader().loadClass(value[0]);
+        }
+        return value[0];
     }
 
 

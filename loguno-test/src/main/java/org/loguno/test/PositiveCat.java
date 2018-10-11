@@ -16,10 +16,18 @@ public class PositiveCat {
     @Loguno("1")
     public String sayIt(@Loguno("2") String x) throws @Loguno("3") NumberFormatException {
 
-        @Loguno.DEBUG(value = "zxc",string = "toString"/*, context = true, string = "toString()", logger = ClassContext.Logger.Slf4j*/)
+        @Loguno.DEBUG(value = {"zxc", "abc"},
+                context = true,
+                string = "toString()",
+                logger = ClassContext.Logger.Slf4j,
+                clazz = Number.class,
+                aaaa = {Override.class, Loguno.class},
+                iii = {1, 2, 3, 4, 5},
+                num = 555)
+
+        //@Loguno.DEBUG({"aaa","bbb","ccc"})
         @Loguno("8")
-        @Loguno.INFO("info me")
-        final int xx = 0;
+        @Loguno.INFO("info me") final int xx = 0;
 
         dodo();
 
@@ -28,6 +36,8 @@ public class PositiveCat {
 
         for (int i = 0; i < 10; i++) {
             System.out.println(o.toString());
+            @Loguno("9")
+            String kkk = "";
         }
 
         @Loguno("5")
