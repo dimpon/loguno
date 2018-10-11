@@ -19,8 +19,8 @@ public class ClassContext {
 
     private LinkedList<String> classes = new LinkedList<>();
     private LinkedList<String> methods = new LinkedList<>();
+    private LinkedList<BlockTree> blocks = new LinkedList<>();
 
-    private BlockTree currentBlock;
 
     private Map<Logger, Boolean> lazyLoggerIsGenerated = new EnumMap<>(Logger.class);
 

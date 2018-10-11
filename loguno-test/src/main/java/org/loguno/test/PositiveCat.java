@@ -22,35 +22,24 @@ public class PositiveCat extends Animal {
 		dodo();
 	}
 
-	@Loguno("1")
+	@Loguno
 	public String sayIt(@Loguno("2") String x, String x1) throws @Loguno("3") NumberFormatException {
 
-		/*
-		 * @Loguno.DEBUG(value = {"zxc", "abc"},
-		 * context = true,
-		 * string = "toString()",
-		 * logger = ClassContext.Logger.Slf4j,
-		 * clazz = Number.class,
-		 * aaaa = {Override.class, Loguno.class},
-		 * iii = {1, 2, 3, 4, 5},
-		 * num = 555)
-		 */
-
-		@Loguno.DEBUG(value = "AAA")
+		@Loguno.DEBUG
 		@Loguno.INFO("info me")
 		final int xx = 5;
 
 		dodo();
 
-		@Loguno.DEBUG("4")
+		@Loguno.DEBUG
 		Object o = new Object();
 
 		for (int i = 0; i < 10; i++) {
-			@Loguno.DEBUG("9")
+			@Loguno.DEBUG("99999")
 			String kkk = "";
 		}
 
-		@Loguno("5")
+		@Loguno.DEBUG("Variable K")
 		String k = "";
 
 		int i1 = Integer.parseInt("1");
@@ -59,7 +48,7 @@ public class PositiveCat extends Animal {
 
 	}
 
-	@Loguno
+	@Loguno("i'm in!!!!")
 	private void dodo() {
 		System.out.printf("dodo");
 	}

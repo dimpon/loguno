@@ -74,10 +74,10 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
         handlersByElementAndAnnotation.forEach(o -> o.process(annotationInstance, block, classContext));*/
 
         try {
-            classContext.setCurrentBlock(block);
+            classContext.getBlocks().add(block);
             return super.visitBlock(block, classContext);
         } finally {
-            classContext.setCurrentBlock(null);
+            classContext.getBlocks().removeLast();
         }
     }
 }

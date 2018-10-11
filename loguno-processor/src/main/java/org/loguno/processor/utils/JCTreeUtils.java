@@ -5,6 +5,9 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.tools.javac.tree.JCTree;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.loguno.processor.configuration.Configuration;
+import org.loguno.processor.configuration.ConfigurationKey;
+import org.loguno.processor.configuration.ConfiguratorManager;
 import sun.reflect.annotation.AnnotationParser;
 
 import java.lang.annotation.Annotation;
@@ -22,14 +25,21 @@ import java.util.stream.Collectors;
 public class JCTreeUtils {
 
 
+    public String getMessageTemplate(String[] value, ConfigurationKey<String> key) {
+
+        Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
+
+        return (value.length > 0 && !value[0].isEmpty()) ?
+                value[0] : conf.getProperty(key);
+    }
+
+
     /**
-     *
      * The method creates the 'real' annotation object based on {@link com.sun.source.tree.AnnotationTree}
      * Now Strings, Strings[] and primitivesa are supported as annotation memmber.
-     *
      */
     @SuppressWarnings("unchecked")
-    public  <A extends Annotation> A createAnnotationInstance(AnnotationTree annotation, Class<A> annotationType) {
+    public <A extends Annotation> A createAnnotationInstance(AnnotationTree annotation, Class<A> annotationType) {
 
         Map<String, String[]> customValues = createAnnotationArgsMap(annotation);
 
