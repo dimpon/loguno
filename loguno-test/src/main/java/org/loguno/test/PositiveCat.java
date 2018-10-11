@@ -16,22 +16,21 @@ public class PositiveCat {
     @Loguno("1")
     public String sayIt(@Loguno("2") String x) throws @Loguno("3") NumberFormatException {
 
-        @Loguno.DEBUG(value = {"zxc", "abc"},
+       /* @Loguno.DEBUG(value = {"zxc", "abc"},
                 context = true,
                 string = "toString()",
                 logger = ClassContext.Logger.Slf4j,
                 clazz = Number.class,
                 aaaa = {Override.class, Loguno.class},
                 iii = {1, 2, 3, 4, 5},
-                num = 555)
+                num = 555)*/
 
-        //@Loguno.DEBUG({"aaa","bbb","ccc"})
-        @Loguno("8")
+        @Loguno.DEBUG(value = "AAA", context = true, num = 5)
         @Loguno.INFO("info me") final int xx = 0;
 
         dodo();
 
-        @Loguno("4")
+        @Loguno.DEBUG("4")
         Object o = new Object();
 
         for (int i = 0; i < 10; i++) {

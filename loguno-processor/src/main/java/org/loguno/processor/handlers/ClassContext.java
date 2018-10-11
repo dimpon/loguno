@@ -16,17 +16,15 @@ public class ClassContext {
     private String loggerName;
     private boolean lazy;
 
-
     private BlockTree currentBlock;
-
 
     private Map<Logger, Boolean> lazyLoggerIsGenerated = new EnumMap<>(Logger.class);
 
-    public boolean isLoggerGenerated(Logger logger) {
+    boolean isLoggerHere(Logger logger) {
         return lazyLoggerIsGenerated.getOrDefault(logger, false);
     }
 
-    public void generated(Logger logger) {
+    void generated(Logger logger) {
         lazyLoggerIsGenerated.put(logger, true);
     }
 

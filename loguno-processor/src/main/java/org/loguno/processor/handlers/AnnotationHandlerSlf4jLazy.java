@@ -31,7 +31,7 @@ public class AnnotationHandlerSlf4jLazy extends AnnotationHandlerBase<Loguno.Slf
         if (!classContext.isLazy())
             return;
 
-        if (classContext.isLoggerGenerated(ClassContext.Logger.Slf4j))
+        if (classContext.isLoggerHere(ClassContext.Logger.Slf4j))
             return;
 
         JavaFileObject builderFile = filer
