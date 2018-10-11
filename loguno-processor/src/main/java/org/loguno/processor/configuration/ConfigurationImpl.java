@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigurationImpl implements Configuration {
-    private static final String propFileName="loguno.properties";
+    private static final String propFileName= "loguno_internal.properties";
 
     private Properties properties = new Properties();
 

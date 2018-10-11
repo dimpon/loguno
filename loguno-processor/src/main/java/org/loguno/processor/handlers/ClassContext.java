@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.Singular;
 
 import java.util.EnumMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 @Getter
@@ -15,6 +16,9 @@ public class ClassContext {
     private Logger logger;
     private String loggerName;
     private boolean lazy;
+
+    private LinkedList<String> classes = new LinkedList<>();
+    private LinkedList<String> methods = new LinkedList<>();
 
     private BlockTree currentBlock;
 
