@@ -28,8 +28,6 @@ import static org.loguno.processor.utils.JCTreeUtils.*;
 public abstract class AnnotationHandlerExecutable<A extends Annotation, E> extends AnnotationHandlerBase<A, E> {
 
 
-
-
     protected AnnotationHandlerExecutable(JavacProcessingEnvironment environment) {
         super(environment);
     }
@@ -136,24 +134,27 @@ public abstract class AnnotationHandlerExecutable<A extends Annotation, E> exten
 
         String message = JCTreeUtils.tryToInsertClassAndMethodName(getMessageTemplate(value, METHOD_MESSAGE_PATTERN_DEFAULT),classContext);
 
-        final String params = paramSuffix(message);
+        final String paramsTemplate = paramSuffix(message);
 
         message = message.replaceAll("\\[(.*?)\\]", "");
 
-        String paramsStr = tree.getParameters().stream().map(o -> params).collect(Collectors.joining(","));
+        if(!paramsTemplate.isEmpty()){
+            String paramsStr = tree.getParameters().stream().map(o -> paramsTemplate).collect(Collectors.joining(","));
+            message = message + paramsStr;
+        }
 
-        JCTree.JCLiteral wholeMessage = factory.Literal(message + paramsStr);
+        JCTree.JCLiteral wholeMessage =factory.Literal(message);
 
-
-        String loggerName = classContext.getLoggerName();
-
+        String loggerVariable = classContext.getLoggerName();
         final ListBuffer<JCTree.JCExpression> buffer = new ListBuffer<>();
         buffer.append(wholeMessage);
 
-        Arrays.stream(idents).forEach(buffer::append);
+        if(message.contains("{}")) {
+            Arrays.stream(idents).forEach(buffer::append);
+        }
 
         JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
-                factory.Select(factory.Ident(elements.getName(loggerName)), elements.getName(logMethod)),
+                factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
                 buffer.toList());
 
         JCTree.JCStatement callInfoMethodCall = factory.Exec(callInfoMethod);

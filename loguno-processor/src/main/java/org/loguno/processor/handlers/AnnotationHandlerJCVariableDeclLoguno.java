@@ -1,8 +1,5 @@
 package org.loguno.processor.handlers;
 
-import com.sun.source.tree.BlockTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.List;
@@ -26,7 +23,7 @@ public class AnnotationHandlerJCVariableDeclLoguno extends AnnotationHandlerBase
 	public void processTree(Loguno.DEBUG annotation, JCTree.JCVariableDecl element, ClassContext classContext) {
 
 		String message = JCTreeUtils.tryToInsertClassAndMethodName(
-				JCTreeUtils.getMessageTemplate(annotation.value(), ConfigurationKeys.LOCVAR_MESSAGE_PARAMS_PATTERN_DEFAULT), classContext);
+				JCTreeUtils.getMessageTemplate(annotation.value(), ConfigurationKeys.LOCVAR_MESSAGE_PATTERN_DEFAULT), classContext);
 
 		JCTree.JCLiteral value = factory.Literal(message);
 

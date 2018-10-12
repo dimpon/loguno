@@ -14,7 +14,6 @@ public class ConfigurationKey<T> {
     private final String description;
 
     public T getValue(String value){
-
         return (T)value;
     }
 }

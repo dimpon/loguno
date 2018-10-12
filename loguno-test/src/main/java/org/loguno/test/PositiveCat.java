@@ -25,7 +25,8 @@ public class PositiveCat extends Animal {
 	}
 
 	@Loguno
-	public String sayIt(@Loguno("2") String x, String x1) throws @Loguno("3") NumberFormatException {
+	@Loguno.TRACE("Custom message. Has only {method}.")
+	public String sayIt(String x, String x1) throws @Loguno("3") NumberFormatException {
 
 		@Loguno.DEBUG
 		@Loguno
@@ -57,6 +58,10 @@ public class PositiveCat extends Animal {
 	@Loguno.TRACE
 	@Loguno.WARN
 	private void dodo() {
+		System.out.printf("dodo");
+	}
+
+	private void dododo(@Loguno String x1, @Loguno("abc") String x2, String x3, String x4) {
 		System.out.printf("dodo");
 	}
 
