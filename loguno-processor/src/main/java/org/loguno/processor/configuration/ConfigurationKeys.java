@@ -8,6 +8,9 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ConfigurationKeys {
 
+    public static final String CLASS_PATTERN = "{class}";
+    public static final String METHOD_PATTERN = "{method}";
+
     public final ConfigurationKey<String> METHOD_MESSAGE_PATTERN_DEFAULT =
             ConfigurationKey.<String>of("loguno.method.message.default", "Default message for method invocation logging");
 

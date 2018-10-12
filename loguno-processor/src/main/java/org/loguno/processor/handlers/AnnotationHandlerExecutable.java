@@ -10,6 +10,7 @@ import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.List;
+import org.loguno.processor.utils.JCTreeUtils;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -27,8 +28,7 @@ import static org.loguno.processor.utils.JCTreeUtils.*;
 public abstract class AnnotationHandlerExecutable<A extends Annotation, E> extends AnnotationHandlerBase<A, E> {
 
 
-    private static final String CLASS_PATTERN = "{class}";
-    private static final String METHOD_PATTERN = "{method}";
+
 
     protected AnnotationHandlerExecutable(JavacProcessingEnvironment environment) {
         super(environment);
@@ -134,10 +134,7 @@ public abstract class AnnotationHandlerExecutable<A extends Annotation, E> exten
                 .toArray(JCTree.JCExpression[]::new);
 
 
-        String message = getMessageTemplate(value, METHOD_MESSAGE_PATTERN_DEFAULT)
-                .replace(CLASS_PATTERN, classContext.getClasses().getLast())
-                .replace(METHOD_PATTERN, classContext.getMethods().getLast());
-
+        String message = JCTreeUtils.tryToInsertClassAndMethodName(getMessageTemplate(value, METHOD_MESSAGE_PATTERN_DEFAULT),classContext);
 
         final String params = paramSuffix(message);
 

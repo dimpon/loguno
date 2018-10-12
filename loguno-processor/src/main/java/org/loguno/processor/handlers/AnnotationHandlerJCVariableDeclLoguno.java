@@ -11,7 +11,6 @@ import org.loguno.Loguno;
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.utils.JCTreeUtils;
 
-
 /**
  * @author Dmitrii Ponomarev
  */
@@ -19,42 +18,41 @@ import org.loguno.processor.utils.JCTreeUtils;
 @Order
 public class AnnotationHandlerJCVariableDeclLoguno extends AnnotationHandlerBase<Loguno.DEBUG, JCTree.JCVariableDecl> {
 
-    public AnnotationHandlerJCVariableDeclLoguno(JavacProcessingEnvironment environment) {
-        super(environment);
-    }
+	public AnnotationHandlerJCVariableDeclLoguno(JavacProcessingEnvironment environment) {
+		super(environment);
+	}
 
-    @Override
-    public void processTree(Loguno.DEBUG annotation, JCTree.JCVariableDecl element, ClassContext classContext) {
+	@Override
+	public void processTree(Loguno.DEBUG annotation, JCTree.JCVariableDecl element, ClassContext classContext) {
 
+		String message = JCTreeUtils.tryToInsertClassAndMethodName(
+				JCTreeUtils.getMessageTemplate(annotation.value(), ConfigurationKeys.LOCVAR_MESSAGE_PARAMS_PATTERN_DEFAULT), classContext);
 
-        String message = JCTreeUtils.getMessageTemplate(annotation.value(),ConfigurationKeys.LOCVAR_MESSAGE_PARAMS_PATTERN_DEFAULT);
+		JCTree.JCLiteral value = factory.Literal(message);
 
-        JCTree.JCLiteral value = factory.Literal(message);
+		JCTree.JCLiteral paramName = factory.Literal(element.name.toString());
 
-        JCTree.JCLiteral paramName = factory.Literal(element.name.toString());
+		JCTree.JCIdent param = factory.Ident(elements.getName(element.name.toString()));
 
-        JCTree.JCIdent param = factory.Ident(elements.getName(element.name.toString()));
+		String loggerName = classContext.getLoggerName();
 
-        String loggerName = classContext.getLoggerName();
+		JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression> nil(),
+				factory.Select(factory.Ident(elements.getName(loggerName)), elements.getName("debug")),
+				com.sun.tools.javac.util.List.<JCTree.JCExpression> of(value, paramName, param));
 
-        JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
-                factory.Select(factory.Ident(elements.getName(loggerName)), elements.getName("debug")),
-                com.sun.tools.javac.util.List.<JCTree.JCExpression>of(value,paramName,param));
+		JCTree.JCStatement callInfoMethodCall = factory.Exec(callInfoMethod);
 
-        JCTree.JCStatement callInfoMethodCall = factory.Exec(callInfoMethod);
+		JCTree.JCBlock body = (JCTree.JCBlock) classContext.getBlocks().getLast();
 
+		ListBuffer<JCTree.JCStatement> li = new ListBuffer<>();
 
-        JCTree.JCBlock body = (JCTree.JCBlock) classContext.getBlocks().getLast();
+		body.stats.forEach(st -> {
+			li.append(st);
+			if (st == element)
+				li.append(callInfoMethodCall);
+		});
 
-        ListBuffer<JCTree.JCStatement> li = new ListBuffer<>();
+		body.stats = li.toList();
 
-        body.stats.forEach(st -> {
-            li.append(st);
-            if(st==element)
-                li.append(callInfoMethodCall);
-        });
-
-        body.stats = li.toList();
-
-    }
+	}
 }
