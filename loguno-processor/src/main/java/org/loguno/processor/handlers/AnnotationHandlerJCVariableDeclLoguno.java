@@ -37,7 +37,7 @@ public class AnnotationHandlerJCVariableDeclLoguno extends AnnotationHandlerBase
 				factory.Select(factory.Ident(elements.getName(loggerName)), elements.getName("debug")),
 				com.sun.tools.javac.util.List.<JCTree.JCExpression> of(value, paramName, param));
 
-		JCTree.JCStatement callInfoMethodCall = factory.Exec(callInfoMethod);
+		JCTree.JCStatement callInfoMethodCall = factory.at(element.pos).Exec(callInfoMethod);
 
 		JCTree.JCBlock body = (JCTree.JCBlock) classContext.getBlocks().getLast();
 

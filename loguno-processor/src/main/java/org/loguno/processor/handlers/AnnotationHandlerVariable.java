@@ -65,9 +65,13 @@ public abstract class AnnotationHandlerVariable <A extends Annotation, E> extend
 
         String message = JCTreeUtils.tryToInsertClassAndMethodName(JCTreeUtils.getMessageTemplate(value, METHODPARAM_MESSAGE_PATTERN_DEFAULT), classContext);
 
+        VariableTree tree = (VariableTree)elements.getTree(element);
+
         Tree tree1 = trees.getTree(element.getEnclosingElement());
 
         Tree.Kind kind = tree1.getKind();
+
+
 
 
         Symbol.VarSymbol el = (Symbol.VarSymbol)element;

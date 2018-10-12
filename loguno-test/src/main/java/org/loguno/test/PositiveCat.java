@@ -21,7 +21,7 @@ public class PositiveCat extends Animal {
 	public PositiveCat() {
 		super("cat");
 		ccc = "xoxox";
-		dodo();
+		dodo(new Date(),"Eduard");
 	}
 
 	@Loguno
@@ -32,7 +32,7 @@ public class PositiveCat extends Animal {
 		@Loguno
 		final String xx = "kalligraphy";
 
-		dodo();
+		dodo(new Date(),"Eduard");
 
 		@Loguno.DEBUG
 		Object o = new Object();
@@ -55,9 +55,9 @@ public class PositiveCat extends Animal {
 	@Loguno.DEBUG
 	@Loguno.INFO
 	@Loguno.ERROR
-	@Loguno.TRACE
+	@Loguno.TRACE("Run Lola run! This is class {class}.")
 	@Loguno.WARN
-	private void dodo() {
+	private void dodo(Date date, String nameOfKing) {
 		System.out.printf("dodo");
 	}
 

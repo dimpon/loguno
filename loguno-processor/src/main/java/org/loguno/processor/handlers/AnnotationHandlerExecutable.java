@@ -27,171 +27,164 @@ import static org.loguno.processor.utils.JCTreeUtils.*;
 
 public abstract class AnnotationHandlerExecutable<A extends Annotation, E> extends AnnotationHandlerBase<A, E> {
 
+	protected AnnotationHandlerExecutable(JavacProcessingEnvironment environment) {
+		super(environment);
+	}
 
-    protected AnnotationHandlerExecutable(JavacProcessingEnvironment environment) {
-        super(environment);
-    }
+	@Handler
+	@Order
+	public static class AnnotationHandlerLoguno extends AnnotationHandlerExecutable<Loguno, ExecutableElement> {
 
-    @Handler
-    @Order
-    public static class AnnotationHandlerLoguno extends AnnotationHandlerExecutable<Loguno, ExecutableElement> {
+		public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
 
-        public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {
-            super(environment);
-        }
+		@Override
+		public void processTree(Loguno annotation, ExecutableElement element, ClassContext classContext) {
+			String method = conf.getProperty(ConfigurationKeys.LOG_METHOD_DEFAULT);
+			doRealJob(annotation.value(), method, element, classContext);
+		}
+	}
 
-        @Override
-        public void processTree(Loguno annotation, ExecutableElement element, ClassContext classContext) {
-            String method = conf.getProperty(ConfigurationKeys.LOG_METHOD_DEFAULT);
-            doRealJob(annotation.value(), method, element, classContext);
-        }
-    }
+	@Handler
+	@Order
+	public static class AnnotationHandlerDebug extends AnnotationHandlerExecutable<Loguno.DEBUG, ExecutableElement> {
 
-    @Handler
-    @Order
-    public static class AnnotationHandlerDebug extends AnnotationHandlerExecutable<Loguno.DEBUG, ExecutableElement> {
+		public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
 
-        public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
-            super(environment);
-        }
+		@Override
+		public void processTree(Loguno.DEBUG annotation, ExecutableElement element, ClassContext classContext) {
+			doRealJob(annotation.value(), "debug", element, classContext);
+		}
+	}
 
-        @Override
-        public void processTree(Loguno.DEBUG annotation, ExecutableElement element, ClassContext classContext) {
-            doRealJob(annotation.value(), "debug", element, classContext);
-        }
-    }
+	@Handler
+	@Order
+	public static class AnnotationHandlerInfo extends AnnotationHandlerExecutable<Loguno.INFO, ExecutableElement> {
 
-    @Handler
-    @Order
-    public static class AnnotationHandlerInfo extends AnnotationHandlerExecutable<Loguno.INFO, ExecutableElement> {
+		public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
 
-        public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
-            super(environment);
-        }
+		@Override
+		public void processTree(Loguno.INFO annotation, ExecutableElement element, ClassContext classContext) {
+			doRealJob(annotation.value(), "info", element, classContext);
+		}
+	}
 
-        @Override
-        public void processTree(Loguno.INFO annotation, ExecutableElement element, ClassContext classContext) {
-            doRealJob(annotation.value(), "info", element, classContext);
-        }
-    }
+	@Handler
+	@Order
+	public static class AnnotationHandlerError extends AnnotationHandlerExecutable<Loguno.ERROR, ExecutableElement> {
 
-    @Handler
-    @Order
-    public static class AnnotationHandlerError extends AnnotationHandlerExecutable<Loguno.ERROR, ExecutableElement> {
+		public AnnotationHandlerError(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
 
-        public AnnotationHandlerError(JavacProcessingEnvironment environment) {
-            super(environment);
-        }
+		@Override
+		public void processTree(Loguno.ERROR annotation, ExecutableElement element, ClassContext classContext) {
+			doRealJob(annotation.value(), "error", element, classContext);
+		}
+	}
 
-        @Override
-        public void processTree(Loguno.ERROR annotation, ExecutableElement element, ClassContext classContext) {
-            doRealJob(annotation.value(), "error", element, classContext);
-        }
-    }
+	@Handler
+	@Order
+	public static class AnnotationHandlerTrace extends AnnotationHandlerExecutable<Loguno.TRACE, ExecutableElement> {
 
-    @Handler
-    @Order
-    public static class AnnotationHandlerTrace extends AnnotationHandlerExecutable<Loguno.TRACE, ExecutableElement> {
+		public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
 
-        public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
-            super(environment);
-        }
+		@Override
+		public void processTree(Loguno.TRACE annotation, ExecutableElement element, ClassContext classContext) {
+			doRealJob(annotation.value(), "trace", element, classContext);
+		}
+	}
 
-        @Override
-        public void processTree(Loguno.TRACE annotation, ExecutableElement element, ClassContext classContext) {
-            doRealJob(annotation.value(), "trace", element, classContext);
-        }
-    }
+	@Handler
+	@Order
+	public static class AnnotationHandlerWarn extends AnnotationHandlerExecutable<Loguno.WARN, ExecutableElement> {
 
-    @Handler
-    @Order
-    public static class AnnotationHandlerWarn extends AnnotationHandlerExecutable<Loguno.WARN, ExecutableElement> {
+		public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
 
-        public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
-            super(environment);
-        }
+		@Override
+		public void processTree(Loguno.WARN annotation, ExecutableElement element, ClassContext classContext) {
+			doRealJob(annotation.value(), "warn", element, classContext);
+		}
+	}
 
-        @Override
-        public void processTree(Loguno.WARN annotation, ExecutableElement element, ClassContext classContext) {
-            doRealJob(annotation.value(), "warn", element, classContext);
-        }
-    }
+	public void doRealJob(String[] value, String logMethod, ExecutableElement element, ClassContext classContext) {
 
+		MethodTree methodTree = trees.getTree(element);
 
+		// generate array of pairs - param name-param value
+		JCTree.JCExpression[] idents = methodTree.getParameters().stream()
+				.map(param -> Stream.<JCTree.JCExpression> of(
+						factory.Literal(param.getName().toString()),
+						factory.Ident(elements.getName(param.getName()))))
+				.flatMap(s -> s)
+				.toArray(JCTree.JCExpression[]::new);
 
-    public void doRealJob(String[] value, String logMethod, ExecutableElement element, ClassContext classContext) {
+		String message = JCTreeUtils.tryToInsertClassAndMethodName(getMessageTemplate(value, METHOD_MESSAGE_PATTERN_DEFAULT), classContext);
 
-        MethodTree tree = trees.getTree(element);
+		final String paramsTemplate = paramSuffix(message);
 
-        //generate array of pairs - param name-param value
-        JCTree.JCExpression[] idents = tree.getParameters().stream()
-                .map(param -> Stream.<JCTree.JCExpression>of(
-                        factory.Literal(param.getName().toString()),
-                        factory.Ident(elements.getName(param.getName()))))
-                .flatMap(s -> s)
-                .toArray(JCTree.JCExpression[]::new);
+		message = message.replaceAll("\\[(.*?)\\]", "");
 
+		if (!paramsTemplate.isEmpty()) {
+			String paramsStr = methodTree.getParameters().stream().map(o -> paramsTemplate).collect(Collectors.joining(","));
+			message = message + paramsStr;
+		}
 
-        String message = JCTreeUtils.tryToInsertClassAndMethodName(getMessageTemplate(value, METHOD_MESSAGE_PATTERN_DEFAULT),classContext);
+		JCTree.JCLiteral wholeMessage = factory.Literal(message);
 
-        final String paramsTemplate = paramSuffix(message);
+		String loggerVariable = classContext.getLoggerName();
+		final ListBuffer<JCTree.JCExpression> buffer = new ListBuffer<>();
+		buffer.append(wholeMessage);
 
-        message = message.replaceAll("\\[(.*?)\\]", "");
+		if (message.contains("{}")) {
+			Arrays.stream(idents).forEach(buffer::append);
+		}
 
-        if(!paramsTemplate.isEmpty()){
-            String paramsStr = tree.getParameters().stream().map(o -> paramsTemplate).collect(Collectors.joining(","));
-            message = message + paramsStr;
-        }
+		JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression> nil(),
+				factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
+				buffer.toList());
 
-        JCTree.JCLiteral wholeMessage =factory.Literal(message);
+		JCTree.JCStatement callInfoMethodCall = factory.at(((JCTree) methodTree).pos).Exec(callInfoMethod);
 
-        String loggerVariable = classContext.getLoggerName();
-        final ListBuffer<JCTree.JCExpression> buffer = new ListBuffer<>();
-        buffer.append(wholeMessage);
+		JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
 
-        if(message.contains("{}")) {
-            Arrays.stream(idents).forEach(buffer::append);
-        }
+		if (element.getKind() == ElementKind.CONSTRUCTOR &&
+				body.stats.size() > 0 &&
+				body.stats.get(0) != null &&
+				body.stats.get(0).toString().contains("super")) {
 
-        JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
-                factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
-                buffer.toList());
+			ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
+			bodyNew.append(body.stats.get(0));
+			bodyNew.append(callInfoMethodCall);
 
-        JCTree.JCStatement callInfoMethodCall = factory.Exec(callInfoMethod);
+			for (int i = 1; i < body.stats.size(); i++) {
+				bodyNew.append(body.stats.get(i));
+			}
 
-        JCTree.JCBlock body = (JCTree.JCBlock) tree.getBody();
+			body.stats = bodyNew.toList();
 
-        if (element.getKind() == ElementKind.CONSTRUCTOR &&
-                body.stats.size() > 0 &&
-                body.stats.get(0) != null &&
-                body.stats.get(0).toString().contains("super")) {
+		} else {
+			body.stats = body.stats.prepend(callInfoMethodCall);
+		}
 
+	}
 
-            ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
-            bodyNew.append(body.stats.get(0));
-            bodyNew.append(callInfoMethodCall);
-
-
-            for (int i = 1; i < body.stats.size(); i++) {
-                bodyNew.append(body.stats.get(i));
-            }
-
-            body.stats = bodyNew.toList();
-
-
-        } else {
-            body.stats = body.stats.prepend(callInfoMethodCall);
-        }
-
-    }
-
-    private String paramSuffix(String messagePattern) {
-        Pattern p = Pattern.compile("\\[(.*?)\\]");
-        Matcher m = p.matcher(messagePattern);
-        if (m.find()) {
-            return m.group();
-        }
-        return "";
-    }
+	private String paramSuffix(String messagePattern) {
+		Pattern p = Pattern.compile("\\[(.*?)\\]");
+		Matcher m = p.matcher(messagePattern);
+		if (m.find()) {
+			return m.group();
+		}
+		return "";
+	}
 
 }
