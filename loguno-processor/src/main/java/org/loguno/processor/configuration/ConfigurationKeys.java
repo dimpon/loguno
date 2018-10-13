@@ -1,10 +1,5 @@
 package org.loguno.processor.configuration;
 
-import lombok.AccessLevel;
-import lombok.experimental.Accessors;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.UtilityClass;
-
 public class ConfigurationKeys {
 
 	public static final String CLASS_PATTERN = "{class}";
@@ -16,7 +11,7 @@ public class ConfigurationKeys {
 	public static final ConfigurationKey<String> LOCVAR_MESSAGE_PATTERN_DEFAULT = ConfigurationKey.<String> of("loguno.localvar.message.default",
 			"Default message for logging one local variable");
 
-	public static final ConfigurationKey<String> METHODPARAM_MESSAGE_PATTERN_DEFAULT = ConfigurationKey.<String> of("loguno.mathodparam.message.default",
+	public static final ConfigurationKey<String> METHODPARAM_MESSAGE_PATTERN_DEFAULT = ConfigurationKey.<String> of("loguno.methodparam.message.default",
 			"Default message for logging one method parameter");
 
 	public static final ConfigurationKey<String> LOG_METHOD_DEFAULT = ConfigurationKey.<String> of("loguno.log.method.default", "Default log method");

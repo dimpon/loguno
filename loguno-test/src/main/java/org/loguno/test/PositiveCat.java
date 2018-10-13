@@ -1,7 +1,6 @@
 package org.loguno.test;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+
 import org.loguno.Loguno;
 import org.loguno.processor.handlers.ClassContext;
 
@@ -15,54 +14,58 @@ import java.util.zip.DataFormatException;
 @Loguno.Slf4j(value = "LOGGER", lazy = true)
 public class PositiveCat extends Animal {
 
-	private String ccc;
+    private String ccc;
 
-	@Loguno
-	public PositiveCat() {
-		super("cat");
-		ccc = "xoxox";
-		dodo(new Date(),"Eduard");
-	}
+    @Loguno
+    public PositiveCat() {
+        super("cat");
+        ccc = "xoxox";
+        dodo(new Date(), "Eduard");
+    }
 
-	@Loguno
-	@Loguno.TRACE("Custom message. Has only {method}.")
-	public String sayIt(String x, String x1) throws @Loguno("3") NumberFormatException {
+    @Loguno
+    public PositiveCat(@Loguno String catName,@Loguno("gender = {}") String catGender) {
+        super(catName);
+    }
 
-		@Loguno.DEBUG
-		@Loguno
-		final String xx = "kalligraphy";
+    @Loguno
+    @Loguno.TRACE("Custom message. Has only {method}.")
+    public String sayIt(String x, String x1) throws @Loguno("3") NumberFormatException {
 
-		dodo(new Date(),"Eduard");
+        @Loguno.DEBUG
+        @Loguno final String xx = "kalligraphy";
 
-		@Loguno.DEBUG
-		Object o = new Object();
+        dodo(new Date(), "Eduard");
 
-		for (int i = 0; i < 10; i++) {
-			@Loguno.DEBUG("99999")
-			String kkk = "";
-		}
+        @Loguno.DEBUG
+        Object o = new Object();
 
-		@Loguno.DEBUG("Variable K")
-		String k = "";
+        for (int i = 0; i < 10; i++) {
+            @Loguno.DEBUG("99999")
+            String kkk = "";
+        }
 
-		int i1 = Integer.parseInt("1");
+        @Loguno.DEBUG("Variable K")
+        String k = "";
 
-		return k + xx;
+        int i1 = Integer.parseInt("1");
 
-	}
+        return k + xx;
 
-	@Loguno("i'm in!!!!")
-	@Loguno.DEBUG
-	@Loguno.INFO
-	@Loguno.ERROR
-	@Loguno.TRACE("Run Lola run! This is class {class}.")
-	@Loguno.WARN
-	private void dodo(Date date, String nameOfKing) {
-		System.out.printf("dodo");
-	}
+    }
 
-	private void dododo(@Loguno String x1, @Loguno("abc") String x2, String x3, String x4) {
-		System.out.printf("dodo");
-	}
+    @Loguno("i'm in!!!!")
+    @Loguno.DEBUG
+    @Loguno.INFO
+    @Loguno.ERROR
+    @Loguno.TRACE("Run Lola run! This is class {class}.")
+    @Loguno.WARN
+    private void dodo(Date date, String nameOfKing) {
+        System.out.printf("dodo");
+    }
+
+    private void dododo(@Loguno String x1, @Loguno("abc") String x2, String x3, String x4) {
+        System.out.printf("dodo");
+    }
 
 }

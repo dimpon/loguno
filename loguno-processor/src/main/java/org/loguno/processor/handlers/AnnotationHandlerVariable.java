@@ -7,17 +7,22 @@ import com.sun.source.tree.VariableTree;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
+import com.sun.tools.javac.util.List;
+import com.sun.tools.javac.util.ListBuffer;
 import org.loguno.Loguno;
 import org.loguno.processor.configuration.ConfigurationKey;
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.utils.JCTreeUtils;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
-import static org.loguno.processor.configuration.ConfigurationKeys.METHODPARAM_MESSAGE_PATTERN_DEFAULT;
+
 
 
 /**
@@ -40,8 +45,6 @@ public abstract class AnnotationHandlerVariable <A extends Annotation, E> extend
 
         @Override
         public void processTree(Loguno annotation, VariableElement element, ClassContext classContext) {
-            annotation.value();
-
             doRealJob(annotation.value(),"info",element,classContext);
 
             //String method = conf.getProperty(ConfigurationKeys.LOG_METHOD_DEFAULT);
@@ -51,6 +54,8 @@ public abstract class AnnotationHandlerVariable <A extends Annotation, E> extend
 
 
     public void doRealJob(String[] value, String logMethod, VariableElement element, ClassContext classContext) {
+
+
 
         /*MethodTree tree = trees.getTree(element);
 
@@ -63,18 +68,59 @@ public abstract class AnnotationHandlerVariable <A extends Annotation, E> extend
                 .toArray(JCTree.JCExpression[]::new);
 */
 
-        String message = JCTreeUtils.tryToInsertClassAndMethodName(JCTreeUtils.getMessageTemplate(value, METHODPARAM_MESSAGE_PATTERN_DEFAULT), classContext);
+        String message = JCTreeUtils.tryToInsertClassAndMethodName(JCTreeUtils.getMessageTemplate(value, ConfigurationKeys.METHODPARAM_MESSAGE_PATTERN_DEFAULT), classContext);
 
-        VariableTree tree = (VariableTree)elements.getTree(element);
+        VariableTree variableTree = (VariableTree)elements.getTree(element);
 
-        Tree tree1 = trees.getTree(element.getEnclosingElement());
+        JCTree.JCLiteral wholeMessage = factory.Literal(message);
+        String loggerVariable = classContext.getLoggerName();
 
-        Tree.Kind kind = tree1.getKind();
+        final ListBuffer<JCTree.JCExpression> buffer = new ListBuffer<>();
+        buffer.append(wholeMessage);
+
+        if (message.contains("{}")) {
+            buffer.append(factory.Literal(variableTree.getName().toString()));
+            buffer.append(factory.Ident(elements.getName(variableTree.getName())));
+        }
+
+        JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression> nil(),
+                factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
+                buffer.toList());
+
+        JCTree.JCStatement callInfoMethodCall = factory.at(((JCTree) variableTree).pos).Exec(callInfoMethod);
+
+        ExecutableElement enclosingElement = (ExecutableElement)element.getEnclosingElement();
+
+        MethodTree methodTree = (MethodTree)trees.getTree(element.getEnclosingElement());
+
+        JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
+
+
+        if (enclosingElement.getKind() == ElementKind.CONSTRUCTOR &&
+                body.stats.size() > 0 &&
+                body.stats.get(0) != null &&
+                body.stats.get(0).toString().contains("super")) {
+
+            ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
+            bodyNew.append(body.stats.get(0));
+            bodyNew.append(callInfoMethodCall);
+
+            for (int i = 1; i < body.stats.size(); i++) {
+                bodyNew.append(body.stats.get(i));
+            }
+
+            body.stats = bodyNew.toList();
+
+        } else {
+            body.stats = body.stats.prepend(callInfoMethodCall);
+        }
+
+       /* Tree.Kind kind = methodTree.getKind();
 
 
 
 
-        Symbol.VarSymbol el = (Symbol.VarSymbol)element;
+        Symbol.VarSymbol el = (Symbol.VarSymbol)element;*/
 
 
         //factory.at(((Symbol.VarSymbol) element).pos)
