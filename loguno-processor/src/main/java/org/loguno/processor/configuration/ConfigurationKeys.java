@@ -5,6 +5,9 @@ public class ConfigurationKeys {
 	public static final String CLASS_PATTERN = "{class}";
 	public static final String METHOD_PATTERN = "{method}";
 
+	public static final ConfigurationKey<Boolean> ENABLE = ConfigurationKey.<Boolean> of("loguno.enable",
+			"Default message for logging one method parameter", Boolean::valueOf);
+
 	public static final ConfigurationKey<String> METHOD_MESSAGE_PATTERN_DEFAULT = ConfigurationKey.<String> of("loguno.method.message.default",
 			"Default message for method invocation logging");
 
@@ -17,5 +20,7 @@ public class ConfigurationKeys {
 	public static final ConfigurationKey<String> LOG_METHOD_DEFAULT = ConfigurationKey.<String> of("loguno.log.method.default", "Default log method");
 
 	public static final ConfigurationKey<String> ERR_METHOD_DEFAULT = ConfigurationKey.<String> of("loguno.err.method.default", "Default err method");
+
+
 
 }

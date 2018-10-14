@@ -4,9 +4,7 @@ import com.sun.tools.javac.util.ListBuffer;
 import org.loguno.Loguno;
 
 import org.loguno.processor.configuration.ConfigurationKeys;
-import org.loguno.processor.configuration.ConfiguratorManager;
 import com.sun.source.tree.MethodTree;
-import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.List;
@@ -16,7 +14,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -25,15 +22,15 @@ import java.util.stream.Stream;
 import static org.loguno.processor.configuration.ConfigurationKeys.*;
 import static org.loguno.processor.utils.JCTreeUtils.*;
 
-public abstract class AnnotationHandlerExecutable<A extends Annotation, E> extends AnnotationHandlerBase<A, E> {
+public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends AnnotationHandlerBase<A, E> {
 
-	protected AnnotationHandlerExecutable(JavacProcessingEnvironment environment) {
+	protected AnnotationHandlerMethod(JavacProcessingEnvironment environment) {
 		super(environment);
 	}
 
 	@Handler
 	@Order
-	public static class AnnotationHandlerLoguno extends AnnotationHandlerExecutable<Loguno, ExecutableElement> {
+	public static class AnnotationHandlerLoguno extends AnnotationHandlerMethod<Loguno, ExecutableElement> {
 
 		public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {
 			super(environment);
@@ -48,7 +45,7 @@ public abstract class AnnotationHandlerExecutable<A extends Annotation, E> exten
 
 	@Handler
 	@Order
-	public static class AnnotationHandlerDebug extends AnnotationHandlerExecutable<Loguno.DEBUG, ExecutableElement> {
+	public static class AnnotationHandlerDebug extends AnnotationHandlerMethod<Loguno.DEBUG, ExecutableElement> {
 
 		public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
 			super(environment);
@@ -62,7 +59,7 @@ public abstract class AnnotationHandlerExecutable<A extends Annotation, E> exten
 
 	@Handler
 	@Order
-	public static class AnnotationHandlerInfo extends AnnotationHandlerExecutable<Loguno.INFO, ExecutableElement> {
+	public static class AnnotationHandlerInfo extends AnnotationHandlerMethod<Loguno.INFO, ExecutableElement> {
 
 		public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
 			super(environment);
@@ -76,7 +73,7 @@ public abstract class AnnotationHandlerExecutable<A extends Annotation, E> exten
 
 	@Handler
 	@Order
-	public static class AnnotationHandlerError extends AnnotationHandlerExecutable<Loguno.ERROR, ExecutableElement> {
+	public static class AnnotationHandlerError extends AnnotationHandlerMethod<Loguno.ERROR, ExecutableElement> {
 
 		public AnnotationHandlerError(JavacProcessingEnvironment environment) {
 			super(environment);
@@ -90,7 +87,7 @@ public abstract class AnnotationHandlerExecutable<A extends Annotation, E> exten
 
 	@Handler
 	@Order
-	public static class AnnotationHandlerTrace extends AnnotationHandlerExecutable<Loguno.TRACE, ExecutableElement> {
+	public static class AnnotationHandlerTrace extends AnnotationHandlerMethod<Loguno.TRACE, ExecutableElement> {
 
 		public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
 			super(environment);
@@ -104,7 +101,7 @@ public abstract class AnnotationHandlerExecutable<A extends Annotation, E> exten
 
 	@Handler
 	@Order
-	public static class AnnotationHandlerWarn extends AnnotationHandlerExecutable<Loguno.WARN, ExecutableElement> {
+	public static class AnnotationHandlerWarn extends AnnotationHandlerMethod<Loguno.WARN, ExecutableElement> {
 
 		public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
 			super(environment);
@@ -116,7 +113,7 @@ public abstract class AnnotationHandlerExecutable<A extends Annotation, E> exten
 		}
 	}
 
-	public void doRealJob(String[] value, String logMethod, ExecutableElement element, ClassContext classContext) {
+	void doRealJob(String[] value, String logMethod, ExecutableElement element, ClassContext classContext) {
 
 		MethodTree methodTree = trees.getTree(element);
 

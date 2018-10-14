@@ -32,20 +32,20 @@ public class PositiveCat extends Animal {
     @Loguno.TRACE("Custom message. Has only {method}.")
     public String sayIt(String x, String x1) throws @Loguno("3") NumberFormatException {
 
-        @Loguno.DEBUG
+        @Loguno
         @Loguno final String xx = "kalligraphy";
 
         dodo(new Date(), "Eduard");
 
-        @Loguno.DEBUG
+        @Loguno
         Object o = new Object();
 
         for (int i = 0; i < 10; i++) {
-            @Loguno.DEBUG("99999")
+            @Loguno("99999")
             String kkk = "";
         }
 
-        @Loguno.DEBUG("Variable K")
+        @Loguno("Variable K")
         String k = "";
 
         int i1 = Integer.parseInt("1");
