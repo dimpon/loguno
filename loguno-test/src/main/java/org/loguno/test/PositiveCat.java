@@ -50,7 +50,7 @@ public class PositiveCat extends Animal {
         String k = "";
         try {
             int i1 = Integer.parseInt("1");
-        } catch (@Loguno("pizdetz") NumberFormatException e) {
+        } catch (@Loguno("pizdetz") NumberFormatException | NullPointerException e) {
             e.printStackTrace();
         }
         return k + xx;
