@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  * @author Dmitrii Ponomarev
  */
 @AllArgsConstructor
-public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> {
+public class LogunoMethodBodyVisitor extends TreeScanner<Void, ClassContext> {
 
 
     //private final JavacProcessingEnvironment environment;
@@ -37,23 +37,36 @@ public class LogunoLocalVariableVisitor extends TreeScanner<Void, ClassContext> 
     public Void visitVariable(VariableTree variableTree, ClassContext classContext) {
 
         List<? extends AnnotationTree> variableAnnotations = variableTree.getModifiers().getAnnotations();
-
         variableAnnotations.forEach(annotation -> {
-
-            Tree annotationType = annotation.getAnnotationType();
-            String className = annotationType.toString().replace(".", "$");
-            Optional<Class<? extends Annotation>> annClass = handlersProvider.getAnnotationClassByName(className);
-
-
-            if (annClass.isPresent()) {
-                Stream<? extends AnnotationHandler<?, VariableTree>> handlers = handlersProvider.getHandlersByElementAndAnnotation(annClass.get(), variableTree);
-                Annotation annotationObj = JCTreeUtils.createAnnotationInstance(annotation, annClass.get());
-                handlers.forEach(handler -> {
-                    handler.process(annotationObj, variableTree, classContext);
-                });
-            }
+            findHandlerAndCall(annotation,variableTree,classContext);
         });
         return super.visitVariable(variableTree, classContext);
+    }
+
+    private <E> void findHandlerAndCall(AnnotationTree annotation, E element, ClassContext classContext){
+
+        Tree annotationType = annotation.getAnnotationType();
+        String className = annotationType.toString().replace(".", "$");
+        Optional<Class<? extends Annotation>> annClass = handlersProvider.getAnnotationClassByName(className);
+
+        if (annClass.isPresent()) {
+            Stream<? extends AnnotationHandler<?, E>> handlers = handlersProvider.getHandlersByElementAndAnnotation(annClass.get(), element);
+            Annotation annotationObj = JCTreeUtils.createAnnotationInstance(annotation, annClass.get());
+            handlers.forEach(handler -> {
+                handler.process(annotationObj, element, classContext);
+            });
+        }
+    }
+
+    public Void visitCatch(CatchTree catchBlock, ClassContext classContext) {
+
+        List<? extends AnnotationTree> variableAnnotations = catchBlock.getParameter().getModifiers().getAnnotations();
+
+        variableAnnotations.forEach(annotation -> {
+            findHandlerAndCall(annotation,catchBlock,classContext);
+        });
+
+        return super.visitCatch(catchBlock, classContext);
     }
 
 

@@ -24,42 +24,44 @@ public class PositiveCat extends Animal {
     }
 
     @Loguno
-    public PositiveCat(@Loguno String catName,@Loguno("gender = {}") String catGender) {
+    public PositiveCat(@Loguno String catName, @Loguno("gender = {}") String catGender) {
         super(catName);
     }
 
-    @Loguno
-    @Loguno.TRACE("Custom message. Has only {method}.")
-    public String sayIt(String x, String x1) throws @Loguno("3") NumberFormatException {
+    //@Loguno
+    //@Loguno.TRACE("Custom message. Has only {method}.")
+    public String sayIt(String x, String x1) {
 
-        @Loguno
-        @Loguno final String xx = "kalligraphy";
+       // @Loguno
+        //@Loguno("hren' kakaeto")
+        final String xx = "kalligraphy";
 
         dodo(new Date(), "Eduard");
 
-        @Loguno
+        //@Loguno
         Object o = new Object();
 
         for (int i = 0; i < 10; i++) {
-            @Loguno("99999")
+            //@Loguno("99999")
             String kkk = "";
         }
 
-        @Loguno("Variable K")
+        //@Loguno("Variable K")
         String k = "";
-
-        int i1 = Integer.parseInt("1");
-
+        try {
+            int i1 = Integer.parseInt("1");
+        } catch (@Loguno("pizdetz") NumberFormatException e) {
+            e.printStackTrace();
+        }
         return k + xx;
-
     }
 
-    @Loguno("i'm in!!!!")
+   /* @Loguno("i'm in!!!!")
     @Loguno.DEBUG
     @Loguno.INFO
     @Loguno.ERROR
     @Loguno.TRACE("Run Lola run! This is class {class}.")
-    @Loguno.WARN
+    @Loguno.WARN*/
     private void dodo(Date date, String nameOfKing) {
         System.out.printf("dodo");
     }

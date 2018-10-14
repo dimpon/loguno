@@ -56,12 +56,16 @@ public final class HandlersProvider {
                 .map(h -> (AnnotationHandler<?, E>) h);
     }
 
+    public  Map<Class<? extends Annotation>, List<AnnotationHandler>> getHandlersaByElement(Object e){
+        return handlers.getOrDefault(keyClass(e), Collections.emptyMap());
+    }
+
     public Set<Class<? extends Annotation>> supportedAnnotations() {
         return this.supportedAnnotations;
     }
 
     public Optional<Class<? extends Annotation>> getAnnotationClassByName(final String name) {
-        return this.supportedAnnotations.stream().filter(c -> c.getName().contains(name)).findAny();
+        return this.supportedAnnotations.stream().filter(c -> c.getName().endsWith(name)).findAny();
     }
 
     @SneakyThrows({InstantiationException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class})

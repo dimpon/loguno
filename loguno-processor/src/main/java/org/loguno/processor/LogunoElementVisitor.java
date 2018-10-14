@@ -2,16 +2,13 @@ package org.loguno.processor;
 
 import com.sun.source.tree.MethodTree;
 import com.sun.source.util.Trees;
-import com.sun.tools.javac.tree.JCTree;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 
 import javax.lang.model.element.*;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementScanner8;
 import java.util.Arrays;
-import java.util.List;
 
 public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
 
@@ -60,7 +57,7 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
             processHandlers(e, recorder);
             Trees trees = Trees.instance(environment);
             MethodTree method = trees.getTree(e);
-            method.getBody().accept(new LogunoLocalVariableVisitor(handlersProvider), recorder);
+            method.getBody().accept(new LogunoMethodBodyVisitor(handlersProvider), recorder);
 
             return super.visitExecutable(e, recorder);
         } finally {
