@@ -126,9 +126,6 @@ public class JCTreeUtils {
 		} else if (argument instanceof JCTree.JCNewArray) {
 			JCTree.JCNewArray aArgument = (JCTree.JCNewArray) argument;
 
-			List<String[]> collect = aArgument.elems.stream()
-					.map(JCTreeUtils::castElement).collect(Collectors.toList());
-
 			result = aArgument.elems.stream()
 					.map(JCTreeUtils::castElement)
 					.flatMap(Arrays::stream)

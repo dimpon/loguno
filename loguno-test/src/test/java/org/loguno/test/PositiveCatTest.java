@@ -17,11 +17,14 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(LoggerFactory.class)
-public class PositiveDogTest {
+public class PositiveCatTest {
     @Test
-    public void testPositiveDog() {
+    public void testPositiveCat() {
 
-      /*  org.slf4j.Logger log = mock(org.slf4j.Logger.class);
+        PositiveCat cat = new PositiveCat();
+        cat.sayIt("hello","Kitty");
+
+      /*  org.slf4j.SupportedLoggers log = mock(org.slf4j.SupportedLoggers.class);
         PowerMockito.mockStatic(LoggerFactory.class);
 
         when(LoggerFactory.getLogger(any(Class.class))).thenReturn(log);

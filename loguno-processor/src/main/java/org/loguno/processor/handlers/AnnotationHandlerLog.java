@@ -7,14 +7,14 @@ import javax.lang.model.element.TypeElement;
 
 @Handler
 @Order
-public class AnnotationHandlerLog extends AnnotationHandlerBase<Loguno.Log, TypeElement> {
+public class AnnotationHandlerLog extends AnnotationHandlerBase<Loguno.Logger, TypeElement> {
 
     public AnnotationHandlerLog(JavacProcessingEnvironment environment) {
         super(environment);
     }
 
     @Override
-    public void processTree(Loguno.Log annotation, TypeElement e, ClassContext classContext) {
+    public void processTree(Loguno.Logger annotation, TypeElement e, ClassContext classContext) {
         System.out.println("AnnotationHandlerLog: " + annotation.value());
     }
 

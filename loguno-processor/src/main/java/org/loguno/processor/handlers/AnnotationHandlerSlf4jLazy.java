@@ -15,7 +15,7 @@ import java.io.PrintWriter;
  */
 @Handler
 @Order(2)
-public class AnnotationHandlerSlf4jLazy extends AnnotationHandlerBase<Loguno.Slf4j, TypeElement> {
+public class AnnotationHandlerSlf4jLazy extends AnnotationHandlerBase<Loguno.Logger, TypeElement> {
 
 
     private static final String lazyFactoryClass = "org.loguno.lazy.LazyLoggerFactorySlf4j";
@@ -26,12 +26,12 @@ public class AnnotationHandlerSlf4jLazy extends AnnotationHandlerBase<Loguno.Slf
 
     @SneakyThrows(IOException.class)
     @Override
-    public void processTree(Loguno.Slf4j annotation, TypeElement typeElement, ClassContext classContext) {
+    public void processTree(Loguno.Logger annotation, TypeElement typeElement, ClassContext classContext) {
 
-        if (!classContext.isLazy())
+        if (!classContext.getLoggers().getLast().isLazy())
             return;
 
-        if (classContext.isLoggerHere(ClassContext.Logger.Slf4j))
+        if (classContext.isLazyLoggerHere(classContext.getLoggers().getLast().getLogger()))
             return;
 
         JavaFileObject builderFile = filer
@@ -129,6 +129,6 @@ public class AnnotationHandlerSlf4jLazy extends AnnotationHandlerBase<Loguno.Slf
             out.print("}");
         }
 
-        classContext.generated(ClassContext.Logger.Slf4j);
+        classContext.lazyLoggerGenerated(classContext.getLoggers().getLast().getLogger());
     }
 }

@@ -1,6 +1,6 @@
 package org.loguno;
 
-import org.loguno.processor.handlers.ClassContext;
+import org.loguno.processor.handlers.SupportedLoggers;
 
 import java.lang.annotation.*;
 
@@ -24,27 +24,14 @@ public @interface Loguno {
 	@Documented
 	@Retention(RetentionPolicy.SOURCE)
 	@Target(TYPE)
-	@interface Slf4j {
-		String value() default "LOG";
-
+	@interface Logger {
+		SupportedLoggers value() default SupportedLoggers.Empty;
+		String name() default "LOG";
 		boolean lazy() default false;
 	}
 
-	@Documented
-	@Retention(RetentionPolicy.SOURCE)
-	@Target(TYPE)
-	@interface Log4j {
-		String[] value() default "";
-	}
 
-	@Documented
-	@Retention(RetentionPolicy.SOURCE)
-	@Target(TYPE)
-	@interface Log {
-		String[] value() default "";
-	}
-
-	@Documented
+	/*@Documented
 	@Retention(RetentionPolicy.SOURCE)
 	@Target(LOCAL_VARIABLE)
 	@interface Catch {
@@ -96,9 +83,9 @@ public @interface Loguno {
 
 			Class<? extends Throwable>[] exception() default { Throwable.class };
 		}
-	}
+	}*/
 
-	@Documented
+	/*@Documented
 	@Retention(RetentionPolicy.SOURCE)
 	@Target(METHOD)
 	@interface Return {
@@ -139,7 +126,7 @@ public @interface Loguno {
 			String[] value() default "";
 		}
 	}
-
+*/
 	@Documented
 	@Retention(RetentionPolicy.SOURCE)
 	@Target({ METHOD, TYPE, LOCAL_VARIABLE, CONSTRUCTOR, PARAMETER, TYPE_PARAMETER, TYPE_USE })

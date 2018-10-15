@@ -30,7 +30,7 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
 	@Override
 	public Void visitType(TypeElement e, ClassContext recorder) {
 
-		recorder.getClasses().add(e.getQualifiedName().toString());
+		recorder.getClasses().addLast(e.getQualifiedName().toString());
 
 		try {
 			processHandlers(e, recorder);
@@ -38,6 +38,9 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
 			return super.visitType(e, recorder);
 		} finally {
 			recorder.getClasses().removeLast();
+
+			if (recorder.getLoggers().size() > 0)
+				recorder.getLoggers().removeLast();
 		}
 	}
 
@@ -51,19 +54,19 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
 	@Override
 	public Void visitExecutable(ExecutableElement e, ClassContext recorder) {
 
-        recorder.getMethods().add(e.getSimpleName().toString());
+		recorder.getMethods().addLast(e.getSimpleName().toString());
 
-        try {
-            processHandlers(e, recorder);
-            Trees trees = Trees.instance(environment);
-            MethodTree method = trees.getTree(e);
-            method.getBody().accept(new LogunoMethodBodyVisitor(handlersProvider), recorder);
+		try {
+			processHandlers(e, recorder);
+			Trees trees = Trees.instance(environment);
+			MethodTree method = trees.getTree(e);
+			method.getBody().accept(new LogunoMethodBodyVisitor(handlersProvider), recorder);
 
-            return super.visitExecutable(e, recorder);
-        } finally {
-            recorder.getMethods().removeLast();
-        }
-    }
+			return super.visitExecutable(e, recorder);
+		} finally {
+			recorder.getMethods().removeLast();
+		}
+	}
 
 	@Override
 	public Void visitTypeParameter(TypeParameterElement e, ClassContext recorder) {

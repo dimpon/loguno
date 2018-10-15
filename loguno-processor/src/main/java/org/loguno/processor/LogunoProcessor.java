@@ -77,6 +77,7 @@ public class LogunoProcessor extends AbstractProcessor {
                 // JCTree tree = (JCTree) trees.getTree(element);
                 //tree.accept(scanner);
                 //tree.accept(translator);
+                System.out.println("recorder="+recorder);
             });
         } catch (Exception e) {
             e.printStackTrace();

@@ -138,7 +138,8 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
 
 		JCTree.JCLiteral wholeMessage = factory.Literal(message);
 
-		String loggerVariable = classContext.getLoggerName();
+		String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
+
 		final ListBuffer<JCTree.JCExpression> buffer = new ListBuffer<>();
 		buffer.append(wholeMessage);
 

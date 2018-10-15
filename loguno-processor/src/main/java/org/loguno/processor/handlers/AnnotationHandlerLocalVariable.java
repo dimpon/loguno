@@ -48,7 +48,7 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
 
         JCTree.JCIdent param = factory.Ident(elements.getName(element.name.toString()));
 
-        String loggerVariable = classContext.getLoggerName();
+        String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
 
         JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
                 factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
