@@ -28,14 +28,25 @@ import static org.loguno.processor.configuration.ConfigurationKeys.METHOD_PATTER
 @UtilityClass
 public class JCTreeUtils {
 
+	/**
+	 * returns value from array, if exists. Otherwise from config.
+	 */
 	public String getMessageTemplate(String[] value, ConfigurationKey<String> key) {
 		Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
 		return (value.length > 0 && !value[0].isEmpty()) ? value[0] : conf.getProperty(key);
 	}
 
 	/**
+	 * Tries to insert into message class name and method name.
+	 */
+	public String tryToInsertClassAndMethodName(String message, ClassContext context) {
+		return message.replace(CLASS_PATTERN, context.getClasses().getLast())
+				.replace(METHOD_PATTERN, context.getMethods().getLast());
+	}
+
+	/**
 	 * The method creates the 'real' annotation object based on {@link com.sun.source.tree.AnnotationTree}
-	 * Now Strings, Strings[] and primitivesa are supported as annotation memmber.
+	 * Now Strings, Strings[] and primitives are supported as annotation member. Classses, enums, annotations are not supported.
 	 */
 	@SuppressWarnings("unchecked")
 	public <A extends Annotation> A createAnnotationInstance(AnnotationTree annotation, Class<A> annotationType) {
@@ -105,11 +116,7 @@ public class JCTreeUtils {
 		return values;
 	}
 
-	public String tryToInsertClassAndMethodName(String message, ClassContext context) {
-		return message.replace(CLASS_PATTERN, context.getClasses().getLast())
-				.replace(METHOD_PATTERN, context.getMethods().getLast());
 
-	}
 
 	private String[] castElement(ExpressionTree argument) {
 

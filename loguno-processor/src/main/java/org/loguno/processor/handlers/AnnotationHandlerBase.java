@@ -68,16 +68,4 @@ abstract public class AnnotationHandlerBase<A extends Annotation, E> implements 
                 .getGenericSuperclass()).getActualTypeArguments()[1];
     }
 
-
-    protected JCTree.JCExpression createJCExpression(final String fullName) {
-        String[] splitted = fullName.split("\\.");
-        return doRound(splitted, (splitted.length - 1));
-    }
-
-    private JCTree.JCExpression doRound(String[] splitted, int i) {
-        if (i == 0)
-            return factory.Ident(elements.getName(splitted[i]));
-        return factory.Select(doRound(splitted, i - 1), elements.getName(splitted[i]));
-    }
-
 }

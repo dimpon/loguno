@@ -18,6 +18,11 @@ public class PositiveCat extends Animal {
 
     private String ccc;
 
+    @Loguno
+    public PositiveCat(String a) {
+        super(a);
+    }
+
 
 
     @Loguno
@@ -74,8 +79,38 @@ public class PositiveCat extends Animal {
     }
 
     @Loguno.Logger
-    private static class RightLeg{
+    private  class RightLeg{
 
+        private String a;
+        @Loguno
+        public RightLeg() {
+            super();
+            a="123";
+
+        }
+
+        @Loguno.Logger
+        private  class RightLeg1{
+            private String aa;
+
+            @Loguno
+            public RightLeg1() {
+                super();
+                this.aa = a;
+            }
+
+            @Loguno.Logger
+            private  class RightLeg2{
+                private String aa;
+                @Loguno
+                private void hi(){}
+            }
+        }
+    }
+
+    @Loguno.Logger
+    private static   class RightLeg3{
+        private String aa;
     }
 
 }

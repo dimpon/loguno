@@ -66,12 +66,14 @@ public class LogunoProcessor extends AbstractProcessor {
 
         Set<? extends Element> elements = roundEnvironment.getRootElements();
 
+
         try {
+            final ClassContext recorder = new ClassContext();
             elements.forEach(element -> {
                 //messager.printMessage(Diagnostic.Kind.NOTE, "Simple Name: "+element);
                 //System.out.println("Simple Name: " + element);
 
-                ClassContext recorder = new ClassContext();
+
                 Void accept = element.accept(visitor, recorder);
 
                 // JCTree tree = (JCTree) trees.getTree(element);

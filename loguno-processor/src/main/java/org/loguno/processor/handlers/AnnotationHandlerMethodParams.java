@@ -106,25 +106,5 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
             body.stats = body.stats.prepend(callInfoMethodCall);
         }
 
-       /* Tree.Kind kind = methodTree.getKind();
-
-
-
-
-        Symbol.VarSymbol el = (Symbol.VarSymbol)element;*/
-
-
-        //factory.at(((Symbol.VarSymbol) element).pos)
-
-
-        //MethodTree tree = (MethodTree)trees.getTree(el.owner);
-
-        //Tree tree = trees.getTree(element);
-
-
-
-
-
-
     }
 }

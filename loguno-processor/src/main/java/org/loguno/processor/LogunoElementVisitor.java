@@ -12,80 +12,78 @@ import java.util.Arrays;
 
 public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
 
-	private HandlersProvider handlersProvider;
-	private JavacProcessingEnvironment environment;
+    private HandlersProvider handlersProvider;
+    private JavacProcessingEnvironment environment;
 
-	LogunoElementVisitor(JavacProcessingEnvironment environment) {
-		super();
-		this.handlersProvider = HandlersProvider.create(environment);
-		this.environment = environment;
-	}
+    LogunoElementVisitor(JavacProcessingEnvironment environment) {
+        super();
+        this.handlersProvider = HandlersProvider.create(environment);
+        this.environment = environment;
+    }
 
-	@Override
-	public Void visitPackage(PackageElement e, ClassContext recorder) {
-		processHandlers(e, recorder);
-		return super.visitPackage(e, recorder);
-	}
+    @Override
+    public Void visitPackage(PackageElement e, ClassContext recorder) {
+        processHandlers(e, recorder);
+        return super.visitPackage(e, recorder);
+    }
 
-	@Override
-	public Void visitType(TypeElement e, ClassContext recorder) {
+    @Override
+    public Void visitType(TypeElement e, ClassContext classContext) {
 
-		recorder.getClasses().addLast(e.getQualifiedName().toString());
+        classContext.getClasses().addLast(e.getQualifiedName().toString());
 
-		try {
-			processHandlers(e, recorder);
+        try {
+            processHandlers(e, classContext);
+            return super.visitType(e, classContext);
+        } finally {
+            classContext.getClasses().removeLast();
+            if (classContext.getLoggers().size() > 0)
+                classContext.getLoggers().removeLast();
+        }
+    }
 
-			return super.visitType(e, recorder);
-		} finally {
-			recorder.getClasses().removeLast();
+    @Override
+    public Void visitVariable(VariableElement e, ClassContext recorder) {
+        // catches methods arguments only
+        processHandlers(e, recorder);
+        return super.visitVariable(e, recorder);
+    }
 
-			if (recorder.getLoggers().size() > 0)
-				recorder.getLoggers().removeLast();
-		}
-	}
+    @Override
+    public Void visitExecutable(ExecutableElement e, ClassContext classContext) {
 
-	@Override
-	public Void visitVariable(VariableElement e, ClassContext recorder) {
-		// catches methods arguments only
-		processHandlers(e, recorder);
-		return super.visitVariable(e, recorder);
-	}
+        classContext.getMethods().addLast(e.getSimpleName().toString());
 
-	@Override
-	public Void visitExecutable(ExecutableElement e, ClassContext recorder) {
+        try {
+            processHandlers(e, classContext);
+            Trees trees = Trees.instance(environment);
+            MethodTree method = trees.getTree(e);
+            method.getBody().accept(new LogunoMethodBodyVisitor(handlersProvider), classContext);
 
-		recorder.getMethods().addLast(e.getSimpleName().toString());
+            return super.visitExecutable(e, classContext);
+        } finally {
+            classContext.getMethods().removeLast();
+        }
+    }
 
-		try {
-			processHandlers(e, recorder);
-			Trees trees = Trees.instance(environment);
-			MethodTree method = trees.getTree(e);
-			method.getBody().accept(new LogunoMethodBodyVisitor(handlersProvider), recorder);
+    @Override
+    public Void visitTypeParameter(TypeParameterElement e, ClassContext recorder) {
+        // catches class fields
+        processHandlers(e, recorder);
+        return super.visitTypeParameter(e, recorder);
+    }
 
-			return super.visitExecutable(e, recorder);
-		} finally {
-			recorder.getMethods().removeLast();
-		}
-	}
+    private <T extends Element> void processHandlers(T e, ClassContext recorder) {
 
-	@Override
-	public Void visitTypeParameter(TypeParameterElement e, ClassContext recorder) {
-		// catches class fields
-		processHandlers(e, recorder);
-		return super.visitTypeParameter(e, recorder);
-	}
-
-	private <T extends Element> void processHandlers(T e, ClassContext recorder) {
-
-		handlersProvider
-				.supportedAnnotations()
-				.forEach(logunoAnnClass -> {
-					Arrays.stream(e.getAnnotationsByType(logunoAnnClass))
-							.forEach(annFromElement -> {
-								handlersProvider
-										.getHandlersByElementAndAnnotation(logunoAnnClass, e)
-										.forEach(handler -> handler.process(annFromElement, e, recorder));
-							});
-				});
-	}
+        handlersProvider
+                .supportedAnnotations()
+                .forEach(logunoAnnClass -> {
+                    Arrays.stream(e.getAnnotationsByType(logunoAnnClass))
+                            .forEach(annFromElement -> {
+                                handlersProvider
+                                        .getHandlersByElementAndAnnotation(logunoAnnClass, e)
+                                        .forEach(handler -> handler.process(annFromElement, e, recorder));
+                            });
+                });
+    }
 }

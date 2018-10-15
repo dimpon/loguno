@@ -15,12 +15,12 @@ import java.io.PrintWriter;
  */
 @Handler
 @Order(2)
-public class AnnotationHandlerSlf4jLazy extends AnnotationHandlerBase<Loguno.Logger, TypeElement> {
+public class AnnotationHandlerLoggerLazy extends AnnotationHandlerBase<Loguno.Logger, TypeElement> {
 
 
     private static final String lazyFactoryClass = "org.loguno.lazy.LazyLoggerFactorySlf4j";
 
-    public AnnotationHandlerSlf4jLazy(JavacProcessingEnvironment environment) {
+    public AnnotationHandlerLoggerLazy(JavacProcessingEnvironment environment) {
         super(environment);
     }
 
