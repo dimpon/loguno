@@ -36,7 +36,7 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
 
         @Override
         public void processTree(Loguno annotation, VariableElement element, ClassContext classContext) {
-            doRealJob(annotation.value(),"info",element,classContext);
+            doRealJob(annotation.value(), "info", element, classContext);
 
             //String method = conf.getProperty(ConfigurationKeys.LOG_METHOD_DEFAULT);
             //doRealJob(annotation.value(), method, element, classContext);
@@ -44,7 +44,7 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
     }
 
 
-     void doRealJob(String[] value, String logMethod, VariableElement element, ClassContext classContext) {
+    void doRealJob(String[] value, String logMethod, VariableElement element, ClassContext classContext) {
 
 
 
@@ -59,9 +59,9 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
                 .toArray(JCTree.JCExpression[]::new);
 */
 
-        String message = JCTreeUtils.tryToInsertClassAndMethodName(JCTreeUtils.getMessageTemplate(value, ConfigurationKeys.METHODPARAM_MESSAGE_PATTERN_DEFAULT), classContext);
+        String message = JCTreeUtils.message(value, ConfigurationKeys.METHODPARAM_MESSAGE_PATTERN_DEFAULT, classContext);
 
-        VariableTree variableTree = (VariableTree)elements.getTree(element);
+        VariableTree variableTree = (VariableTree) elements.getTree(element);
 
         JCTree.JCLiteral wholeMessage = factory.Literal(message);
         String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
@@ -74,15 +74,15 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
             buffer.append(factory.Ident(elements.getName(variableTree.getName())));
         }
 
-        JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression> nil(),
+        JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
                 factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
                 buffer.toList());
 
         JCTree.JCStatement callInfoMethodCall = factory.at(((JCTree) variableTree).pos).Exec(callInfoMethod);
 
-        ExecutableElement enclosingElement = (ExecutableElement)element.getEnclosingElement();
+        ExecutableElement enclosingElement = (ExecutableElement) element.getEnclosingElement();
 
-        MethodTree methodTree = (MethodTree)trees.getTree(element.getEnclosingElement());
+        MethodTree methodTree = (MethodTree) trees.getTree(element.getEnclosingElement());
 
         JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
 

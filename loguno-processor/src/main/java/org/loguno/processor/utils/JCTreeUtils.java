@@ -28,118 +28,122 @@ import static org.loguno.processor.configuration.ConfigurationKeys.METHOD_PATTER
 @UtilityClass
 public class JCTreeUtils {
 
-	/**
-	 * returns value from array, if exists. Otherwise from config.
-	 */
-	public String getMessageTemplate(String[] value, ConfigurationKey<String> key) {
-		Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
-		return (value.length > 0 && !value[0].isEmpty()) ? value[0] : conf.getProperty(key);
-	}
 
-	/**
-	 * Tries to insert into message class name and method name.
-	 */
-	public String tryToInsertClassAndMethodName(String message, ClassContext context) {
-		return message.replace(CLASS_PATTERN, context.getClasses().getLast())
-				.replace(METHOD_PATTERN, context.getMethods().getLast());
-	}
+    public String message(String[] valueFromAnn, ConfigurationKey<String> key, ClassContext context) {
+        return JCTreeUtils.tryToInsertClassAndMethodName(getMessageTemplate(valueFromAnn, key), context);
+    }
 
-	/**
-	 * The method creates the 'real' annotation object based on {@link com.sun.source.tree.AnnotationTree}
-	 * Now Strings, Strings[] and primitives are supported as annotation member. Classses, enums, annotations are not supported.
-	 */
-	@SuppressWarnings("unchecked")
-	public <A extends Annotation> A createAnnotationInstance(AnnotationTree annotation, Class<A> annotationType) {
+    /**
+     * returns value from array, if exists. Otherwise from config.
+     */
+    public String getMessageTemplate(String[] value, ConfigurationKey<String> key) {
+        Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
+        return (value.length > 0 && !value[0].isEmpty()) ? value[0] : conf.getProperty(key);
+    }
 
-		Map<String, String[]> customValues = createAnnotationArgsMap(annotation);
+    /**
+     * Tries to insert into message class name and method name.
+     */
+    public String tryToInsertClassAndMethodName(String message, ClassContext context) {
+        return message.replace(CLASS_PATTERN, context.getClasses().getLast())
+                .replace(METHOD_PATTERN, context.getMethods().getLast());
+    }
 
-		Map<String, Object> values = new LinkedHashMap<>();
+    /**
+     * The method creates the 'real' annotation object based on {@link com.sun.source.tree.AnnotationTree}
+     * Now Strings, Strings[] and primitives are supported as annotation member. Classses, enums, annotations are not supported.
+     */
+    @SuppressWarnings("unchecked")
+    public <A extends Annotation> A createAnnotationInstance(AnnotationTree annotation, Class<A> annotationType) {
 
-		// Extract default values from annotation
-		for (Method method : annotationType.getDeclaredMethods()) {
-			values.put(method.getName(), method.getDefaultValue());
-			Class<?> type = method.getReturnType();
-			if (customValues.containsKey(method.getName())) {
-				Object o = castValue(type, customValues.get(method.getName()));
-				values.put(method.getName(), o);
-			}
-		}
+        Map<String, String[]> customValues = createAnnotationArgsMap(annotation);
 
-		return (A) AnnotationParser.annotationForMap(annotationType, values);
-	}
+        Map<String, Object> values = new LinkedHashMap<>();
 
-	@SneakyThrows
-	private Object castValue(Class<?> clazz, String... value) {
+        // Extract default values from annotation
+        for (Method method : annotationType.getDeclaredMethods()) {
+            values.put(method.getName(), method.getDefaultValue());
+            Class<?> type = method.getReturnType();
+            if (customValues.containsKey(method.getName())) {
+                Object o = castValue(type, customValues.get(method.getName()));
+                values.put(method.getName(), o);
+            }
+        }
 
-		if (clazz.isPrimitive()) {
-			switch (clazz.getName()) {
-			case "boolean":
-				return Boolean.valueOf(value[0]);
-			case "int":
-				return Integer.valueOf(value[0]);
-			case "long":
-				return Long.valueOf(value[0]);
-			case "double":
-				return Double.valueOf(value[0]);
-			case "float":
-				return Float.valueOf(value[0]);
-			case "byte":
-				return Byte.valueOf(value[0]);
-			}
-		}
+        return (A) AnnotationParser.annotationForMap(annotationType, values);
+    }
 
-		if (clazz.isEnum()) {
-			throw new UnsupportedOperationException();
-		}
+    @SneakyThrows
+    private Object castValue(Class<?> clazz, String... value) {
 
-		if (clazz.isArray()) {
-			return value;
-		}
+        if (clazz.isPrimitive()) {
+            switch (clazz.getName()) {
+                case "boolean":
+                    return Boolean.valueOf(value[0]);
+                case "int":
+                    return Integer.valueOf(value[0]);
+                case "long":
+                    return Long.valueOf(value[0]);
+                case "double":
+                    return Double.valueOf(value[0]);
+                case "float":
+                    return Float.valueOf(value[0]);
+                case "byte":
+                    return Byte.valueOf(value[0]);
+            }
+        }
 
-		return value[0];
-	}
+        if (clazz.isEnum()) {
+            throw new UnsupportedOperationException();
+        }
 
-	private Map<String, String[]> createAnnotationArgsMap(AnnotationTree annotation) {
-		List<? extends ExpressionTree> arguments = annotation.getArguments();
+        if (clazz.isArray()) {
+            return value;
+        }
 
-		Map<String, String[]> values = new LinkedHashMap<>();
+        return value[0];
+    }
 
-		for (ExpressionTree argument : arguments) {
-			if (argument instanceof JCTree.JCAssign) {
-				JCTree.JCAssign aArgument = (JCTree.JCAssign) argument;
-				String name = ((JCTree.JCIdent) aArgument.lhs).getName().toString();
-				values.put(name, castElement(aArgument.rhs));
-			} else {
-				values.put("value", castElement(argument));
-			}
-		}
-		return values;
-	}
+    private Map<String, String[]> createAnnotationArgsMap(AnnotationTree annotation) {
+        List<? extends ExpressionTree> arguments = annotation.getArguments();
+
+        Map<String, String[]> values = new LinkedHashMap<>();
+
+        for (ExpressionTree argument : arguments) {
+            if (argument instanceof JCTree.JCAssign) {
+                JCTree.JCAssign aArgument = (JCTree.JCAssign) argument;
+                String name = ((JCTree.JCIdent) aArgument.lhs).getName().toString();
+                values.put(name, castElement(aArgument.rhs));
+            } else {
+                values.put("value", castElement(argument));
+            }
+        }
+        return values;
+    }
 
 
+    private String[] castElement(ExpressionTree argument) {
 
-	private String[] castElement(ExpressionTree argument) {
+        String[] result = new String[0];
 
-		String[] result = new String[0];
+        if (argument instanceof JCTree.JCLiteral) {
+            JCTree.JCLiteral aArgument = (JCTree.JCLiteral) argument;
+            result = new String[]{aArgument.getValue().toString()};
 
-		if (argument instanceof JCTree.JCLiteral) {
-			JCTree.JCLiteral aArgument = (JCTree.JCLiteral) argument;
-			result = new String[] { aArgument.getValue().toString() };
+        } else if (argument instanceof JCTree.JCFieldAccess) {
+            JCTree.JCFieldAccess aArgument = (JCTree.JCFieldAccess) argument;
+            result = new String[]{aArgument.toString()};
 
-		} else if (argument instanceof JCTree.JCFieldAccess) {
-			JCTree.JCFieldAccess aArgument = (JCTree.JCFieldAccess) argument;
-			result = new String[] { aArgument.toString() };
+        } else if (argument instanceof JCTree.JCNewArray) {
+            JCTree.JCNewArray aArgument = (JCTree.JCNewArray) argument;
 
-		} else if (argument instanceof JCTree.JCNewArray) {
-			JCTree.JCNewArray aArgument = (JCTree.JCNewArray) argument;
+            result = aArgument.elems.stream()
+                    .map(JCTreeUtils::castElement)
+                    .flatMap(Arrays::stream)
+                    .toArray(String[]::new);
+        }
 
-			result = aArgument.elems.stream()
-					.map(JCTreeUtils::castElement)
-					.flatMap(Arrays::stream)
-					.toArray(String[]::new);
-		}
-
-		return result;
-	}
+        return result;
+    }
 
 }

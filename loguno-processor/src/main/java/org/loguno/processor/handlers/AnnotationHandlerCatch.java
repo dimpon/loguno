@@ -32,8 +32,7 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
 
     void doRealJob(String[] value, String logMethod, JCTree.JCCatch element, ClassContext classContext) {
 
-        String message = JCTreeUtils.tryToInsertClassAndMethodName(
-                JCTreeUtils.getMessageTemplate(value, ConfigurationKeys.CATCH_MESSAGE_PATTERN_DEFAULT), classContext);
+        String message = JCTreeUtils.message(value, ConfigurationKeys.CATCH_MESSAGE_PATTERN_DEFAULT, classContext);
 
         JCTree.JCLiteral wholeMessage = factory.Literal(message);
 

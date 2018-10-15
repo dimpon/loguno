@@ -39,8 +39,7 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
 
     void doRealJob(String[] value, String logMethod, JCTree.JCVariableDecl element, ClassContext classContext) {
 
-        String message = JCTreeUtils.tryToInsertClassAndMethodName(
-                JCTreeUtils.getMessageTemplate(value, ConfigurationKeys.LOCVAR_MESSAGE_PATTERN_DEFAULT), classContext);
+        String message = JCTreeUtils.message(value, ConfigurationKeys.LOCVAR_MESSAGE_PATTERN_DEFAULT, classContext);
 
         JCTree.JCLiteral wholeMessage = factory.Literal(message);
 
