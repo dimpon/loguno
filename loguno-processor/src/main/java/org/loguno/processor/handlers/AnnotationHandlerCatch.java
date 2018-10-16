@@ -46,7 +46,7 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
                 .logMethod(logMethod)
                 .message(message)
                 .build()
-                .addParam(element.param.name.toString())
+                .addParam(element.getParameter().getName().toString())
                 .create();
 
         //JCTree.JCLiteral wholeMessage = factory.Literal(message);

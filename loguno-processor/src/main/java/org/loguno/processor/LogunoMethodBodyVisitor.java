@@ -11,11 +11,13 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.loguno.Loguno;
 import org.loguno.processor.handlers.AnnotationHandler;
+import org.loguno.processor.handlers.AnnotationHandlerMultipleExceptionsCatch;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import org.loguno.processor.utils.JCTreeUtils;
 import sun.reflect.annotation.AnnotationParser;
 
+import javax.lang.model.element.Name;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -38,12 +40,12 @@ public class LogunoMethodBodyVisitor extends TreeScanner<Void, ClassContext> {
 
         List<? extends AnnotationTree> variableAnnotations = variableTree.getModifiers().getAnnotations();
         variableAnnotations.forEach(annotation -> {
-            findHandlerAndCall(annotation,variableTree,classContext);
+            findHandlerAndCall(annotation, variableTree, classContext);
         });
         return super.visitVariable(variableTree, classContext);
     }
 
-    private <E> void findHandlerAndCall(AnnotationTree annotation, E element, ClassContext classContext){
+    private <E> void findHandlerAndCall(AnnotationTree annotation, E element, ClassContext classContext) {
 
         Tree annotationType = annotation.getAnnotationType();
         String className = annotationType.toString().replace(".", "$");
@@ -60,15 +62,53 @@ public class LogunoMethodBodyVisitor extends TreeScanner<Void, ClassContext> {
 
     public Void visitCatch(CatchTree catchBlock, ClassContext classContext) {
 
-        List<? extends AnnotationTree> variableAnnotations = catchBlock.getParameter().getModifiers().getAnnotations();
+        Tree.Kind kind = catchBlock.getParameter().getType().getKind();
 
-        variableAnnotations.forEach(annotation -> {
-            findHandlerAndCall(annotation,catchBlock,classContext);
-        });
+        if (kind == Tree.Kind.IDENTIFIER) {
+
+            List<? extends AnnotationTree> variableAnnotations = catchBlock.getParameter().getModifiers().getAnnotations();
+
+            variableAnnotations.forEach(annotation -> {
+                findHandlerAndCall(annotation, catchBlock, classContext);
+            });
+        }
+
+
+
+        if (kind == Tree.Kind.UNION_TYPE) {
+            com.sun.tools.javac.util.List<JCTree.JCExpression> typeAlternatives = ((JCTree.JCTypeUnion) catchBlock.getParameter().getType()).getTypeAlternatives();
+
+            Name e = catchBlock.getParameter().getName();
+            BlockTree block = catchBlock.getBlock();
+
+            List<? extends AnnotationTree> annotations1 = catchBlock.getParameter().getModifiers().getAnnotations();
+            JCTree.JCExpression exceptionClass1 = typeAlternatives.get(0);
+
+            annotations1.forEach(annotation -> {
+                findHandlerAndCall(annotation, AnnotationHandlerMultipleExceptionsCatch
+                        .ExceptionTO.of(e, (JCTree.JCBlock) block, exceptionClass1, (JCTree) catchBlock), classContext);
+            });
+
+
+            for (int i = 1; i < typeAlternatives.size(); i++) {
+
+                JCTree.JCExpression exception = typeAlternatives.get(i);
+                if (exception instanceof JCTree.JCAnnotatedType) {
+                    JCTree.JCAnnotatedType annException = (JCTree.JCAnnotatedType) exception;
+                    JCTree.JCExpression exceptionClass = annException.underlyingType;
+                    com.sun.tools.javac.util.List<JCTree.JCAnnotation> annotations = annException.getAnnotations();
+
+                    for (JCTree.JCAnnotation annotation : annotations) {
+                        findHandlerAndCall(annotation, AnnotationHandlerMultipleExceptionsCatch
+                                .ExceptionTO.of(e, (JCTree.JCBlock) block, exceptionClass, (JCTree) catchBlock), classContext);
+                    }
+
+                }
+            }
+        }
 
         return super.visitCatch(catchBlock, classContext);
     }
-
 
 
     @Override

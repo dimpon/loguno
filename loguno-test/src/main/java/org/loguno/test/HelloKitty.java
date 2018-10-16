@@ -30,7 +30,13 @@ public class HelloKitty {
 
 		try {
 			int i1 = Integer.parseInt("1");
-		} catch (NumberFormatException | @Loguno NullPointerException e) {
+		} catch (@Loguno("number") NumberFormatException  e) {
+			e.printStackTrace();
+		}
+
+		try {
+			int i1 = Integer.parseInt("aaa");
+		} catch (@Loguno("number is wrong") NumberFormatException | @Loguno("NPE") @Loguno.DEBUG NullPointerException  e) {
 			e.printStackTrace();
 		}
 
