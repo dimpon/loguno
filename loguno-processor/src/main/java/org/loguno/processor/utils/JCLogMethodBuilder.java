@@ -11,31 +11,37 @@ import lombok.Builder;
 @Builder
 public class JCLogMethodBuilder {
 
-	private final TreeMaker factory;
+    private final TreeMaker factory;
 
-	private final Names names;
+    private final Names names;
 
-	private final JavacElements elements;
+    private final JavacElements elements;
 
-	private final String message;
+    private final String message;
 
-	private final String loggerName;
+    private final String loggerName;
 
     private final String logMethod;
 
-	private final JCTree element;
+    private final JCTree element;
 
-	private final ListBuffer<JCTree.JCExpression> $buffer = new ListBuffer<>();
+    private final ListBuffer<JCTree.JCExpression> $buffer = new ListBuffer<>();
 
-	public JCLogMethodBuilder addParamPair(String name) {
-		JCTree.JCLiteral paramName = factory.at(element.pos).Literal(name);
-		JCTree.JCIdent paramValue = factory.at(element.pos).Ident(elements.getName(name));
-		$buffer.append(paramName);
-		$buffer.append(paramValue);
-		return this;
-	}
+    public JCLogMethodBuilder addParamPair(String name) {
+        JCTree.JCLiteral paramName = factory.at(element.pos).Literal(name);
+        JCTree.JCIdent paramValue = factory.at(element.pos).Ident(elements.getName(name));
+        $buffer.append(paramName);
+        $buffer.append(paramValue);
+        return this;
+    }
 
-	public List<JCTree.JCStatement> create(JCTree.JCBlock body) {
+    public JCLogMethodBuilder addParam(String name) {
+        JCTree.JCIdent paramValue = factory.at(element.pos).Ident(elements.getName(name));
+        $buffer.append(paramValue);
+        return this;
+    }
+
+    public JCTree.JCStatement create() {
 
         JCTree.JCLiteral wholeMessage = factory.at(element.pos).Literal(message);
         $buffer.prepend(wholeMessage);
@@ -44,16 +50,7 @@ public class JCLogMethodBuilder {
                 factory.Select(factory.Ident(elements.getName(loggerName)), elements.getName(logMethod)),
                 $buffer.toList());
 
-        JCTree.JCStatement callInfoMethodCall = factory.at(element.pos).Exec(callInfoMethod);
+        return factory.at(element.pos).Exec(callInfoMethod);
 
-        ListBuffer<JCTree.JCStatement> li = new ListBuffer<>();
-
-        body.stats.forEach(st -> {
-            li.append(st);
-            if (st == element)
-                li.append(callInfoMethodCall);
-        });
-
-        return li.toList();
     }
 }

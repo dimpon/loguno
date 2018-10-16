@@ -20,7 +20,7 @@ public class HelloKitty {
 		return this;
 	}
 
-	@Loguno
+	//@Loguno
 	public HelloKitty sayOwner(String owner) {
 		this.owner = owner;
 
@@ -28,7 +28,13 @@ public class HelloKitty {
 			this.owner = "na";
 		}
 
-		@Loguno
+		try {
+			int i1 = Integer.parseInt("1");
+		} catch (NumberFormatException | @Loguno NullPointerException e) {
+			e.printStackTrace();
+		}
+
+		//@Loguno
 		StringBuilder newName = new StringBuilder(name + " of " + this.owner);
 
 		for (int i = 0; i < 10; i++) {
@@ -37,7 +43,7 @@ public class HelloKitty {
 
 		int i = 5;
 
-		@Loguno
+		//@Loguno
 		int s = i + 1;
 
 		return this;

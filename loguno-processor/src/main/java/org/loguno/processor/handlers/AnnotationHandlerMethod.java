@@ -8,6 +8,7 @@ import com.sun.source.tree.MethodTree;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.List;
+import org.loguno.processor.utils.JCLogMethodBuilder;
 import org.loguno.processor.utils.JCTreeUtils;
 
 import javax.lang.model.element.ElementKind;
@@ -117,72 +118,42 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
 
         MethodTree methodTree = trees.getTree(element);
 
-        // generate array of pairs - param name-param value
-        JCTree.JCExpression[] idents = methodTree.getParameters().stream()
-                .map(param -> Stream.<JCTree.JCExpression>of(
-                        factory.Literal(param.getName().toString()),
-                        factory.Ident(elements.getName(param.getName()))))
-                .flatMap(s -> s)
-                .toArray(JCTree.JCExpression[]::new);
+        String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
 
         String message = JCTreeUtils.message(value, METHOD_MESSAGE_PATTERN_DEFAULT, classContext);
 
-        final String paramsTemplate = paramSuffix(message);
+        final String repeatPart = JCTreeUtils.getRepeatPart(message);
 
-        message = message.replaceAll("\\[(.*?)\\]", "");
 
-        if (!paramsTemplate.isEmpty()) {
-            String paramsStr = methodTree.getParameters().stream().map(o -> paramsTemplate).collect(Collectors.joining(","));
-            message = message + paramsStr;
+        if (!repeatPart.isEmpty()) {
+            String paramsStr = methodTree.getParameters().stream().map(o -> repeatPart).collect(Collectors.joining(","));
+            message = message.replaceAll(JCTreeUtils.REPEAT_PATTERN, paramsStr);
         }
 
-        JCTree.JCLiteral wholeMessage = factory.Literal(message);
+        JCLogMethodBuilder builder = JCLogMethodBuilder.builder()
+                .factory(factory)
+                .elements(elements)
+                .names(names)
+                .element((JCTree) methodTree)
+                .loggerName(loggerVariable)
+                .logMethod(logMethod)
+                .message(message)
+                .build();
 
-        String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
 
-        final ListBuffer<JCTree.JCExpression> buffer = new ListBuffer<>();
-        buffer.append(wholeMessage);
+        methodTree.getParameters().forEach(o -> {
+            builder.addParamPair(o.getName().toString());
+        });
 
-        if (message.contains("{}")) {
-            Arrays.stream(idents).forEach(buffer::append);
-        }
 
-        JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
-                factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
-                buffer.toList());
-
-        JCTree.JCStatement callInfoMethodCall = factory.at(((JCTree) methodTree).pos).Exec(callInfoMethod);
+        JCTree.JCStatement methodCall = builder.create();
 
         JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
 
-        if (element.getKind() == ElementKind.CONSTRUCTOR &&
-                body.stats.size() > 0 &&
-                body.stats.get(0) != null &&
-                body.stats.get(0).toString().contains("super")) {
+        body.stats = JCTreeUtils.generateNewMethodBody(element, trees, methodCall);
 
-            ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
-            bodyNew.append(body.stats.get(0));
-            bodyNew.append(callInfoMethodCall);
-
-            for (int i = 1; i < body.stats.size(); i++) {
-                bodyNew.append(body.stats.get(i));
-            }
-
-            body.stats = bodyNew.toList();
-
-        } else {
-            body.stats = body.stats.prepend(callInfoMethodCall);
-        }
 
     }
 
-    private String paramSuffix(String messagePattern) {
-        Pattern p = Pattern.compile("\\[(.*?)\\]");
-        Matcher m = p.matcher(messagePattern);
-        if (m.find()) {
-            return m.group();
-        }
-        return "";
-    }
 
 }

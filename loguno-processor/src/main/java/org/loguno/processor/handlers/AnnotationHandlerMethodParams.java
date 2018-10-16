@@ -8,6 +8,7 @@ import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
 import org.loguno.Loguno;
 import org.loguno.processor.configuration.ConfigurationKeys;
+import org.loguno.processor.utils.JCLogMethodBuilder;
 import org.loguno.processor.utils.JCTreeUtils;
 
 import javax.lang.model.element.ElementKind;
@@ -46,65 +47,46 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
 
     void doRealJob(String[] value, String logMethod, VariableElement element, ClassContext classContext) {
 
-
-
-        /*MethodTree tree = trees.getTree(element);
-
-        //generate array of pairs - param name-param value
-        JCTree.JCExpression[] idents = tree.getParameters().stream()
-                .map(param -> Stream.<JCTree.JCExpression>of(
-                        factory.Literal(param.getName().toString()),
-                        factory.Ident(elements.getName(param.getName()))))
-                .flatMap(s -> s)
-                .toArray(JCTree.JCExpression[]::new);
-*/
-
         String message = JCTreeUtils.message(value, ConfigurationKeys.METHODPARAM_MESSAGE_PATTERN_DEFAULT, classContext);
 
-        VariableTree variableTree = (VariableTree) elements.getTree(element);
+        VariableTree elementTree = (VariableTree) elements.getTree(element);
 
-        JCTree.JCLiteral wholeMessage = factory.Literal(message);
         String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
 
-        final ListBuffer<JCTree.JCExpression> buffer = new ListBuffer<>();
-        buffer.append(wholeMessage);
+        JCTree.JCStatement methodCall = JCLogMethodBuilder.builder()
+                .factory(factory)
+                .elements(elements)
+                .names(names)
+                .element((JCTree) elementTree)
+                .loggerName(loggerVariable)
+                .logMethod(logMethod)
+                .message(message)
+                .build()
+                .addParamPair(elementTree.getName().toString())
+                .create();
 
-        if (message.contains("{}")) {
-            buffer.append(factory.Literal(variableTree.getName().toString()));
-            buffer.append(factory.Ident(elements.getName(variableTree.getName())));
-        }
-
-        JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
-                factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
-                buffer.toList());
-
-        JCTree.JCStatement callInfoMethodCall = factory.at(((JCTree) variableTree).pos).Exec(callInfoMethod);
-
-        ExecutableElement enclosingElement = (ExecutableElement) element.getEnclosingElement();
+        ExecutableElement methodElement = (ExecutableElement) element.getEnclosingElement();
 
         MethodTree methodTree = (MethodTree) trees.getTree(element.getEnclosingElement());
 
         JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
 
+        body.stats = JCTreeUtils.generateNewMethodBody(methodElement, trees,methodCall);
 
-        if (enclosingElement.getKind() == ElementKind.CONSTRUCTOR &&
-                body.stats.size() > 0 &&
-                body.stats.get(0) != null &&
-                body.stats.get(0).toString().contains("super")) {
+
+        /*if (JCTreeUtils.isMethodConstructorWithSuper(methodElement, trees)) {
 
             ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
             bodyNew.append(body.stats.get(0));
-            bodyNew.append(callInfoMethodCall);
+            bodyNew.append(methodCall);
 
             for (int i = 1; i < body.stats.size(); i++) {
                 bodyNew.append(body.stats.get(i));
             }
 
             body.stats = bodyNew.toList();
-
         } else {
-            body.stats = body.stats.prepend(callInfoMethodCall);
-        }
-
+            body.stats = body.stats.prepend(methodCall);
+        }*/
     }
 }

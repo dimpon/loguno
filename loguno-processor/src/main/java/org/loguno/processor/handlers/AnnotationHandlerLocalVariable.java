@@ -44,34 +44,7 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
 
         String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
 
-        /*JCTree.JCLiteral wholeMessage = factory.at(element.pos).Literal(message);
-
-        JCTree.JCLiteral paramName = factory.at(element.pos).Literal(element.name.toString());
-
-        JCTree.JCIdent param = factory.at(element.pos).Ident(elements.getName(element.name.toString()));
-
-        String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
-
-        JCTree.JCMethodInvocation callInfoMethod = factory.at(element.pos).Apply(List.<JCTree.JCExpression>nil(),
-                factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
-                com.sun.tools.javac.util.List.<JCTree.JCExpression>of(wholeMessage, paramName, param));
-
-        JCTree.JCStatement callInfoMethodCall = factory.at(element.pos).Exec(callInfoMethod);
-*/
-        JCTree.JCBlock body = (JCTree.JCBlock) classContext.getBlocks().getLast();
-
-        /*ListBuffer<JCTree.JCStatement> li = new ListBuffer<>();
-
-        body.stats.forEach(st -> {
-            li.append(st);
-            if (st == element)
-                li.append(callInfoMethodCall);
-        });*/
-
-        //body.stats = li.toList();
-
-        ///////////////
-        body.stats = JCLogMethodBuilder.builder()
+        JCTree.JCStatement methodCall = JCLogMethodBuilder.builder()
                 .factory(factory)
                 .elements(elements)
                 .names(names)
@@ -81,10 +54,19 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
                 .message(message)
                 .build()
                 .addParamPair(element.name.toString())
-                .create(body);
+                .create();
 
+        JCTree.JCBlock body = (JCTree.JCBlock) classContext.getBlocks().getLast();
 
+        ListBuffer<JCTree.JCStatement> li = new ListBuffer<>();
 
+        body.stats.forEach(st -> {
+            li.append(st);
+            if (st == element)
+                li.append(methodCall);
+        });
+
+        body.stats =  li.toList();
 
     }
 }
