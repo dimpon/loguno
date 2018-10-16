@@ -6,6 +6,7 @@ import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
 import org.loguno.Loguno;
 import org.loguno.processor.configuration.ConfigurationKeys;
+import org.loguno.processor.utils.JCLogMethodBuilder;
 import org.loguno.processor.utils.JCTreeUtils;
 
 import javax.lang.model.element.VariableElement;
@@ -41,30 +42,49 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
 
         String message = JCTreeUtils.message(value, ConfigurationKeys.LOCVAR_MESSAGE_PATTERN_DEFAULT, classContext);
 
-        JCTree.JCLiteral wholeMessage = factory.Literal(message);
+        String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
 
-        JCTree.JCLiteral paramName = factory.Literal(element.name.toString());
+        /*JCTree.JCLiteral wholeMessage = factory.at(element.pos).Literal(message);
 
-        JCTree.JCIdent param = factory.Ident(elements.getName(element.name.toString()));
+        JCTree.JCLiteral paramName = factory.at(element.pos).Literal(element.name.toString());
+
+        JCTree.JCIdent param = factory.at(element.pos).Ident(elements.getName(element.name.toString()));
 
         String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
 
-        JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
+        JCTree.JCMethodInvocation callInfoMethod = factory.at(element.pos).Apply(List.<JCTree.JCExpression>nil(),
                 factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
                 com.sun.tools.javac.util.List.<JCTree.JCExpression>of(wholeMessage, paramName, param));
 
         JCTree.JCStatement callInfoMethodCall = factory.at(element.pos).Exec(callInfoMethod);
-
+*/
         JCTree.JCBlock body = (JCTree.JCBlock) classContext.getBlocks().getLast();
 
-        ListBuffer<JCTree.JCStatement> li = new ListBuffer<>();
+        /*ListBuffer<JCTree.JCStatement> li = new ListBuffer<>();
 
         body.stats.forEach(st -> {
             li.append(st);
             if (st == element)
                 li.append(callInfoMethodCall);
-        });
+        });*/
 
-        body.stats = li.toList();
+        //body.stats = li.toList();
+
+        ///////////////
+        body.stats = JCLogMethodBuilder.builder()
+                .factory(factory)
+                .elements(elements)
+                .names(names)
+                .element(element)
+                .loggerName(loggerVariable)
+                .logMethod(logMethod)
+                .message(message)
+                .build()
+                .addParamPair(element.name.toString())
+                .create(body);
+
+
+
+
     }
 }

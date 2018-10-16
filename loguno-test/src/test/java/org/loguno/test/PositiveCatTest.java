@@ -21,8 +21,15 @@ public class PositiveCatTest {
     @Test
     public void testPositiveCat() {
 
-        PositiveCat cat = new PositiveCat();
-        cat.sayIt("hello","Kitty");
+
+        HelloKitty k = new HelloKitty();
+
+        k.sayHello();
+
+        k.sayName("Barsik").sayOwner("Vovochka");
+
+        //PositiveCat cat = new PositiveCat();
+        //cat.sayIt("hello","Kitty");
 
       /*  org.slf4j.SupportedLoggers log = mock(org.slf4j.SupportedLoggers.class);
         PowerMockito.mockStatic(LoggerFactory.class);

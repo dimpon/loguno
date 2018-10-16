@@ -12,7 +12,7 @@ import java.util.zip.DataFormatException;
 /**
  * @author Dmitrii Ponomarev
  */
-@Loguno.Logger(name="LOOGER",lazy = true)//(name = "LOGGER", lazy = true)
+//@Loguno.Logger(name="LOOGER",lazy = true)//(name = "LOGGER", lazy = true)
 //@Loguno.Logger(SupportedLoggers.Slf4j);
 public class PositiveCat extends Animal {
 
@@ -58,7 +58,7 @@ public class PositiveCat extends Animal {
         String k = "";
         try {
             int i1 = Integer.parseInt("1");
-        } catch (@Loguno("all is broken") NumberFormatException | NullPointerException e) {
+        } catch (@Loguno NumberFormatException | @Loguno NullPointerException e) {
             e.printStackTrace();
         }
         return k + xx;
@@ -108,7 +108,7 @@ public class PositiveCat extends Animal {
         }
     }
 
-    @Loguno.Logger
+    @Loguno.Logger(value = SupportedLoggers.Slf4j,name = "LOG007")
     private static   class RightLeg3{
         private String aa;
     }

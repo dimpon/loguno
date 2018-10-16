@@ -3,6 +3,7 @@ package org.loguno.processor;
 import com.google.auto.service.AutoService;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.util.Options;
+import org.loguno.Loguno;
 import org.loguno.processor.configuration.Configuration;
 import org.loguno.processor.configuration.ConfigurationImpl;
 import org.loguno.processor.configuration.ConfigurationKeys;
@@ -12,9 +13,12 @@ import org.loguno.processor.handlers.ClassContext;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @SupportedAnnotationTypes({"org.loguno.*"})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -64,7 +68,19 @@ public class LogunoProcessor extends AbstractProcessor {
             return false;
         }
 
-        Set<? extends Element> elements = roundEnvironment.getRootElements();
+
+        Set<? extends Element> elementsAnnotatedWith1 = roundEnvironment.getElementsAnnotatedWith(Loguno.class);
+        Set<TypeElement> elementsAnnotatedWith = (Set<TypeElement>)roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class);
+        List<NestingKind> collect = elementsAnnotatedWith.stream().map(typeElement -> typeElement.getNestingKind()).collect(Collectors.toList());
+
+
+        Set<TypeElement> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()
+                .map(o -> (TypeElement)o)
+                .filter(o -> o.getNestingKind()==NestingKind.TOP_LEVEL)
+                .collect(Collectors.toSet());
+
+        //todo send only annotated classes. it saves performance.
+        //Set<? extends Element> elements = roundEnvironment.getRootElements();
 
 
         try {

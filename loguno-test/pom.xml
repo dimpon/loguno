@@ -49,7 +49,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.25</version>
-            <scope>test</scope>
         </dependency>
 
 
@@ -90,6 +89,32 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>1.5.8.RELEASE</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>repackage</goal>
+                    </goals>
+                    <configuration>
+                        <classifier>spring-boot</classifier>
+                        <mainClass>
+                            org.loguno.test.HelloKitty
+                        </mainClass>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+
+
+    <finalName>kitty</finalName>
+    </build>
 
 
 </project>
