@@ -8,7 +8,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.LoggerFactory;
-import sun.misc.Unsafe;
+
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -26,7 +26,7 @@ public class PositiveCatTest {
     }*/
 
     @Test
-    public void testPositiveCat() {
+    public void testPositiveCat() throws Exception {
 
 
         HelloKitty k = new HelloKitty();
