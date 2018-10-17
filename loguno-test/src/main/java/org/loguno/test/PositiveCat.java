@@ -2,18 +2,15 @@ package org.loguno.test;
 
 
 import org.loguno.Loguno;
-import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.SupportedLoggers;
 
-import java.lang.reflect.Constructor;
 import java.util.Date;
-import java.util.zip.DataFormatException;
 
 /**
  * @author Dmitrii Ponomarev
  */
 //@Loguno.Logger(name="LOOGER",lazy = true)//(name = "LOGGER", lazy = true)
-//@Loguno.Logger(SupportedLoggers.Slf4j);
+//@Loguno.Logger(SupportedLoggers.SLF4J);
 public class PositiveCat extends Animal {
 
     private String ccc;
@@ -108,7 +105,7 @@ public class PositiveCat extends Animal {
         }
     }
 
-    @Loguno.Logger(value = SupportedLoggers.Slf4j,name = "LOG007")
+    @Loguno.Logger(value = SupportedLoggers.SLF4J,name = "LOG007")
     private static   class RightLeg3{
         private String aa;
     }

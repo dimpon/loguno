@@ -45,10 +45,10 @@ public class LogunoProcessor extends AbstractProcessor {
         this.visitor = new LogunoElementVisitor(javacProcessingEnvironment);
 
 
-        /*this.trees = Trees.instance(javacProcessingEnvironment);
+        /*this.trees = Trees.create(javacProcessingEnvironment);
         this.typeUtils = javacProcessingEnvironment.getTypeUtils();
         this.elementUtils = javacProcessingEnvironment.getElementUtils();
-        this.treeMaker = TreeMaker.instance(javacProcessingEnvironment.getContext());
+        this.treeMaker = TreeMaker.create(javacProcessingEnvironment.getContext());
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "LogunoProcessor.Init..." + Thread.currentThread());
 */
     }

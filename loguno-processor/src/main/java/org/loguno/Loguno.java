@@ -25,7 +25,7 @@ public @interface Loguno {
 	@Retention(RetentionPolicy.SOURCE)
 	@Target(TYPE)
 	@interface Logger {
-		SupportedLoggers value() default SupportedLoggers.Empty;
+		SupportedLoggers value() default SupportedLoggers.NONE;
 		String name() default "LOG";
 		boolean lazy() default false;
 	}

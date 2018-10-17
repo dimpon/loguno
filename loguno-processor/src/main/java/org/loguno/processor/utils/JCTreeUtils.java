@@ -3,6 +3,7 @@ package org.loguno.processor.utils;
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.Tree;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.ListBuffer;
@@ -11,19 +12,20 @@ import lombok.experimental.UtilityClass;
 import org.loguno.processor.configuration.Configuration;
 import org.loguno.processor.configuration.ConfigurationKey;
 import org.loguno.processor.configuration.ConfiguratorManager;
+import org.loguno.processor.handlers.AnnotationHandler;
 import org.loguno.processor.handlers.ClassContext;
+import org.loguno.processor.handlers.HandlersProvider;
+import org.loguno.processor.handlers.VoidAnnotation;
 import sun.reflect.annotation.AnnotationParser;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static org.loguno.processor.configuration.ConfigurationKeys.CLASS_PATTERN;
 import static org.loguno.processor.configuration.ConfigurationKeys.METHOD_PATTERN;
@@ -35,6 +37,32 @@ import static org.loguno.processor.configuration.ConfigurationKeys.METHOD_PATTER
 public class JCTreeUtils {
 
     public static final String REPEAT_PATTERN = "\\[(.*?)\\]";
+
+    public static VoidAnnotation VOID_ANN = (VoidAnnotation)AnnotationParser.annotationForMap(VoidAnnotation.class, Collections.emptyMap());
+
+    public <E> void findHandlersAndCall(AnnotationTree annotation, E element, ClassContext classContext) {
+
+        final HandlersProvider handlersProvider = HandlersProvider.instance();
+        Tree annotationType = annotation.getAnnotationType();
+        String className = annotationType.toString().replace(".", "$");
+        Optional<Class<? extends Annotation>> annClass = handlersProvider.getAnnotationClassByName(className);
+
+        if (annClass.isPresent()) {
+            Stream<? extends AnnotationHandler<?, E>> handlers = handlersProvider.getHandlersByElementAndAnnotation(annClass.get(), element);
+            Annotation annotationObj = JCTreeUtils.createAnnotationInstance(annotation, annClass.get());
+            handlers.forEach(handler -> {
+                handler.process(annotationObj, element, classContext);
+            });
+        }
+    }
+
+    public <E> void findHandlersAndCall(E element, ClassContext classContext) {
+        final HandlersProvider handlersProvider = HandlersProvider.instance();
+        Stream<? extends AnnotationHandler<?, E>> handlers = handlersProvider.getHandlersByElementAndAnnotation(VoidAnnotation.class, element);
+        handlers.forEach(handler -> {
+            handler.process(JCTreeUtils.VOID_ANN, element, classContext);
+        });
+    }
 
     public String getRepeatPart(String messagePattern) {
         Pattern p = Pattern.compile(REPEAT_PATTERN);

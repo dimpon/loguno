@@ -1,25 +1,14 @@
 package org.loguno.processor.handlers;
 
-import com.sun.source.tree.Tree;
 import org.loguno.Loguno;
 import com.sun.source.tree.ClassTree;
-import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Flags;
-import com.sun.tools.javac.code.Symtab;
-import com.sun.tools.javac.code.Types;
-import com.sun.tools.javac.model.JavacElements;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.TreeMaker;
-import com.sun.tools.javac.util.Context;
-import com.sun.tools.javac.util.Name;
-import com.sun.tools.javac.util.Names;
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.utils.JCLoggerBuilder;
 
 import javax.lang.model.element.*;
-import java.util.List;
-import java.util.Set;
 
 import static javax.lang.model.element.ElementKind.CLASS;
 import static javax.lang.model.element.NestingKind.MEMBER;
@@ -43,7 +32,7 @@ public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger
 
         SupportedLoggers loggerFramework = annotation.value();
 
-        if (loggerFramework == SupportedLoggers.Empty) {
+        if (loggerFramework == SupportedLoggers.NONE) {
             loggerFramework = conf.getProperty(ConfigurationKeys.LOGGING_FRAMEWORK_DEFAULT);
         }
 
@@ -84,7 +73,7 @@ public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger
 
         JCTree.JCClassDecl classDecl = (JCTree.JCClassDecl) classTree;
 
-        classDecl.defs = classDecl.defs.append(logVar1);
+        classDecl.defs = classDecl.defs.prepend(logVar1);
 
     }
 }

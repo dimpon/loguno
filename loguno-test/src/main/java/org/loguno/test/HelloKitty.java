@@ -2,6 +2,10 @@ package org.loguno.test;
 
 import org.loguno.Loguno;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
 /**
  * @author Dmitrii Ponomarev
  */
@@ -10,6 +14,7 @@ public class HelloKitty {
 
 	private String name;
 	private String owner;
+	private String result;
 
 	public String sayHello() {
 		return "hello";
@@ -20,7 +25,7 @@ public class HelloKitty {
 		return this;
 	}
 
-	//@Loguno
+	// @Loguno
 	public HelloKitty sayOwner(String owner) {
 		this.owner = owner;
 
@@ -30,17 +35,20 @@ public class HelloKitty {
 
 		try {
 			int i1 = Integer.parseInt("1");
-		} catch (@Loguno("number") NumberFormatException  e) {
+			Files.createDirectory(null, null);
+		} catch (NullPointerException | @Loguno("Num") NumberFormatException | @Loguno("IO") @Loguno IOException e) {
 			e.printStackTrace();
 		}
 
-		try {
-			int i1 = Integer.parseInt("aaa");
-		} catch (@Loguno("number is wrong") NumberFormatException | @Loguno("NPE") @Loguno.DEBUG NullPointerException  e) {
-			e.printStackTrace();
-		}
+		/*
+		 * try {
+		 * int i1 = Integer.parseInt("aaa");
+		 * } catch (@Loguno("number is wrong") NumberFormatException | @Loguno("NPE") @Loguno.DEBUG NullPointerException e) {
+		 * // e.printStackTrace();
+		 * }
+		 */
 
-		//@Loguno
+		// @Loguno
 		StringBuilder newName = new StringBuilder(name + " of " + this.owner);
 
 		for (int i = 0; i < 10; i++) {
@@ -49,7 +57,7 @@ public class HelloKitty {
 
 		int i = 5;
 
-		//@Loguno
+		// @Loguno
 		int s = i + 1;
 
 		return this;
