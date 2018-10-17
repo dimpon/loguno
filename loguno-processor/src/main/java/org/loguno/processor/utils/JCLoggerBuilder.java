@@ -10,14 +10,13 @@ import com.sun.tools.javac.util.Names;
 import lombok.Builder;
 import lombok.Singular;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Builder
 public class JCLoggerBuilder {
 
     @Singular
-    private List<Integer> modifiers = new ArrayList<>();
+    private List<Integer> modifiers;
 
     private final TreeMaker factory;
 

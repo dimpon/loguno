@@ -1,6 +1,5 @@
 package org.loguno.plugin;
 
-import com.google.auto.service.AutoService;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.Plugin;
 import com.sun.source.util.TaskEvent;
@@ -13,7 +12,6 @@ import com.sun.tools.javac.util.Log;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@AutoService(Plugin.class)
 public class LogunoPlugin implements Plugin {
 
     public static final String NAME = "Loguno";

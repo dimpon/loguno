@@ -12,63 +12,73 @@ import java.nio.file.Files;
 @Loguno.Logger
 public class HelloKitty {
 
-	private String name;
-	private String owner;
-	private String result;
+    private String name;
+    private String owner;
+    private String result;
 
-	public String sayHello() {
-		return "hello";
-	}
+    @Loguno
+    public String sayHello() {
+        return "hello";
+    }
 
-	public HelloKitty sayName(@Loguno String name) {
-		this.name = name;
-		return this;
-	}
+    public HelloKitty sayName(@Loguno String name) throws @Loguno IOException, @Loguno NumberFormatException {
 
-	// @Loguno
-	public HelloKitty sayOwner(String owner) {
-		this.owner = owner;
+        int i1 = Integer.parseInt("dsd");
+        Files.createDirectory(null, null);
 
-		if (this.owner.isEmpty()) {
-			this.owner = "na";
-		}
+        this.name = name;
+        return this;
+    }
 
-		try {
-			int i1 = Integer.parseInt("1");
-			Files.createDirectory(null, null);
-		} catch (NullPointerException | @Loguno("Num") NumberFormatException | @Loguno("IO") @Loguno IOException e) {
-			e.printStackTrace();
-		}
+    @Loguno
+    public HelloKitty sayOwner(String owner) {
+        this.owner = owner;
 
-		/*
-		 * try {
-		 * int i1 = Integer.parseInt("aaa");
-		 * } catch (@Loguno("number is wrong") NumberFormatException | @Loguno("NPE") @Loguno.DEBUG NullPointerException e) {
-		 * // e.printStackTrace();
-		 * }
-		 */
+        if (this.owner.isEmpty()) {
+            this.owner = "na";
+        }
 
-		// @Loguno
-		StringBuilder newName = new StringBuilder(name + " of " + this.owner);
+        try {
+            int i1 = Integer.parseInt("1");
+            Files.createDirectory(null, null);
+        } catch (NullPointerException | @Loguno("Num") NumberFormatException | @Loguno("IO") @Loguno IOException e) {
+            e.printStackTrace();
+        }
 
-		for (int i = 0; i < 10; i++) {
-			newName.append("a").append(i);
-		}
 
-		int i = 5;
+        try {
+            int i1 = Integer.parseInt("aaa");
+        } catch (@Loguno.DEBUG("number is wrong") NumberFormatException | @Loguno("NPE") @Loguno.DEBUG NullPointerException e) {
+            // e.printStackTrace();
+        }
 
-		// @Loguno
-		int s = i + 1;
 
-		return this;
-	}
+        @Loguno
+        @Loguno.INFO
+        @Loguno.DEBUG
+        @Loguno.WARN
+        @Loguno.TRACE
+        @Loguno.ERROR
+        StringBuilder newName = new StringBuilder(name + " of " + this.owner);
 
-	@Loguno
-	public static void main(String[] args) {
-		HelloKitty k = new HelloKitty();
-		k.sayHello();
-		k.sayName("Barsik")
-				.sayOwner("Vovochka");
-	}
+        for (int i = 0; i < 10; i++) {
+            newName.append("a").append(i);
+        }
+
+        int i = 5;
+
+        @Loguno.TRACE
+        int s = i + 1;
+
+        return this;
+    }
+
+    @Loguno
+    public static void main(String[] args) throws Exception {
+        HelloKitty k = new HelloKitty();
+        k.sayHello();
+        k.sayName("Barsik")
+                .sayOwner("Vovochka");
+    }
 
 }

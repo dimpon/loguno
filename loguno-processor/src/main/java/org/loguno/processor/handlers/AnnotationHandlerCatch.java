@@ -49,28 +49,8 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
                 .addParam(element.getParameter().getName().toString())
                 .create();
 
-        //JCTree.JCLiteral wholeMessage = factory.Literal(message);
-
-        //JCTree.JCLiteral paramName = factory.Literal(element.name.toString());
-
-        //JCTree.JCLiteral paramName = factory.Literal(element.param.toString());
-
-        //JCTree.JCIdent param = factory.Ident(element.param.name);
-
-
-
-       /* JCTree.JCMethodInvocation callInfoMethod = factory.Apply(List.<JCTree.JCExpression>nil(),
-                factory.Select(factory.Ident(elements.getName(loggerVariable)), elements.getName(logMethod)),
-                com.sun.tools.javac.util.List.<JCTree.JCExpression>of(wholeMessage,param));
-
-        JCTree.JCStatement callInfoMethodCall = factory.at(element.pos).Exec(callInfoMethod);
-*/
         JCTree.JCBlock body = element.getBlock();
 
-        //ListBuffer<JCTree.JCStatement> li = new ListBuffer<>();
-
         body.stats = body.stats.prepend(methodCall);
-
-
     }
 }

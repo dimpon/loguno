@@ -24,12 +24,12 @@
 
     <dependencies>
 
-        <dependency>
+      <!--  <dependency>
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service</artifactId>
             <version>1.0-rc2</version>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.reflections</groupId>
@@ -82,6 +82,16 @@
     </profiles>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/java</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -89,7 +99,14 @@
                     <version>3.8.0</version>
                     <configuration>
                         <target>1.8</target>
-                        <!--compilerArgument>-proc:none</compilerArgument-->
+                        <!--<compilerArgument>-proc:none</compilerArgument>-->
+                        <!--<compilerArgument>-processor lombok.launch.AnnotationProcessorHider$AnnotationProcessor</compilerArgument>-->
+                        <annotationProcessors>
+                            <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+                        </annotationProcessors>
+
+
+
                         <!-- TODO: Incorporate into this pom, rather than the caller <compilerArgument>-Xplugin:VisibilityPlugin</compilerArgument> -->
                     </configuration>
                 </plugin>

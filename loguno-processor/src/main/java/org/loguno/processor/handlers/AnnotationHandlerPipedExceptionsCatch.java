@@ -1,7 +1,6 @@
 package org.loguno.processor.handlers;
 
 import com.sun.source.tree.AnnotationTree;
-import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.CatchTree;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
@@ -15,7 +14,6 @@ import org.loguno.processor.utils.JCLogMethodBuilder;
 import org.loguno.processor.utils.JCTreeUtils;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,34 +21,32 @@ import java.util.Map;
 /**
  * @author Dmitrii Ponomarev
  */
-public abstract class AnnotationHandlerMultipleExceptionsCatch2<A extends Annotation, E> extends AnnotationHandlerBase<A, E> {
+public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation, E> extends AnnotationHandlerBase<A, E> {
 
-	public AnnotationHandlerMultipleExceptionsCatch2(JavacProcessingEnvironment environment) {
+	public AnnotationHandlerPipedExceptionsCatch(JavacProcessingEnvironment environment) {
 		super(environment);
 	}
 
 	@Handler
 	@Order
 	public static class AnnotationHandlerPipedExceptions
-			extends AnnotationHandlerMultipleExceptionsCatch2<VoidAnnotation, PipedExceptions> {
+			extends AnnotationHandlerPipedExceptionsCatch<VoidAnnotation, PipedExceptionsHolder> {
 
 		public AnnotationHandlerPipedExceptions(JavacProcessingEnvironment environment) {
 			super(environment);
 		}
 
 		@Override
-		public void processTree(VoidAnnotation annotation, PipedExceptions element, ClassContext classContext) {
+		public void processTree(VoidAnnotation annotation, PipedExceptionsHolder peHolder, ClassContext classContext) {
 
-
-			final String e = element.varName;
-			final CatchTree catchTree = element.element;
+			final String e = peHolder.varName;
+			final CatchTree catchTree = peHolder.element;
 			final JCTree.JCBlock block = (JCTree.JCBlock)catchTree.getBlock();
 
-			element.$exceptions.forEach((key, value) -> {
+			peHolder.$exceptions.forEach((key, value) -> {
 
 					if(value==null || value.isEmpty())
 						return;
-
 
 				final JCStatementHolder holder = JCStatementHolder.of()
 						.element(block)
@@ -60,19 +56,13 @@ public abstract class AnnotationHandlerMultipleExceptionsCatch2<A extends Annota
 					JCTreeUtils.findHandlersAndCall(ann,holder,classContext);
 				});
 
-
-
-
-
 				JCTree.JCStatement body;
 
 				if(holder.$logMethods.size()>1){
 					body = factory.at(block.pos()).Block(0,holder.$logMethods.toList());
 				}else {
 					body = holder.$logMethods.first();
-
 				}
-
 
 				JCTree.JCIdent except = factory.Ident(elements.getName(e));
 
@@ -82,17 +72,26 @@ public abstract class AnnotationHandlerMultipleExceptionsCatch2<A extends Annota
 				block.stats = block.stats.prepend(anIf);
 
 			});
-
-
-
-			// doRealJob(annotation.value(), method, element, classContext);
 		}
 	}
 
 	@Handler
 	@Order
-	public static class AnnotationHandlerLoguno
-			extends AnnotationHandlerMultipleExceptionsCatch2<Loguno, JCStatementHolder> {
+	public static class AnnotationHandlerDebug extends AnnotationHandlerPipedExceptionsCatch<Loguno.DEBUG, JCStatementHolder> {
+
+		public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
+
+		@Override
+		public void processTree(Loguno.DEBUG annotation, JCStatementHolder element, ClassContext classContext) {
+			doRealJob(annotation.value(), "debug", element, classContext);
+		}
+	}
+
+	@Handler
+	@Order
+	public static class AnnotationHandlerLoguno extends AnnotationHandlerPipedExceptionsCatch<Loguno, JCStatementHolder> {
 
 		public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {
 			super(environment);
@@ -124,25 +123,17 @@ public abstract class AnnotationHandlerMultipleExceptionsCatch2<A extends Annota
 				.create();
 
 		holder.add(methodCall);
-
-		/*JCTree.JCIdent except = factory.Ident(elements.getName(to.e));
-
-		JCTree.JCIf anIf = factory.at(to.element.pos())
-				.If(factory.Parens(factory.TypeTest(except, to.exceptionClass)), methodCall, null);
-
-		to.body.stats = to.body.stats.prepend(anIf);*/
-
 	}
 
 	@NoArgsConstructor(staticName = "of")
 	@Accessors(fluent = true, chain = true)
 	@Setter
-	public static class PipedExceptions {
+	public static class PipedExceptionsHolder {
 		private String varName;
 		private final Map<JCTree.JCExpression, List<? extends AnnotationTree>> $exceptions = new HashMap<>();
 		private CatchTree element;
 
-		public PipedExceptions putIfAbsentOneException(JCTree.JCExpression exception, List<? extends AnnotationTree> annotations) {
+		public PipedExceptionsHolder putIfAbsentOneException(JCTree.JCExpression exception, List<? extends AnnotationTree> annotations) {
 			this.$exceptions.putIfAbsent(exception, annotations);
 			return this;
 		}

@@ -1,6 +1,5 @@
 package org.loguno.processor;
 
-import com.google.auto.service.AutoService;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.util.Options;
 import org.loguno.Loguno;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 
 @SupportedAnnotationTypes({"org.loguno.*"})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@AutoService(Processor.class)
 public class LogunoProcessor extends AbstractProcessor {
 
     //LogunoScanner scanner = new LogunoScanner();
@@ -68,34 +66,20 @@ public class LogunoProcessor extends AbstractProcessor {
             return false;
         }
 
-
-        Set<? extends Element> elementsAnnotatedWith1 = roundEnvironment.getElementsAnnotatedWith(Loguno.class);
-        Set<TypeElement> elementsAnnotatedWith = (Set<TypeElement>)roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class);
-        List<NestingKind> collect = elementsAnnotatedWith.stream().map(typeElement -> typeElement.getNestingKind()).collect(Collectors.toList());
-
-
         Set<TypeElement> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()
                 .map(o -> (TypeElement)o)
                 .filter(o -> o.getNestingKind()==NestingKind.TOP_LEVEL)
                 .collect(Collectors.toSet());
 
-        //todo send only annotated classes. it saves performance.
-        //Set<? extends Element> elements = roundEnvironment.getRootElements();
-
 
         try {
             final ClassContext recorder = new ClassContext();
             elements.forEach(element -> {
-                //messager.printMessage(Diagnostic.Kind.NOTE, "Simple Name: "+element);
-                //System.out.println("Simple Name: " + element);
-
-
                 Void accept = element.accept(visitor, recorder);
 
                 // JCTree tree = (JCTree) trees.getTree(element);
                 //tree.accept(scanner);
                 //tree.accept(translator);
-                System.out.println("recorder="+recorder);
             });
         } catch (Exception e) {
             e.printStackTrace();

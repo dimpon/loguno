@@ -23,6 +23,78 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
         super(environment);
     }
 
+
+    @Handler
+    @Order
+    public static class AnnotationHandlerWarn extends AnnotationHandlerLocalVariable<Loguno.WARN, JCTree.JCVariableDecl> {
+
+        public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(Loguno.WARN annotation, JCTree.JCVariableDecl element, ClassContext classContext) {
+            doRealJob(annotation.value(), "warn", element, classContext);
+        }
+    }
+
+    @Handler
+    @Order
+    public static class AnnotationHandlerError extends AnnotationHandlerLocalVariable<Loguno.ERROR, JCTree.JCVariableDecl> {
+
+        public AnnotationHandlerError(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(Loguno.ERROR annotation, JCTree.JCVariableDecl element, ClassContext classContext) {
+            doRealJob(annotation.value(), "error", element, classContext);
+        }
+    }
+
+    @Handler
+    @Order
+    public static class AnnotationHandlerDebug extends AnnotationHandlerLocalVariable<Loguno.DEBUG, JCTree.JCVariableDecl> {
+
+        public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(Loguno.DEBUG annotation, JCTree.JCVariableDecl element, ClassContext classContext) {
+            doRealJob(annotation.value(), "debug", element, classContext);
+        }
+    }
+
+    /////////////////
+    @Handler
+    @Order
+    public static class AnnotationHandlerTrace extends AnnotationHandlerLocalVariable<Loguno.TRACE, JCTree.JCVariableDecl> {
+
+        public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(Loguno.TRACE annotation, JCTree.JCVariableDecl element, ClassContext classContext) {
+            doRealJob(annotation.value(), "trace", element, classContext);
+        }
+    }
+
+    @Handler
+    @Order
+    public static class AnnotationHandlerInfo extends AnnotationHandlerLocalVariable<Loguno.INFO, JCTree.JCVariableDecl> {
+
+        public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(Loguno.INFO annotation, JCTree.JCVariableDecl element, ClassContext classContext) {
+            doRealJob(annotation.value(), "info", element, classContext);
+        }
+    }
+
     @Handler
     @Order
     public static class AnnotationHandlerLoguno extends AnnotationHandlerLocalVariable<Loguno, JCTree.JCVariableDecl> {

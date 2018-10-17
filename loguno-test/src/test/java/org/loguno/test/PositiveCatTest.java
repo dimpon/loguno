@@ -8,6 +8,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.LoggerFactory;
+import sun.misc.Unsafe;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -18,6 +19,12 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(LoggerFactory.class)
 public class PositiveCatTest {
+
+   /* @Test(expected = SecurityException.class)
+    public void testSingletonGetter() throws Exception {
+        Unsafe.getUnsafe();
+    }*/
+
     @Test
     public void testPositiveCat() {
 

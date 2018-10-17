@@ -38,7 +38,7 @@ public class JCTreeUtils {
 
     public static final String REPEAT_PATTERN = "\\[(.*?)\\]";
 
-    public static VoidAnnotation VOID_ANN = (VoidAnnotation)AnnotationParser.annotationForMap(VoidAnnotation.class, Collections.emptyMap());
+    private static VoidAnnotation VOID_ANN = (VoidAnnotation)AnnotationParser.annotationForMap(VoidAnnotation.class, Collections.emptyMap());
 
     public <E> void findHandlersAndCall(AnnotationTree annotation, E element, ClassContext classContext) {
 
@@ -56,7 +56,7 @@ public class JCTreeUtils {
         }
     }
 
-    public <E> void findHandlersAndCall(E element, ClassContext classContext) {
+    public <E> void findVoidHandlersAndCall(E element, ClassContext classContext) {
         final HandlersProvider handlersProvider = HandlersProvider.instance();
         Stream<? extends AnnotationHandler<?, E>> handlers = handlersProvider.getHandlersByElementAndAnnotation(VoidAnnotation.class, element);
         handlers.forEach(handler -> {
