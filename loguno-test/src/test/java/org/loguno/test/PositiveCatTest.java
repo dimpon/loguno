@@ -29,11 +29,11 @@ public class PositiveCatTest {
     public void testPositiveCat() throws Exception {
 
 
-        HelloKitty k = new HelloKitty();
+        /*HelloKitty k = new HelloKitty();
 
         k.sayHello();
 
-        k.sayName("Barsik").sayOwner("Vovochka");
+        k.sayName("Barsik").sayOwner("Vovochka");*/
 
         //PositiveCat cat = new PositiveCat();
         //cat.sayIt("hello","Kitty");
