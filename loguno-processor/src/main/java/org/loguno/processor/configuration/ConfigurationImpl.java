@@ -18,8 +18,8 @@ public class ConfigurationImpl implements Configuration {
 
 	private static final String external = "loguno.properties";
 
-	public static String sourcepath;
-	public static String userdir;
+	public static String sourcepath="";
+	public static String userdir="";
 
 	// priority 3
 	private Properties properties = new Properties();
