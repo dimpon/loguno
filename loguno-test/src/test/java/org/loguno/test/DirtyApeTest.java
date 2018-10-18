@@ -31,10 +31,10 @@ public class DirtyApeTest {
         ape.hiApe(2);
 
         verify(mock, times(1))
-                .info("org.loguno.test.DirtyApe.<init>() is invoked.{}:{}", "a", "Gumpa");
+                .info("org.loguno.test.DirtyApe.<init> is invoked.{}:{}", "a", "Gumpa");
 
         verify(mock, times(1))
-                .info("org.loguno.test.DirtyApe.hiApe() is invoked with success. {}:{}", "i", 2);
+                .info("org.loguno.test.DirtyApe.hiApe is invoked.{}:{}", "i", 2);
     }
 
     private static void setFinalStatic(Field field, Object newValue) throws Exception {
