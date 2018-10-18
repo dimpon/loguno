@@ -23,21 +23,18 @@ public class DirtyApeTest {
         //Arrange
         Field log = DirtyApe.class.getDeclaredField("LOG");
         Logger mock = mock(Logger.class);
-        setFinalStatic(log,mock);
+        setFinalStatic(log, mock);
 
         //Act
         DirtyApe ape = new DirtyApe("Gumpa");
 
         ape.hiApe(2);
 
-        //Assert
-        verify(mock, times(2));
-        /*
-
-                .info(eq("org.loguno.test.DirtyApe.<init>() is invoked with success. {}:{}"), eq(<Object[]>any()));
+        verify(mock, times(1))
+                .info("org.loguno.test.DirtyApe.<init>() is invoked.{}:{}", "a", "Gumpa");
 
         verify(mock, times(1))
-                .info(eq("org.loguno.test.DirtyApe.hiApe() is invoked with success. {}:{}"), eq("i"), eq(2));*/
+                .info("org.loguno.test.DirtyApe.hiApe() is invoked with success. {}:{}", "i", 2);
     }
 
     private static void setFinalStatic(Field field, Object newValue) throws Exception {
