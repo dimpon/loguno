@@ -11,6 +11,7 @@ import java.lang.reflect.Modifier;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.eq;
 
 public class DirtyApeTest {
 
@@ -30,10 +31,10 @@ public class DirtyApeTest {
 
         //Assert
         verify(mock, times(1))
-                .info("org.loguno.test.DirtyApe.<init>() is invoked with success. {}:{}", "a", "Gumpa");
+                .info(eq("org.loguno.test.DirtyApe.<init>() is invoked with success. {}:{}"), eq("a"), eq("Gumpa"));
 
         verify(mock, times(1))
-                .info("org.loguno.test.DirtyApe.hiApe() is invoked with success. {}:{}", "i", 2);
+                .info(eq("org.loguno.test.DirtyApe.hiApe() is invoked with success. {}:{}"), eq("i"), eq(2));
     }
 
     static void setFinalStatic(Field field, Object newValue) throws Exception {
