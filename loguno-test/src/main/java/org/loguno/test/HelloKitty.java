@@ -9,7 +9,7 @@ import java.nio.file.Files;
 /**
  * @author Dmitrii Ponomarev
  */
-@Loguno.Logger
+//@Loguno.Logger
 public class HelloKitty {
 
     private String name;
