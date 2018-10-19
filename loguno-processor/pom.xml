@@ -47,10 +47,10 @@
         <dependency>
             <groupId>jdk.tools</groupId>
             <artifactId>jdk.tools</artifactId>
-            <version>jdk</version>
+            <version>jdk1.8.0</version>
             <scope>system</scope>
-            <systemPath>${java.home}/../lib/tools.jar</systemPath>
-            <!--<systemPath>${toolsjar}</systemPath>-->
+            <!-- 			<systemPath>${java.home}/../lib/tools.jar</systemPath> -->
+            <systemPath>${toolsjar}</systemPath>
         </dependency>
 
     </dependencies>
