@@ -2,9 +2,13 @@ package org.loguno.processor;
 
 import com.sun.source.tree.MethodTree;
 import com.sun.source.util.Trees;
+import org.loguno.Loguno;
+import org.loguno.processor.configuration.ConfigurationKeys;
+import org.loguno.processor.configuration.ConfiguratorManager;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+import org.loguno.processor.handlers.SupportedLoggers;
 
 import javax.lang.model.element.*;
 import javax.lang.model.util.ElementScanner8;
@@ -23,7 +27,7 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
 
     @Override
     public Void visitPackage(PackageElement e, ClassContext recorder) {
-        processHandlers(e, recorder);
+        //processHandlers(e, recorder);
         return super.visitPackage(e, recorder);
     }
 
@@ -31,15 +35,40 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
     public Void visitType(TypeElement e, ClassContext classContext) {
 
         classContext.getClasses().addLast(e.getQualifiedName().toString());
+        addLoggerToClassContext(e, classContext);
 
         try {
             processHandlers(e, classContext);
             return super.visitType(e, classContext);
         } finally {
+            removeLoggerFromClassContext(e, classContext);
             classContext.getClasses().removeLast();
-            if (classContext.getLoggers().size() > 0)
-                classContext.getLoggers().removeLast();
         }
+    }
+
+    private void addLoggerToClassContext(TypeElement e, ClassContext classContext) {
+
+        Loguno.Logger annotation = e.getAnnotation(Loguno.Logger.class);
+        if (annotation == null)
+            return;
+
+        SupportedLoggers loggerFramework = annotation.value();
+
+        if (loggerFramework == SupportedLoggers.NONE) {
+            loggerFramework = ConfiguratorManager.getInstance().getConfiguration().getProperty(ConfigurationKeys.LOGGING_FRAMEWORK_DEFAULT);
+        }
+
+        ClassContext.LoggerInfo currentLogger = ClassContext.LoggerInfo.of(loggerFramework, annotation.name(), annotation.lazy());
+        classContext.getLoggers().addLast(currentLogger);
+
+    }
+
+    private void removeLoggerFromClassContext(TypeElement e, ClassContext classContext) {
+        Loguno.Logger annotation = e.getAnnotation(Loguno.Logger.class);
+        if (annotation == null)
+            return;
+
+        classContext.getLoggers().removeLast();
     }
 
     @Override
@@ -59,9 +88,12 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
             Trees trees = Trees.instance(environment);
             MethodTree method = trees.getTree(e);
 
-            method.accept(new LogunoMethodVisitor(handlersProvider), classContext);
+            //interface
+            //method.getBody()==null;
 
-            method.getBody().accept(new LogunoMethodBodyVisitor(handlersProvider), classContext);
+            LogunoMethodBodyVisitor visitor = new LogunoMethodBodyVisitor(handlersProvider);
+            visitor.scan(method, classContext);
+
 
             return super.visitExecutable(e, classContext);
         } finally {
@@ -72,7 +104,7 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
     @Override
     public Void visitTypeParameter(TypeParameterElement e, ClassContext recorder) {
         // catches class fields
-        processHandlers(e, recorder);
+        //processHandlers(e, recorder);
         return super.visitTypeParameter(e, recorder);
     }
 

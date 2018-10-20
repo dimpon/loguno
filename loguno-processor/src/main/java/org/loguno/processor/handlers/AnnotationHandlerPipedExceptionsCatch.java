@@ -91,6 +91,62 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
 
 	@Handler
 	@Order
+	public static class AnnotationHandlerInfo extends AnnotationHandlerPipedExceptionsCatch<Loguno.INFO, JCStatementHolder> {
+
+		public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
+
+		@Override
+		public void processTree(Loguno.INFO annotation, JCStatementHolder element, ClassContext classContext) {
+			doRealJob(annotation.value(), "info", element, classContext);
+		}
+	}
+
+	@Handler
+	@Order
+	public static class AnnotationHandlerTrace extends AnnotationHandlerPipedExceptionsCatch<Loguno.TRACE, JCStatementHolder> {
+
+		public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
+
+		@Override
+		public void processTree(Loguno.TRACE annotation, JCStatementHolder element, ClassContext classContext) {
+			doRealJob(annotation.value(), "trace", element, classContext);
+		}
+	}
+
+	@Handler
+	@Order
+	public static class AnnotationHandlerWarn extends AnnotationHandlerPipedExceptionsCatch<Loguno.WARN, JCStatementHolder> {
+
+		public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
+
+		@Override
+		public void processTree(Loguno.WARN annotation, JCStatementHolder element, ClassContext classContext) {
+			doRealJob(annotation.value(), "warn", element, classContext);
+		}
+	}
+
+	@Handler
+	@Order
+	public static class AnnotationHandlerError extends AnnotationHandlerPipedExceptionsCatch<Loguno.ERROR, JCStatementHolder> {
+
+		public AnnotationHandlerError(JavacProcessingEnvironment environment) {
+			super(environment);
+		}
+
+		@Override
+		public void processTree(Loguno.ERROR annotation, JCStatementHolder element, ClassContext classContext) {
+			doRealJob(annotation.value(), "error", element, classContext);
+		}
+	}
+
+	@Handler
+	@Order
 	public static class AnnotationHandlerLoguno extends AnnotationHandlerPipedExceptionsCatch<Loguno, JCStatementHolder> {
 
 		public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {

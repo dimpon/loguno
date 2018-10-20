@@ -30,14 +30,7 @@ public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger
     @Override
     public void processTree(Loguno.Logger annotation, TypeElement typeElement, ClassContext classContext) {
 
-        SupportedLoggers loggerFramework = annotation.value();
-
-        if (loggerFramework == SupportedLoggers.NONE) {
-            loggerFramework = conf.getProperty(ConfigurationKeys.LOGGING_FRAMEWORK_DEFAULT);
-        }
-
-        ClassContext.LoggerInfo currentLogger = ClassContext.LoggerInfo.of(loggerFramework, annotation.name(), annotation.lazy());
-        classContext.getLoggers().addLast(currentLogger);
+        ClassContext.LoggerInfo currentLogger = classContext.getLoggers().getLast();
 
         ////////////////////////////////
 

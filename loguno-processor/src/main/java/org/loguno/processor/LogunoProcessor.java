@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class LogunoProcessor extends AbstractProcessor {
 
     //LogunoScanner scanner = new LogunoScanner();
-    private LogunoElementVisitor visitor;
+
     //LogunoTranslator translator = new LogunoTranslator();
     private JavacProcessingEnvironment javacProcessingEnvironment;
 
@@ -40,7 +40,7 @@ public class LogunoProcessor extends AbstractProcessor {
         ConfigurationImpl.userdir = userdir;
 
 
-        this.visitor = new LogunoElementVisitor(javacProcessingEnvironment);
+
 
 
         /*this.trees = Trees.create(javacProcessingEnvironment);
@@ -59,20 +59,34 @@ public class LogunoProcessor extends AbstractProcessor {
         Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
         Boolean enable = conf.getProperty(ConfigurationKeys.ENABLE);
 
-        if(!enable)
+        if (!enable)
             return true;
 
         if (annotations.isEmpty()) {
             return false;
         }
 
+        Set<? extends Element> rootElements = roundEnvironment.getRootElements();
+
+        rootElements.forEach(o -> {
+            TypeElement e =((TypeElement) o);
+            NestingKind nestingKind = e.getNestingKind();
+            Loguno.Logger a = e.getAnnotation(Loguno.Logger.class);
+            System.out.printf("");
+        });
+
+        Set<? extends Element> elementsAnnotatedWith = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class);
+
+
+
         Set<TypeElement> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()
-                .map(o -> (TypeElement)o)
-                .filter(o -> o.getNestingKind()==NestingKind.TOP_LEVEL)
+                .map(o -> (TypeElement) o)
+                .filter(o -> o.getNestingKind() == NestingKind.TOP_LEVEL)
                 .collect(Collectors.toSet());
 
 
         try {
+            final LogunoElementVisitor visitor = new LogunoElementVisitor(javacProcessingEnvironment);
             final ClassContext recorder = new ClassContext();
             elements.forEach(element -> {
                 Void accept = element.accept(visitor, recorder);
@@ -83,6 +97,7 @@ public class LogunoProcessor extends AbstractProcessor {
             });
         } catch (Exception e) {
             e.printStackTrace();
+            javacProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
         }
 
         //processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());//crash everything
@@ -92,7 +107,7 @@ public class LogunoProcessor extends AbstractProcessor {
         }*/
 
         long end = System.currentTimeMillis();
-        System.out.println("exec time, Millis:"+(end-start));
+        System.out.println("exec time, Millis:" + (end - start));
 
         return true;
     }
