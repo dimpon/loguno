@@ -5,6 +5,7 @@ import com.sun.source.tree.CatchTree;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.ListBuffer;
+import com.sun.tools.javac.util.Pair;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -174,8 +175,8 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
 				.loggerName(loggerVariable)
 				.logMethod(logMethod)
 				.message(message)
+				.param(Pair.of(JCLogMethodBuilder.ParamType.VAR,holder.exceptionName))
 				.build()
-				.addParam(holder.exceptionName)
 				.create();
 
 		holder.add(methodCall);

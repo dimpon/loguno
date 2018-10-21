@@ -4,6 +4,7 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
+import com.sun.tools.javac.util.Pair;
 import org.loguno.Loguno;
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.utils.JCLogMethodBuilder;
@@ -124,8 +125,8 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
                 .loggerName(loggerVariable)
                 .logMethod(logMethod)
                 .message(message)
+                .param(Pair.of(JCLogMethodBuilder.ParamType.PAIR, element.name.toString()))
                 .build()
-                .addParamPair(element.name.toString())
                 .create();
 
         JCTree.JCBlock body = (JCTree.JCBlock) classContext.getBlocks().getLast();
@@ -138,7 +139,7 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
                 li.append(methodCall);
         });
 
-        body.stats =  li.toList();
+        body.stats = li.toList();
 
     }
 }

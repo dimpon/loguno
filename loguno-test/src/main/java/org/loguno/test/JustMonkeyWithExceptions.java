@@ -19,35 +19,83 @@ public class JustMonkeyWithExceptions extends Animal {
         super(name);
     }
 
-    public void veryDayLife() {
+    public static JustMonkeyWithExceptions of(String name){
+        return new JustMonkeyWithExceptions(name);
+    }
 
-        /*try {
+    public void day1() {
+
+        try {
+            jump();
+            eat();
+            teasePython();
+        } catch (@Loguno.WARN("Monkey is hungry") @Loguno NoBananasException |
+                @Loguno.TRACE @Loguno.ERROR("Monkey is killed") CaughtByPythonException e) {
+
+        } catch (@Loguno.INFO("Monkey hurt") @Loguno.WARN FallDownException e1) {
+        }
+
+    }
+
+    public void day2() {
+        try {
+            jump();
+            eat();
+            teasePython();
+        } catch (@Loguno.INFO("Monkey gets hurt") @Loguno FallDownException e) {
+
+        } catch (@Loguno.WARN("Monkey is hungry") NoBananasException e) {
+
+        } catch (@Loguno.ERROR("Monkey is killed") @Loguno.TRACE CaughtByPythonException e) {
+
+        }
+    }
+
+    public void day3() {
+        try {
             jump();
             //eat();
             //teasePython();
         } catch (@Loguno.INFO("monkey gets hurt") FallDownException e) {
-            System.out.printf("");
+
+        }
+    }
+
+    public void dayZ() {
+
+        try {
+            jump();
+            //eat();
+            //teasePython();
+        } catch (@Loguno.INFO("monkey gets hurt") FallDownException e) {
+            try {
+                System.out.printf("poor monkey");
+            } catch (@Loguno.INFO Exception e1) {
+
+            }
         }
 
         try {
             jump();
             eat();
             teasePython();
-        } catch (@Loguno.INFO("Monkey gets hurt") FallDownException e) {
-            System.out.printf("");
+        } catch (@Loguno.INFO("Monkey gets hurt") @Loguno FallDownException e) {
+
         } catch (@Loguno.WARN("Monkey is hungry") NoBananasException e) {
-            System.out.printf("");
-        } catch (@Loguno.ERROR("Monkey is killed") CaughtByPythonException e) {
-            System.out.printf("");
-        }*/
+
+        } catch (@Loguno.ERROR("Monkey is killed") @Loguno.TRACE CaughtByPythonException e) {
+
+        }
 
         try {
             jump();
             eat();
             teasePython();
-        } catch (@Loguno.WARN("Monkey is hungry") @Loguno NoBananasException | @Loguno.TRACE @Loguno.ERROR("Monkey is killed") CaughtByPythonException e) {
-            System.out.printf("");
-        }catch (@Loguno.INFO("Monkey hurt") @Loguno.WARN FallDownException e1){}
+        } catch (@Loguno.WARN("Monkey is hungry") @Loguno NoBananasException |
+                @Loguno.TRACE @Loguno.ERROR("Monkey is killed") CaughtByPythonException e) {
+
+        } catch (@Loguno.INFO("Monkey hurt") @Loguno.WARN FallDownException e1) {
+        }
 
     }
 
@@ -78,24 +126,10 @@ public class JustMonkeyWithExceptions extends Animal {
         return this;
     }
 
-    @Loguno
+    //@Loguno.Logger
     @FunctionalInterface
     interface MonkeyAction<E extends Throwable> {
         void doSmth() throws E;
-
-        @Loguno
-        default void nono(){
-            try {
-                doSmth();
-            } catch (@Loguno Throwable e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Loguno
-        static String heyBro(String x){
-            return x;
-        }
     }
 
 }

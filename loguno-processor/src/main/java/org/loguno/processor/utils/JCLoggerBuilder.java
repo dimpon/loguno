@@ -1,7 +1,6 @@
 package org.loguno.processor.utils;
 
 import com.sun.source.tree.ClassTree;
-import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.model.JavacElements;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeMaker;
@@ -16,7 +15,7 @@ import java.util.List;
 public class JCLoggerBuilder {
 
     @Singular
-    private List<Integer> modifiers;
+    private final List<Integer> modifiers;
 
     private final TreeMaker factory;
 

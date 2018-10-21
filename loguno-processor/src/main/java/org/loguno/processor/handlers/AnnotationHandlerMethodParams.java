@@ -6,6 +6,7 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
+import com.sun.tools.javac.util.Pair;
 import org.loguno.Loguno;
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.utils.JCLogMethodBuilder;
@@ -61,8 +62,8 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
                 .loggerName(loggerVariable)
                 .logMethod(logMethod)
                 .message(message)
+                .param(Pair.of(JCLogMethodBuilder.ParamType.PAIR, elementTree.getName().toString()))
                 .build()
-                .addParamPair(elementTree.getName().toString())
                 .create();
 
         ExecutableElement methodElement = (ExecutableElement) element.getEnclosingElement();
@@ -71,7 +72,7 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
 
         JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
 
-        body.stats = JCTreeUtils.generateNewMethodBody(methodElement, trees,methodCall);
+        body.stats = JCTreeUtils.generateNewMethodBody(methodElement, trees, methodCall);
 
 
         /*if (JCTreeUtils.isMethodConstructorWithSuper(methodElement, trees)) {

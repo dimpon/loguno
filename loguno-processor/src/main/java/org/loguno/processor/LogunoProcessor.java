@@ -84,18 +84,18 @@ public class LogunoProcessor extends AbstractProcessor {
                 .filter(o -> o.getNestingKind() == NestingKind.TOP_LEVEL)
                 .collect(Collectors.toSet());
 
-
+        final ClassContext classContext = new ClassContext();
+        final LogunoElementVisitor visitor = new LogunoElementVisitor(javacProcessingEnvironment);
         try {
-            final LogunoElementVisitor visitor = new LogunoElementVisitor(javacProcessingEnvironment);
-            final ClassContext recorder = new ClassContext();
             elements.forEach(element -> {
-                Void accept = element.accept(visitor, recorder);
+                Void accept = element.accept(visitor, classContext);
 
                 // JCTree tree = (JCTree) trees.getTree(element);
                 //tree.accept(scanner);
                 //tree.accept(translator);
             });
         } catch (Exception e) {
+            System.out.println(classContext.toString());
             e.printStackTrace();
             javacProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
         }

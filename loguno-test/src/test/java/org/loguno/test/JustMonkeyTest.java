@@ -22,27 +22,29 @@ public class JustMonkeyTest {
         //Arrange
         Field log = JustMonkey.class.getDeclaredField("LOG");
         Logger mock = mock(Logger.class);
-        setFinalStatic(log, mock);
+        Utils.setFinalStatic(log, mock);
 
         //Act
         JustMonkey ape = new JustMonkey("Gumpa");
 
-        ape.hiApe(2);
-
+        //Assert
         verify(mock, times(1))
                 .info("org.loguno.test.JustMonkey.<init> is invoked.{}:{}", "a", "Gumpa");
 
         verify(mock, times(1))
+                .info("org.loguno.test.JustMonkey.<init> method param {}={}", "a", "Gumpa");
+
+        ape.hiApe(2);
+
+        verify(mock, times(1))
                 .info("org.loguno.test.JustMonkey.hiApe is invoked.{}:{}", "i", 2);
+
+        verify(mock, times(1))
+                .info("local variable {}={}", "u", 4);
+
     }
 
-    private static void setFinalStatic(Field field, Object newValue) throws Exception {
-        field.setAccessible(true);
 
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
-        field.set(null, newValue);
-    }
+
 }

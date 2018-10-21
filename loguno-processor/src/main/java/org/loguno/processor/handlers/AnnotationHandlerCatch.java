@@ -3,6 +3,7 @@ package org.loguno.processor.handlers;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.List;
+import com.sun.tools.javac.util.Pair;
 import org.loguno.Loguno;
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.utils.JCLogMethodBuilder;
@@ -121,8 +122,8 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
                 .loggerName(loggerVariable)
                 .logMethod(logMethod)
                 .message(message)
+                .param(Pair.of(JCLogMethodBuilder.ParamType.VAR,element.getParameter().getName().toString()))
                 .build()
-                .addParam(element.getParameter().getName().toString())
                 .create();
 
         JCTree.JCBlock body = element.getBlock();

@@ -1,6 +1,7 @@
 package org.loguno.processor.handlers;
 
 import com.sun.tools.javac.util.ListBuffer;
+import com.sun.tools.javac.util.Pair;
 import org.loguno.Loguno;
 
 import org.loguno.processor.configuration.ConfigurationKeys;
@@ -138,12 +139,10 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
                 .loggerName(loggerVariable)
                 .logMethod(logMethod)
                 .message(message)
+                .params(methodTree.getParameters().stream()
+                        .map(o -> Pair.of(JCLogMethodBuilder.ParamType.PAIR, o.getName().toString()))
+                        .collect(Collectors.toList()))
                 .build();
-
-
-        methodTree.getParameters().forEach(o -> {
-            builder.addParamPair(o.getName().toString());
-        });
 
 
         JCTree.JCStatement methodCall = builder.create();
