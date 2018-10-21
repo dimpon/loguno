@@ -18,14 +18,14 @@ import static org.loguno.processor.utils.JCTreeUtils.*;
  * @author Dmitrii Ponomarev
  */
 @AllArgsConstructor
-public class LogunoMethodBodyVisitor extends TreeScanner<Void, ClassContext> {
+public class LogunoMethodVisitor extends TreeScanner<Void, ClassContext> {
 
     // private final JavacProcessingEnvironment environment;
     private final HandlersProvider handlersProvider;
 
     @Override
     public Void visitVariable(VariableTree variableTree, ClassContext classContext) {
-//sym.owner = MethodSymbol
+        //sym.owner = MethodSymbol
         List<? extends AnnotationTree> variableAnnotations = variableTree.getModifiers().getAnnotations();
         variableAnnotations.forEach(annotation -> {
             findHandlersAndCall(annotation, variableTree, classContext);
@@ -61,7 +61,6 @@ public class LogunoMethodBodyVisitor extends TreeScanner<Void, ClassContext> {
 
     @Override
     public Void visitReturn(ReturnTree var1, ClassContext var2) {
-
         return super.visitReturn(var1, var2);
     }
 
@@ -69,9 +68,9 @@ public class LogunoMethodBodyVisitor extends TreeScanner<Void, ClassContext> {
     @Override
     public Void visitCatch(CatchTree catchBlock, ClassContext classContext) {
 
-
         Tree.Kind kind = catchBlock.getParameter().getType().getKind();
 
+        //normal catch
         if (kind == Tree.Kind.IDENTIFIER) {
             List<? extends AnnotationTree> variableAnnotations = catchBlock.getParameter().getModifiers().getAnnotations();
             variableAnnotations.forEach(annotation -> {
@@ -79,7 +78,7 @@ public class LogunoMethodBodyVisitor extends TreeScanner<Void, ClassContext> {
             });
         }
 
-
+        //catch with piped exceptions
         if (kind == Tree.Kind.UNION_TYPE) {
             com.sun.tools.javac.util.List<JCTree.JCExpression> alternatives = ((JCTree.JCTypeUnion) catchBlock.getParameter().getType())
                     .getTypeAlternatives();
@@ -104,10 +103,10 @@ public class LogunoMethodBodyVisitor extends TreeScanner<Void, ClassContext> {
             findVoidHandlersAndCall(pipedExceptions, classContext);
         }
 
-        return this.visitCatchWIthoutParam(catchBlock, classContext);
+        return this.visitCatchWithoutParam(catchBlock, classContext);
     }
 
-    public Void visitCatchWIthoutParam(CatchTree var1, ClassContext var2) {
+    public Void visitCatchWithoutParam(CatchTree var1, ClassContext var2) {
         //Object var3 = this.scan((Tree)var1.getParameter(), var2);
         Void var3 = this.scan(var1.getBlock(), var2);
         return var3;

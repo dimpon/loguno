@@ -5,7 +5,6 @@ import org.loguno.test.exceptions.CaughtByPythonException;
 import org.loguno.test.exceptions.FallDownException;
 import org.loguno.test.exceptions.NoBananasException;
 
-import java.util.function.Function;
 
 @Loguno.Logger
 public class JustMonkeyWithExceptions extends Animal {
@@ -32,7 +31,7 @@ public class JustMonkeyWithExceptions extends Animal {
         } catch (@Loguno.WARN("Monkey is hungry") @Loguno NoBananasException |
                 @Loguno.TRACE @Loguno.ERROR("Monkey is killed") CaughtByPythonException e) {
 
-        } catch (@Loguno.INFO("Monkey hurt") @Loguno.WARN FallDownException e1) {
+        } catch (@Loguno.INFO("Monkey get hurt") @Loguno.WARN FallDownException e1) {
         }
 
     }
@@ -98,12 +97,25 @@ public class JustMonkeyWithExceptions extends Animal {
         }
 
     }
+    public void dayK() throws @Loguno @Loguno.WARN("i need a doctor") FallDownException, @Loguno.WARN("i'm starving") @Loguno NoBananasException, @Loguno.INFO("RIP") CaughtByPythonException {
+        jump();
+        eat();
+        teasePython();
+    }
 
     private void jump() throws FallDownException {
         jump.doSmth();
     }
 
-    private void eat() throws NoBananasException {
+    private void eat() throws @Loguno NoBananasException {
+        eat.doSmth();
+    }
+
+    @Loguno
+    private void eat(@Loguno String animal) throws @Loguno NoBananasException {
+        final String a = "a";
+        @Loguno
+        final String b = "b";
         eat.doSmth();
     }
 

@@ -6,6 +6,7 @@ import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Pair;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -59,7 +60,9 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
 
 				JCTree.JCStatement body;
 
-				if(holder.$logMethods.size()>1){
+				if(holder.$logMethods.size()==0){
+					body = null;
+				}else if(holder.$logMethods.size()>1){
 					body = factory.at(block.pos()).Block(0,holder.$logMethods.toList());
 				}else {
 					body = holder.$logMethods.first();
@@ -199,6 +202,7 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
 	@NoArgsConstructor(staticName = "of")
 	@Accessors(fluent = true, chain = true)
 	@Setter
+	@Getter
 	public static class JCStatementHolder {
 		private JCTree element;
 		private String exceptionName;

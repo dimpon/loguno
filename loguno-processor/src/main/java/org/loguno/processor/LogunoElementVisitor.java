@@ -84,15 +84,17 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
         classContext.getMethods().addLast(e.getSimpleName().toString());
 
         try {
-            processHandlers(e, classContext);
+
             Trees trees = Trees.instance(environment);
             MethodTree method = trees.getTree(e);
 
             //interface
             //method.getBody()==null;
 
-            LogunoMethodBodyVisitor visitor = new LogunoMethodBodyVisitor(handlersProvider);
+            LogunoMethodVisitor visitor = new LogunoMethodVisitor(handlersProvider);
             visitor.scan(method, classContext);
+
+            processHandlers(e, classContext);
 
 
             return super.visitExecutable(e, classContext);

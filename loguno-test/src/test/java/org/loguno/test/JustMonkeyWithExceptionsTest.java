@@ -1,6 +1,8 @@
 package org.loguno.test;
 
 import org.junit.jupiter.api.Test;
+
+import org.loguno.test.exceptions.CaughtByPythonException;
 import org.loguno.test.exceptions.FallDownException;
 import org.loguno.test.exceptions.NoBananasException;
 import org.slf4j.Logger;
@@ -25,7 +27,7 @@ public class JustMonkeyWithExceptionsTest {
     }
 
     @Test
-    public void testDayFallDown() throws Exception {
+    public void testDay1FallDown() throws Exception {
 
         //Arrange
         Logger mock = setLogger(JustMonkeyWithExceptions.class);
@@ -44,15 +46,15 @@ public class JustMonkeyWithExceptionsTest {
 
         //Assert
         verify(mock, times(1))
-                .warn(eq("Exception is caught in org.loguno.test.JustMonkeyWithExceptions.day1."), any(FallDownException.class));
+                .warn(eq("org.loguno.test.JustMonkeyWithExceptions.day1 Exception is caught."), any(FallDownException.class));
 
         verify(mock, times(1))
-                .info(eq("Monkey hurt"), any(FallDownException.class));
+                .info(eq("Monkey get hurt"), any(FallDownException.class));
 
     }
 
     @Test
-    public void testDayNoBanana() throws Exception {
+    public void testDay1NoBanana() throws Exception {
 
         //Arrange
         Logger mock = setLogger(JustMonkeyWithExceptions.class);
@@ -71,10 +73,38 @@ public class JustMonkeyWithExceptionsTest {
 
         //Assert
         verify(mock, times(1))
-                .error(eq("Exception is caught in org.loguno.test.JustMonkeyWithExceptions.day1."), any(NoBananasException.class));
+                .error(eq("org.loguno.test.JustMonkeyWithExceptions.day1 Exception is caught."), any(NoBananasException.class));
 
         verify(mock, times(1))
                 .warn(eq("Monkey is hungry"), any(NoBananasException.class));
+
+    }
+
+    @Test
+    public void testDay1CaughtByPython() throws Exception {
+
+        //Arrange
+        Logger mock = setLogger(JustMonkeyWithExceptions.class);
+
+        JustMonkeyWithExceptions monkey = JustMonkeyWithExceptions.of("Brikhead")
+                .setEat(() -> {
+
+                })
+                .setJump(() -> {
+                })
+                .setTease(() -> {
+                    throw new CaughtByPythonException();
+                });
+
+        //Act
+        monkey.day1();
+
+        //Assert
+        verify(mock, times(1))
+                .error(eq("Monkey is killed"), any(CaughtByPythonException.class));
+
+        verify(mock, times(1))
+                .trace(eq("org.loguno.test.JustMonkeyWithExceptions.day1 Exception is caught."), any(CaughtByPythonException.class));
 
     }
 }

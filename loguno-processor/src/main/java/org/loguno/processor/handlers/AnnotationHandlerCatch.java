@@ -107,12 +107,7 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
 
         String message = JCTreeUtils.message(value, ConfigurationKeys.CATCH_MESSAGE_PATTERN_DEFAULT, classContext);
 
-        String loggerVariable = null;
-        try {
-            loggerVariable = classContext.getLoggers().getLast().getLoggerName();
-        } catch (NoSuchElementException e) {
-            throw e;
-        }
+        String loggerVariable  = classContext.getLoggers().getLast().getLoggerName();
 
         JCTree.JCStatement methodCall = JCLogMethodBuilder.builder()
                 .factory(factory)

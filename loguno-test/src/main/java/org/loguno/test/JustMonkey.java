@@ -7,7 +7,7 @@ public class JustMonkey extends Animal {
 
 
     @Loguno
-    public JustMonkey(@Loguno String a) {
+    public JustMonkey(@Loguno String a, String b) {
         super(a);
     }
 

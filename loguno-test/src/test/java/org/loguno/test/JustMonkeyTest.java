@@ -25,26 +25,21 @@ public class JustMonkeyTest {
         Utils.setFinalStatic(log, mock);
 
         //Act
-        JustMonkey ape = new JustMonkey("Gumpa");
+        JustMonkey ape = new JustMonkey("Gumpa","Gambiya");
 
         //Assert
         verify(mock, times(1))
-                .info("org.loguno.test.JustMonkey.<init> is invoked.{}:{}", "a", "Gumpa");
+                .info("org.loguno.test.JustMonkey.<init> Method parameter {}={}", "a", "Gumpa");
 
         verify(mock, times(1))
-                .info("org.loguno.test.JustMonkey.<init> method param {}={}", "a", "Gumpa");
+                .info("org.loguno.test.JustMonkey.<init> Method is called. Parameter {}={},Parameter {}={}", "a", "Gumpa", "b", "Gambiya");
 
         ape.hiApe(2);
 
         verify(mock, times(1))
-                .info("org.loguno.test.JustMonkey.hiApe is invoked.{}:{}", "i", 2);
+                .info("org.loguno.test.JustMonkey.hiApe Method is called. Parameter {}={}", "i", 2);
 
         verify(mock, times(1))
-                .info("local variable {}={}", "u", 4);
-
+                .info("org.loguno.test.JustMonkey.hiApe Local variable {}={}", "u", 4);
     }
-
-
-
-
 }
