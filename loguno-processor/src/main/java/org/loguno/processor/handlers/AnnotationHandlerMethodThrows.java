@@ -75,7 +75,7 @@ public abstract class AnnotationHandlerMethodThrows <A extends Annotation, E> ex
 
                     holders.add(holder);
 
-                    System.out.printf("");
+
                     ///here build catch block
 
                     ////JCTree.JCModifiers jcModifiers = factory.Modifiers(0);
@@ -94,7 +94,6 @@ public abstract class AnnotationHandlerMethodThrows <A extends Annotation, E> ex
                     catches.append(aCatch);
                 }
 
-                System.out.printf("");
                 ///here build catch block
 
             }

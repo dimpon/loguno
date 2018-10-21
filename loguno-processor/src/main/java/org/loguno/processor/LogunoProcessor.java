@@ -66,17 +66,16 @@ public class LogunoProcessor extends AbstractProcessor {
             return false;
         }
 
-        Set<? extends Element> rootElements = roundEnvironment.getRootElements();
+        /*Set<? extends Element> rootElements = roundEnvironment.getRootElements();
 
         rootElements.forEach(o -> {
             TypeElement e =((TypeElement) o);
             NestingKind nestingKind = e.getNestingKind();
             Loguno.Logger a = e.getAnnotation(Loguno.Logger.class);
-            System.out.printf("");
         });
 
         Set<? extends Element> elementsAnnotatedWith = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class);
-
+*/
 
 
         Set<TypeElement> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()

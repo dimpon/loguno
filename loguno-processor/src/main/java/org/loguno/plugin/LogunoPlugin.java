@@ -61,7 +61,7 @@ public class LogunoPlugin implements Plugin {
                         //.append("  CompilationUnit:" + event.getCompilationUnit())
                         .append("\t TypeElement:" + event.getTypeElement());
 
-                System.out.println(sb.toString());
+                //System.out.println(sb.toString());
                 //logger.printRawLines(Log.WriterKind.NOTICE, sb.toString());
             }
 

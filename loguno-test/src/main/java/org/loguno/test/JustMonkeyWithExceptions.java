@@ -18,7 +18,7 @@ public class JustMonkeyWithExceptions extends Animal {
         super(name);
     }
 
-    public static JustMonkeyWithExceptions of(String name){
+    public static JustMonkeyWithExceptions of(String name) {
         return new JustMonkeyWithExceptions(name);
     }
 
@@ -97,11 +97,19 @@ public class JustMonkeyWithExceptions extends Animal {
         }
 
     }
+
     public void dayK() throws @Loguno @Loguno.WARN("i need a doctor") FallDownException, @Loguno.WARN("i'm starving") @Loguno NoBananasException, @Loguno.INFO("RIP") CaughtByPythonException {
         jump();
         eat();
         teasePython();
     }
+
+    public void dayL() throws FallDownException, NoBananasException, CaughtByPythonException {
+        jump();
+        eat();
+        teasePython();
+    }
+
 
     private void jump() throws FallDownException {
         jump.doSmth();
@@ -114,8 +122,7 @@ public class JustMonkeyWithExceptions extends Animal {
     @Loguno
     private void eat(@Loguno String animal) throws @Loguno NoBananasException {
         final String a = "a";
-        @Loguno
-        final String b = "b";
+        @Loguno final String b = "b";
         eat.doSmth();
     }
 
