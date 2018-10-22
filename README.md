@@ -6,7 +6,9 @@ It is a library for logging abstraction. It unties the logging aspect from you m
 Technically, it generates logging commands and injects it to your java code during compiling. 
 In this way, your code became free from logging code. 
    
-#### Why someone needs it
+#### Why someone needs it?
+
+*You don't see the gopher but it is there!*
 
 When we write a code we want to concentrate on business logic. Secondary aspects shouldn't distract us.
 But reality is different. For example LOGGING. We write logging commands, everywhere and they intertwine your program.
@@ -17,7 +19,6 @@ Forget it. See few samples:
 You write:
 @Loguno
 public void launchRocket(String toPlanet, int crew, Date timeOfArrival){
-    
 }
     
 After compiling:
@@ -30,7 +31,6 @@ Whant to log only 1 parameter? Easy!
 ```java
 You write:
 public void launchRocket(@Loguno String toPlanet, int crew, Date timeOfArrival){
-    
 }
     
 After compiling:
