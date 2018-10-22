@@ -10,13 +10,13 @@ before_deploy:
 
 ## Create release in GitHub
 deploy:
-    provider: releases
-    api_key:
-        secure: 7a97fbf290ce667dcca7c4695f9b9197ebe7d24f
-    file:
-        - loguno-processor/target/loguno-processor-$project_version.jar
-        - loguno-processor/target/loguno-processor-$project_version-sources.jar
-    skip_cleanup: true
-    on:
-        repo: dimpon/loguno
-    name: $project_version
+  provider: releases
+  api_key:
+    secure: 7a97fbf290ce667dcca7c4695f9b9197ebe7d24f
+  file:
+    - loguno-processor/target/loguno-processor-$project_version.jar
+    - loguno-processor/target/loguno-processor-$project_version-sources.jar
+  skip_cleanup: true
+  on:
+    repo: dimpon/loguno
+  name: $project_version
