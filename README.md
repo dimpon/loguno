@@ -6,7 +6,7 @@ In this way, your code became free from logging code.
 
 ## Getting Started
 
-Just add meven dependency:
+Just add maven dependency:
 ```xml
 <dependency>
     <groupId>org.loguno</groupId>
@@ -18,46 +18,47 @@ Just add meven dependency:
 
 ### Why someone needs it?
 
-*You don't see the gopher but it is there!*
-
 When we write a code we want to concentrate on main task. Secondary aspects shouldn't distract us.
-But reality is different. For example logging. We write logging commands, everywhere and they intertwine your program.
+But reality is different. For example logging. We write logging commands, everywhere and they intertwine our program.
 "I'm entering in the method...", "The input parameters are...", "The local variable is...", "The exception is caught.." and so on and so on.
 Forget it. See the few samples:
 
 ```java
 You write:
-@Loguno
-public void launchRocket(String toPlanet, int crew, Date timeOfArrival){
+@Loguno("We're going to Mars. [Parameter:{}={}]")
+public void launchRocket( String planet, int crew, Date timeOfArrival){
 }
+
 After compiling:
-public void launchRocket(String toPlanet, int crew, Date timeOfArrival) {
-    LOG.info("org.loguno.test.JustMonkey.launchRocket Method is called. Parameter {}={},Parameter {}={},Parameter {}={}", "toPlanet", toPlanet, "crew", crew, "timeOfArrival", timeOfArrival);
+public void launchRocket(String planet, int crew, Date timeOfArrival) {
+    LOG.info("We're going to Mars. Parameter:{}={},Parameter:{}={},Parameter:{}={}", "planet", planet, "crew", crew, "timeOfArrival", timeOfArrival);
 }
 ```
 Whant to log only 1 parameter? Easy!
 ```java
 You write:
-public void launchRocket(@Loguno String toPlanet, int crew, Date timeOfArrival){
+public void launchRocket(@Loguno String planet, int crew, Date timeOfArrival){
 }
+
 After compiling:
-public void launchRocket(String toPlanet, int crew, Date timeOfArrival) {
-    LOG.info("org.loguno.test.JustMonkey.launchRocket Method parameter {}={}", "toPlanet", toPlanet);
+public void launchRocket(String planet, int crew, Date timeOfArrival) {
+    LOG.info("org.loguno.test.SpaceMonkey.launchRocket Method parameter {}={}", "planet", planet);
 }
 ```
 More complex example with local variable:
 ```java
 You write:
 @Loguno
-public void hiApe(int i){
+public void hiAlien(int i){
     @Loguno
     int u =2+i;
 }
+
 After compiling:
-public void hiApe(int i) {
-    LOG.info("org.loguno.test.JustMonkey.hiApe Method is called. Parameter {}={}", "i", i);
+public void hiAlien(int i) {
+    LOG.info("org.loguno.test.SpaceMonkey.hiAlien Method is called. Parameter {}={}", "i", i);
     int u = 2 + i;
-    LOG.info("org.loguno.test.JustMonkey.hiApe Local variable {}={}", "u", u);
+    LOG.info("org.loguno.test.SpaceMonkey.hiAlien Local variable {}={}", "u", u);
 }
 ```
 Exceptions handling:
@@ -67,6 +68,7 @@ public void eat(String animal) throws @Loguno.WARN("Bananas are running out!") N
     final String b = "b";
     eat.doSmth();
 }
+
 After compiling:
 public void eat(String animal) throws NoBananasException {
     try {
