@@ -1,0 +1,32 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] Loguno
+[INFO] loguno-processor
+[INFO] loguno-test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Loguno 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ loguno-parent ---
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building loguno-processor 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.5:clean (default-clean) @ loguno-processor ---
+[INFO] Deleting D:\projects\annotation-processor\loguno\loguno-processor\target
+[INFO] 
+[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ loguno-processor ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.8.0:compile (default-compile) @ loguno-processor ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 20 source files to D:\projects\annotation-processor\loguno\loguno-processor\target\classes
+Завершить выполнение пакетного файла [Y(да)/N(нет)]? 
+Завершить выполнение пакетного файла [Y(да)/N(нет)]? 
+Завершить выполнение пакетного файла [Y(да)/N(нет)]? 
+Завершить выполнение пакетного файла [Y(да)/N(нет)]? Завершить выполнение пакетного файла [Y(да)/N(нет)]? Завершить выполнение пакетного файла [Y(да)/N(нет)]? Завершить выполнение пакетного файла [Y(да)/N(нет)]? 
