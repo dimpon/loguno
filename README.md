@@ -1,7 +1,7 @@
 # Loguno
 
 The library for logging abstraction. It decouples logging aspect from your main codeflow.
-Technically, it generates logging commands and injects it to java code during compiling. 
+Technically, it generates logging commands and injects them to java code during compiling. 
 In this way, your code became free from logging code.
 
 ## Getting Started
@@ -26,7 +26,7 @@ Forget it. See the few samples:
 ```java
 You write:
 @Loguno("We're going to Mars. [Parameter:{}={}]")
-public void launchRocket( String planet, int crew, Date timeOfArrival){
+public void launchRocket(String planet, int crew, Date timeOfArrival){
 }
 
 After compiling:
@@ -34,7 +34,7 @@ public void launchRocket(String planet, int crew, Date timeOfArrival) {
     LOG.info("We're going to Mars. Parameter:{}={},Parameter:{}={},Parameter:{}={}", "planet", planet, "crew", crew, "timeOfArrival", timeOfArrival);
 }
 ```
-Whant to log only 1 parameter? Easy!
+Want to log only 1 parameter? Easy!
 ```java
 You write:
 public void launchRocket(@Loguno String planet, int crew, Date timeOfArrival){
@@ -89,6 +89,7 @@ public void monkeyJump() {
     } catch (@Loguno.INFO("monkey gets hurt") FallDownException e) {
     }
 }
+
 After compiling:
 public void monkeyJump() {
     try {
@@ -97,8 +98,9 @@ public void monkeyJump() {
         LOG.info("monkey gets hurt", e);
     }
 }
-
 ```
+
+Interested? Welcome to our [WIKI](https://github.com/dimpon/loguno/wiki)!
 
 
 
