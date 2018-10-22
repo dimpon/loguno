@@ -4,3 +4,19 @@ jdk:
  - openjdk8
 after_success:
   - mvn clean test jacoco:report coveralls:report
+before_deploy:
+  - mvn help:evaluate -N -Dexpression=project.version|grep -v '\['
+  - export project_version=$(mvn help:evaluate -N -Dexpression=project.version|grep -v '\[')
+
+## Create release in GitHub
+deploy:
+    provider: releases
+    api_key:
+        secure: keeeey
+    file:
+        - loguno-processor/target/loguno-processor-$project_version.jar
+        - loguno-processor/target/loguno-processor-$project_version-sources.jar
+    skip_cleanup: true
+    on:
+        repo: dimpon/loguno
+    name: $project_version

@@ -8,8 +8,41 @@
     <packaging>pom</packaging>
 
     <name>Loguno</name>
-    <url>http://maven.apache.org</url>
+    <url>https://github.com/dimpon/loguno</url>
+    <description>Parent POM providing dependency and plugin management for submodules</description>
+    <inceptionYear>2018</inceptionYear>
 
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>dimpon</id>
+            <name>Dmitrii Ponomarev</name>
+        </developer>
+    </developers>
+
+
+    <scm>
+        <connection>scm:git:https://github.com/dimpon/loguno.git</connection>
+        <developerConnection>scm:git:https://github.com/dimpon/loguno.git</developerConnection>
+        <url>https://github.com/dimpon/loguno</url>
+    </scm>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,7 +50,6 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-
     </properties>
 
 
@@ -65,6 +97,9 @@
                     </execution>
                 </executions>
             </plugin>
+
+
+
         </plugins>
     </build>
 
