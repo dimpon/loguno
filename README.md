@@ -1,8 +1,9 @@
 # Loguno
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.loguno/loguno-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.loguno/loguno-parent)
 [![Build Status](https://travis-ci.com/dimpon/loguno.svg?branch=master)](https://travis-ci.com/dimpon/loguno)
 [![Coverage Status](http://img.shields.io/coveralls/dimpon/loguno/master.svg?style=flat-square)](https://coveralls.io/r/dimpon/loguno?branch=master)
-[![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://github.com/dimpon/loguno/blob/master/LICENSE)
+[![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-green.svg)](https://github.com/dimpon/loguno/blob/master/LICENSE)
 
 The library for logging abstraction. It decouples logging aspect from your main codeflow.
 Technically, it generates logging commands and injects them to java code during compiling. 
@@ -16,7 +17,7 @@ Just add maven dependency:
     <groupId>org.loguno</groupId>
     <artifactId>loguno-processor</artifactId>
     <version>0.0.1</version>
-    <scope>compile</scope>
+    <scope>provided</scope>
 </dependency>
 ```
 
