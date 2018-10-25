@@ -8,7 +8,7 @@ import org.loguno.processor.configuration.ConfiguratorManager;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
-import org.loguno.processor.handlers.SupportedLoggers;
+import org.loguno.processor.handlers.Frameworks;
 
 import javax.lang.model.element.*;
 import javax.lang.model.util.ElementScanner8;
@@ -52,9 +52,9 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
         if (annotation == null)
             return;
 
-        SupportedLoggers loggerFramework = annotation.value();
+        Frameworks loggerFramework = annotation.value();
 
-        if (loggerFramework == SupportedLoggers.NONE) {
+        if (loggerFramework == Frameworks.NONE) {
             loggerFramework = ConfiguratorManager.getInstance().getConfiguration().getProperty(ConfigurationKeys.LOGGING_FRAMEWORK_DEFAULT);
         }
 

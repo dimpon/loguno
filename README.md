@@ -1,6 +1,6 @@
 # Loguno
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.loguno/loguno-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.loguno/loguno-parent)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.loguno/loguno-processor/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.loguno/loguno-processor)
 [![Build Status](https://travis-ci.com/dimpon/loguno.svg?branch=master)](https://travis-ci.com/dimpon/loguno)
 [![Coverage Status](http://img.shields.io/coveralls/dimpon/loguno/master.svg?style=flat-square)](https://coveralls.io/r/dimpon/loguno?branch=master)
 [![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-green.svg)](https://github.com/dimpon/loguno/blob/master/LICENSE)
@@ -20,7 +20,7 @@ Just add maven dependency:
     <scope>provided</scope>
 </dependency>
 ```
-And my be Slf4j dependency, cause now Loguno supports only Slf4j:
+And may be Slf4j dependency, cause now Loguno supports only Slf4j:
 ```xml
  <dependency>
     <groupId>org.slf4j</groupId>

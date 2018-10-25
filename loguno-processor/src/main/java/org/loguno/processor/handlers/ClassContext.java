@@ -21,13 +21,13 @@ public class ClassContext {
     private LinkedList<String> methods = new LinkedList<>();
     private LinkedList<BlockTree> blocks = new LinkedList<>();
 
-    private Map<SupportedLoggers, Boolean> lazyLoggerIsGenerated = new EnumMap<>(SupportedLoggers.class);
+    private Map<Frameworks, Boolean> lazyLoggerIsGenerated = new EnumMap<>(Frameworks.class);
 
-    boolean isLazyLoggerHere(SupportedLoggers logger) {
+    boolean isLazyLoggerHere(Frameworks logger) {
         return lazyLoggerIsGenerated.getOrDefault(logger, false);
     }
 
-    void lazyLoggerGenerated(SupportedLoggers logger) {
+    void lazyLoggerGenerated(Frameworks logger) {
         lazyLoggerIsGenerated.put(logger, true);
     }
 
@@ -35,7 +35,7 @@ public class ClassContext {
     @ToString
     @AllArgsConstructor(staticName = "of")
     public static class LoggerInfo {
-        private final SupportedLoggers logger;
+        private final Frameworks logger;
         private final String loggerName;
         private final boolean lazy;
     }

@@ -1,7 +1,7 @@
 package org.loguno.processor.configuration;
 
 
-import org.loguno.processor.handlers.SupportedLoggers;
+import org.loguno.processor.handlers.Frameworks;
 
 public class ConfigurationKeys {
 
@@ -29,7 +29,7 @@ public class ConfigurationKeys {
     public static final ConfigurationKey<String> CATCH_MESSAGE_PATTERN_DEFAULT = ConfigurationKey.<String>of("loguno.catch.message.default",
             "Default message for exception catching");
 
-    public static final ConfigurationKey<SupportedLoggers> LOGGING_FRAMEWORK_DEFAULT = ConfigurationKey.<SupportedLoggers>of("loguno.logging.framework.default",
-            "Default logging framework", SupportedLoggers::valueOf);
+    public static final ConfigurationKey<Frameworks> LOGGING_FRAMEWORK_DEFAULT = ConfigurationKey.<Frameworks>of("loguno.logging.framework.default",
+            "Default logging framework", Frameworks::valueOf);
 
 }

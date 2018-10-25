@@ -10,35 +10,34 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 public class ConfigurationImpl implements Configuration {
 
-	private static final String internal = "loguno_internal.properties";
+    private static final String internal = "loguno_internal.properties";
 
-	private static final String external = "loguno.properties";
+    private static final String external = "loguno.properties";
 
-	public static String sourcepath="";
-	public static String userdir="";
+    private String rootPath;
 
-	// priority 3
-	private Properties properties = new Properties();
 
-	// priority 1
-	private Properties propertiesFromClientSources = new Properties();
+    // priority 3
+    private Properties properties = new Properties();
 
-	// priority 2
-	private Properties propertiesFromClientRoot = new Properties();
+    private Map<String, Properties> propertiesFromPackages = new HashMap<>();
 
-	public ConfigurationImpl() {
 
-		try (InputStream input = getClass().getClassLoader().getResourceAsStream(internal)) {
-			properties.load(input);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+    public ConfigurationImpl() {
 
-		try (InputStream input1 = Files.newInputStream(Paths.get(sourcepath.replace(";", "") + File.separator + external))) {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(internal)) {
+            properties.load(input);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+		/*try (InputStream input1 = Files.newInputStream(Paths.get(sourcepath.replace(";", "") + File.separator + external))) {
 			propertiesFromClientSources.load(input1);
 		} catch (IOException e) {
 			// not critical
@@ -48,21 +47,47 @@ public class ConfigurationImpl implements Configuration {
 			propertiesFromClientRoot.load(input2);
 		} catch (IOException e) {
 			// not critical
-		}
+		}*/
 
-	}
+    }
 
-	@Override
-	public <T> T getProperty(ConfigurationKey<T> key) {
+    private void loadPropertyAndPutItToMap(String path) {
 
-		if (propertiesFromClientSources.containsKey(key.getName())) {
-			return key.getValue(propertiesFromClientSources.getProperty(key.getName()));
-		}
+        try (InputStream input = Files.newInputStream(Paths.get(path + File.separator + external))) {
+            Properties properties = new Properties();
+            properties.load(input);
 
-		if (propertiesFromClientRoot.containsKey(key.getName())) {
-			return key.getValue(propertiesFromClientRoot.getProperty(key.getName()));
-		}
+            if (properties.size() == 0)
+                return;
 
-		return key.getValue(properties.getProperty(key.getName()));
-	}
+            this.rootPath = path;
+
+            propertiesFromPackages.putIfAbsent(path, properties);
+        } catch (IOException e) {
+            // not critical
+        }
+
+    }
+
+    @Override
+    public <T> T getProperty(ConfigurationKey<T> key) {
+
+        if (this.rootPath!=null && propertiesFromPackages.getOrDefault(this.rootPath, new Properties()).containsKey(key.getName())) {
+            return key.getValue(propertiesFromPackages.get(this.rootPath).getProperty(key.getName()));
+        }
+
+        return key.getValue(properties.getProperty(key.getName()));
+    }
+
+    @Override
+    public <T> T getProperty(ConfigurationKey<T> key, String rootPath) {
+
+        loadPropertyAndPutItToMap(rootPath);
+
+        if (propertiesFromPackages.getOrDefault(rootPath, new Properties()).containsKey(key.getName())) {
+            return key.getValue(propertiesFromPackages.get(rootPath).getProperty(key.getName()));
+        }
+
+        return key.getValue(properties.getProperty(key.getName()));
+    }
 }

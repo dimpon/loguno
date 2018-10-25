@@ -30,6 +30,76 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
 
     @Handler
     @Order
+    public static class AnnotationHandlerTrace extends AnnotationHandlerMethodParams<Loguno.TRACE, VariableElement> {
+
+        public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(Loguno.TRACE annotation, VariableElement element, ClassContext classContext) {
+            doRealJob(annotation.value(), "trace", element, classContext);
+        }
+    }
+
+    @Handler
+    @Order
+    public static class AnnotationHandlerDebug extends AnnotationHandlerMethodParams<Loguno.DEBUG, VariableElement> {
+
+        public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(Loguno.DEBUG annotation, VariableElement element, ClassContext classContext) {
+            doRealJob(annotation.value(), "debug", element, classContext);
+        }
+    }
+
+    @Handler
+    @Order
+    public static class AnnotationHandlerInfo extends AnnotationHandlerMethodParams<Loguno.INFO, VariableElement> {
+
+        public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(Loguno.INFO annotation, VariableElement element, ClassContext classContext) {
+            doRealJob(annotation.value(), "info", element, classContext);
+        }
+    }
+
+    @Handler
+    @Order
+    public static class AnnotationHandlerWarn extends AnnotationHandlerMethodParams<Loguno.WARN, VariableElement> {
+
+        public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(Loguno.WARN annotation, VariableElement element, ClassContext classContext) {
+            doRealJob(annotation.value(), "warn", element, classContext);
+        }
+    }
+
+    @Handler
+    @Order
+    public static class AnnotationHandlerError extends AnnotationHandlerMethodParams<Loguno.ERROR, VariableElement> {
+
+        public AnnotationHandlerError(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(Loguno.ERROR annotation, VariableElement element, ClassContext classContext) {
+            doRealJob(annotation.value(), "error", element, classContext);
+        }
+    }
+
+    @Handler
+    @Order
     public static class AnnotationHandlerLoguno extends AnnotationHandlerMethodParams<Loguno, VariableElement> {
 
         public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {
@@ -38,10 +108,8 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
 
         @Override
         public void processTree(Loguno annotation, VariableElement element, ClassContext classContext) {
-            doRealJob(annotation.value(), "info", element, classContext);
-
-            //String method = conf.getProperty(ConfigurationKeys.LOG_METHOD_DEFAULT);
-            //doRealJob(annotation.value(), method, element, classContext);
+            String method = conf.getProperty(ConfigurationKeys.LOG_METHOD_DEFAULT);
+            doRealJob(annotation.value(), method, element, classContext);
         }
     }
 
@@ -73,21 +141,5 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
         JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
 
         body.stats = JCTreeUtils.generateNewMethodBody(methodElement, trees, methodCall);
-
-
-        /*if (JCTreeUtils.isMethodConstructorWithSuper(methodElement, trees)) {
-
-            ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
-            bodyNew.append(body.stats.get(0));
-            bodyNew.append(methodCall);
-
-            for (int i = 1; i < body.stats.size(); i++) {
-                bodyNew.append(body.stats.get(i));
-            }
-
-            body.stats = bodyNew.toList();
-        } else {
-            body.stats = body.stats.prepend(methodCall);
-        }*/
     }
 }

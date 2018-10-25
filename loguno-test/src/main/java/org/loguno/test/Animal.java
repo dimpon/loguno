@@ -1,6 +1,5 @@
 package org.loguno.test;
 
-import lombok.Getter;
 
 /**
  * @author Dmitrii Ponomarev

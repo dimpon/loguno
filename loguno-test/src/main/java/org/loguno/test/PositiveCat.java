@@ -2,7 +2,7 @@ package org.loguno.test;
 
 
 import org.loguno.Loguno;
-import org.loguno.processor.handlers.SupportedLoggers;
+import org.loguno.processor.handlers.Frameworks;
 
 import java.util.Date;
 
@@ -10,7 +10,7 @@ import java.util.Date;
  * @author Dmitrii Ponomarev
  */
 //@Loguno.Logger(name="LOOGER",lazy = true)//(name = "LOGGER", lazy = true)
-//@Loguno.Logger(SupportedLoggers.SLF4J);
+//@Loguno.Logger(Frameworks.SLF4J);
 public class PositiveCat extends Animal {
 
     private String ccc;
@@ -105,7 +105,7 @@ public class PositiveCat extends Animal {
         }
     }
 
-    @Loguno.Logger(value = SupportedLoggers.SLF4J,name = "LOG007")
+    @Loguno.Logger(value = Frameworks.SLF4J,name = "LOG007")
     private static   class RightLeg3{
         private String aa;
     }

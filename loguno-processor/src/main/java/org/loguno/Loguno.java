@@ -1,6 +1,6 @@
 package org.loguno;
 
-import org.loguno.processor.handlers.SupportedLoggers;
+import org.loguno.processor.handlers.Frameworks;
 
 import java.lang.annotation.*;
 
@@ -25,7 +25,7 @@ public @interface Loguno {
 	@Retention(RetentionPolicy.SOURCE)
 	@Target(TYPE)
 	@interface Logger {
-		SupportedLoggers value() default SupportedLoggers.NONE;
+		Frameworks value() default Frameworks.NONE;
 		String name() default "LOG";
 		boolean lazy() default false;
 	}

@@ -3,10 +3,9 @@ package org.loguno.processor.utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.loguno.processor.configuration.Configuration;
-import org.loguno.processor.configuration.ConfigurationImpl;
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.configuration.ConfiguratorManager;
-import org.loguno.processor.handlers.SupportedLoggers;
+import org.loguno.processor.handlers.Frameworks;
 
 /**
  * @author Dmitrii Ponomarev
@@ -34,8 +33,8 @@ public class JCTreeUtilsTest {
         String errMethod = conf.getProperty(ConfigurationKeys.ERR_METHOD_DEFAULT);
         Assertions.assertEquals("error",errMethod);
 
-        SupportedLoggers framework = conf.getProperty(ConfigurationKeys.LOGGING_FRAMEWORK_DEFAULT);
-        Assertions.assertEquals(SupportedLoggers.SLF4J,framework);
+        Frameworks framework = conf.getProperty(ConfigurationKeys.LOGGING_FRAMEWORK_DEFAULT);
+        Assertions.assertEquals(Frameworks.SLF4J,framework);
 
         Boolean enable = conf.getProperty(ConfigurationKeys.ENABLE);
         Assertions.assertTrue(enable);
