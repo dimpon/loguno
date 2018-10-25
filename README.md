@@ -20,6 +20,21 @@ Just add maven dependency:
     <scope>provided</scope>
 </dependency>
 ```
+And my be Slf4j dependency, cause now Loguno supports only Slf4j:
+```xml
+ <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.25</version>
+ </dependency>
+
+ <dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-simple</artifactId>
+    <version>1.7.25</version>
+ </dependency>
+```
+Then, put annotation @Loguno.Logger on class level and put annotation @Loguno on some method...  But better see examples below! 
 
 ### Why someone needs it?
 
