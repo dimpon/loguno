@@ -16,7 +16,7 @@ Just add maven dependency:
 <dependency>
     <groupId>org.loguno</groupId>
     <artifactId>loguno-processor</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <scope>provided</scope>
 </dependency>
 ```
