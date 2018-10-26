@@ -1,6 +1,5 @@
 # Loguno
-
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.loguno/loguno-processor/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.loguno/loguno-processor)
+[![Maven Central](https://img.shields.io/maven-central/v/org.loguno/loguno-processor.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22org.loguno%22%20AND%20a:%22loguno-processor%22)
 [![Build Status](https://travis-ci.com/dimpon/loguno.svg?branch=master)](https://travis-ci.com/dimpon/loguno)
 [![Coverage Status](http://img.shields.io/coveralls/dimpon/loguno/master.svg?style=flat-square)](https://coveralls.io/r/dimpon/loguno?branch=master)
 [![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-green.svg)](https://github.com/dimpon/loguno/blob/master/LICENSE)
