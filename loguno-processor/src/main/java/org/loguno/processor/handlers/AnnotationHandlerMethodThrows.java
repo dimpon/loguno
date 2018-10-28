@@ -41,12 +41,6 @@ public abstract class AnnotationHandlerMethodThrows <A extends Annotation, E> ex
             if(element.getBody().stats==null || element.getBody().stats.isEmpty())
                 return;
 
-            JCExpressionBuilder expressionBuilder = JCExpressionBuilder.builder()
-                    .elements(elements)
-                    .factory(factory)
-                    .build();
-
-
             List<JCTree.JCExpression> aThrows = element.getThrows();
 
             int i=1;
@@ -54,7 +48,7 @@ public abstract class AnnotationHandlerMethodThrows <A extends Annotation, E> ex
             String e = "e";
             ListBuffer<JCTree.JCCatch> catches = new ListBuffer<>();
 
-            java.util.List<AnnotationHandlerPipedExceptionsCatch.JCStatementHolder> holders = new ArrayList<>();
+            //java.util.List<AnnotationHandlerPipedExceptionsCatch.JCStatementHolder> holders = new ArrayList<>();
 
             for (JCTree.JCExpression oneException:aThrows) {
 
@@ -68,19 +62,11 @@ public abstract class AnnotationHandlerMethodThrows <A extends Annotation, E> ex
                             .element(element)
                             .exceptionName(excepVarName);
 
-
                     oneAnnotatedException.getAnnotations().forEach(ann -> {
                         JCTreeUtils.findHandlersAndCall(ann, holder, classContext);
                     });
 
-                    holders.add(holder);
-
-
-                    ///here build catch block
-
-                    ////JCTree.JCModifiers jcModifiers = factory.Modifiers(0);
                     Name ee = names.fromString(holder.exceptionName());
-
 
                     JCTree.JCExpression excepType = oneAnnotatedException.getUnderlyingType();
                     JCTree.JCThrow aThrow = factory.Throw(factory.Ident(elements.getName(holder.exceptionName())));
@@ -93,9 +79,6 @@ public abstract class AnnotationHandlerMethodThrows <A extends Annotation, E> ex
 
                     catches.append(aCatch);
                 }
-
-                ///here build catch block
-
             }
 
             element.getBody().stats=com.sun.tools.javac.util.List.<JCTree.JCStatement>of(

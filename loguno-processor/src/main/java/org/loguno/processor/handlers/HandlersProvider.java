@@ -2,11 +2,9 @@ package org.loguno.processor.handlers;
 
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import lombok.SneakyThrows;
-import org.reflections.Reflections;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -81,10 +79,53 @@ public final class HandlersProvider {
 
 	// todo if performance is slow try https://github.com/atteo/classindex https://github.com/classgraph/classgraph
 	private Stream<Class<? extends AnnotationHandler>> getAnnotationHandlersClasses() {
-		Reflections reflections = new Reflections(HANDLERS_PACKAGE);
-		Set<Class<? extends AnnotationHandler>> handlers = reflections.getSubTypesOf(AnnotationHandler.class);
-		return handlers.stream()
-				.filter(c -> !Modifier.isAbstract(c.getModifiers()))
+
+		Stream<Class<? extends AnnotationHandler>> ha = Stream.<Class<? extends AnnotationHandler>>builder()
+				.add(AnnotationHandlerLogger.class)
+				.add(AnnotationHandlerLoggerLazy.class)
+
+				.add(AnnotationHandlerMethod.AnnotationHandlerLoguno.class)
+				.add(AnnotationHandlerMethod.AnnotationHandlerInfo.class)
+				.add(AnnotationHandlerMethod.AnnotationHandlerWarn.class)
+				.add(AnnotationHandlerMethod.AnnotationHandlerDebug.class)
+				.add(AnnotationHandlerMethod.AnnotationHandlerTrace.class)
+				.add(AnnotationHandlerMethod.AnnotationHandlerError.class)
+
+				.add(AnnotationHandlerMethodParams.AnnotationHandlerLoguno.class)
+				.add(AnnotationHandlerMethodParams.AnnotationHandlerInfo.class)
+				.add(AnnotationHandlerMethodParams.AnnotationHandlerWarn.class)
+				.add(AnnotationHandlerMethodParams.AnnotationHandlerDebug.class)
+				.add(AnnotationHandlerMethodParams.AnnotationHandlerTrace.class)
+				.add(AnnotationHandlerMethodParams.AnnotationHandlerError.class)
+
+				.add(AnnotationHandlerLocalVariable.AnnotationHandlerLoguno.class)
+				.add(AnnotationHandlerLocalVariable.AnnotationHandlerInfo.class)
+				.add(AnnotationHandlerLocalVariable.AnnotationHandlerWarn.class)
+				.add(AnnotationHandlerLocalVariable.AnnotationHandlerDebug.class)
+				.add(AnnotationHandlerLocalVariable.AnnotationHandlerTrace.class)
+				.add(AnnotationHandlerLocalVariable.AnnotationHandlerError.class)
+
+				.add(AnnotationHandlerCatch.AnnotationHandlerLoguno.class)
+				.add(AnnotationHandlerCatch.AnnotationHandlerInfo.class)
+				.add(AnnotationHandlerCatch.AnnotationHandlerWarn.class)
+				.add(AnnotationHandlerCatch.AnnotationHandlerDebug.class)
+				.add(AnnotationHandlerCatch.AnnotationHandlerTrace.class)
+				.add(AnnotationHandlerCatch.AnnotationHandlerError.class)
+
+				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerPipedExceptions.class)
+				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerLoguno.class)
+				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerInfo.class)
+				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerWarn.class)
+				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerDebug.class)
+				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerTrace.class)
+				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerError.class)
+
+				.add(AnnotationHandlerMethodThrows.AnnotationHandlerWholeMethod.class)
+
+		.build();
+
+
+		return ha.filter(c -> !Modifier.isAbstract(c.getModifiers()))
 				.filter(c -> c.isAnnotationPresent(Handler.class));
 	}
 

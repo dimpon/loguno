@@ -19,11 +19,9 @@ import java.lang.annotation.Annotation;
 
 public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> extends AnnotationHandlerBase<A, E> {
 
-
     protected AnnotationHandlerLocalVariable(JavacProcessingEnvironment environment) {
         super(environment);
     }
-
 
     @Handler
     @Order
