@@ -4,10 +4,7 @@ import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.util.Options;
 import org.loguno.Loguno;
-import org.loguno.processor.configuration.Configuration;
-import org.loguno.processor.configuration.ConfigurationImpl;
-import org.loguno.processor.configuration.ConfigurationKeys;
-import org.loguno.processor.configuration.ConfiguratorManager;
+import org.loguno.processor.configuration.*;
 import org.loguno.processor.handlers.ClassContext;
 
 import javax.annotation.processing.*;
@@ -29,6 +26,8 @@ public class LogunoProcessor extends AbstractProcessor {
 
     //LogunoTranslator translator = new LogunoTranslator();
     private JavacProcessingEnvironment javacProcessingEnvironment;
+
+    private Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -55,12 +54,13 @@ public class LogunoProcessor extends AbstractProcessor {
 */
     }
 
-    private String getPropertiesPotentialPath(Element file) {
-
+    private String getFilePath(Element file){
         JavaFileObject sourcefile = ((Symbol.ClassSymbol) file).sourcefile;
+        return sourcefile.getName();
+    }
 
-        String name = sourcefile.getName();
-
+    private String getPropertiesPotentialPath(Element file) {
+        String name = getFilePath(file);
         return name.substring(0, name.lastIndexOf("src"));
     }
 
@@ -79,7 +79,7 @@ public class LogunoProcessor extends AbstractProcessor {
 
         String rootPath = getPropertiesPotentialPath(firstFile);
 
-        Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
+
         Boolean enable = conf.getProperty(ConfigurationKeys.ENABLE, rootPath);
 
         if (!enable)
@@ -108,8 +108,12 @@ public class LogunoProcessor extends AbstractProcessor {
         final LogunoElementVisitor visitor = new LogunoElementVisitor(javacProcessingEnvironment);
         try {
             elements.forEach(element -> {
+
+                ThreadLocalHolder.put(getFilePath(element));
+
                 Void accept = element.accept(visitor, classContext);
 
+                ThreadLocalHolder.cleanupThread();
                 // JCTree tree = (JCTree) trees.getTree(element);
                 //tree.accept(scanner);
                 //tree.accept(translator);
