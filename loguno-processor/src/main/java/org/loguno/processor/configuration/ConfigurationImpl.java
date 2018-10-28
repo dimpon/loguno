@@ -98,7 +98,6 @@ public class ConfigurationImpl implements Configuration {
         return getProperty(key);
     }
 
-    //todo stop scan
     private void scanPackagesTillStopSym(String pa) {
         while (!pa.endsWith(STOP_SYM)) {
             pa = pa.substring(0, pa.lastIndexOf(File.separator));
