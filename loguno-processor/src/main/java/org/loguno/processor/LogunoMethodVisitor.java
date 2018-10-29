@@ -4,10 +4,14 @@ import com.sun.source.tree.*;
 import com.sun.source.util.TreeScanner;
 import com.sun.tools.javac.tree.JCTree;
 import lombok.AllArgsConstructor;
+import org.loguno.Loguno;
+import org.loguno.processor.configuration.ConfigurationKeys;
+import org.loguno.processor.configuration.ConfiguratorManager;
 import org.loguno.processor.handlers.*;
 import org.loguno.processor.utils.JCTreeUtils;
 
 import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
 import java.lang.Void;
 import java.util.*;
 
@@ -22,6 +26,8 @@ public class LogunoMethodVisitor extends TreeScanner<Void, ClassContext> {
 
     // private final JavacProcessingEnvironment environment;
     private final HandlersProvider handlersProvider;
+
+
 
     @Override
     public Void visitVariable(VariableTree variableTree, ClassContext classContext) {

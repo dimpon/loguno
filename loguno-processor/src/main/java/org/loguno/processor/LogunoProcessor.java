@@ -1,11 +1,14 @@
 package org.loguno.processor;
 
+import com.sun.source.tree.ClassTree;
+import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
-import com.sun.tools.javac.util.Options;
+import com.sun.tools.javac.tree.JCTree;
 import org.loguno.Loguno;
 import org.loguno.processor.configuration.*;
 import org.loguno.processor.handlers.ClassContext;
+import org.loguno.processor.handlers.HandlersProvider;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -14,7 +17,6 @@ import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,8 @@ public class LogunoProcessor extends AbstractProcessor {
         super.init(processingEnv);
 
         this.javacProcessingEnvironment = (JavacProcessingEnvironment) processingEnv;
+
+        HandlersProvider.create(this.javacProcessingEnvironment);
 
 
         /*Options options = Options.instance(this.javacProcessingEnvironment.getContext());
@@ -101,17 +105,30 @@ public class LogunoProcessor extends AbstractProcessor {
 
         Set<TypeElement> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()
                 .map(o -> (TypeElement) o)
+                //.filter(typeElement -> typeElement.getSimpleName().toString().contains("JustMonkey"))
                 .filter(o -> o.getNestingKind() == NestingKind.TOP_LEVEL)
                 .collect(Collectors.toSet());
 
         final ClassContext classContext = new ClassContext();
         final LogunoElementVisitor visitor = new LogunoElementVisitor(javacProcessingEnvironment);
+
+
+
+        //final LogunoScanner scanner = new LogunoScanner();
         try {
             elements.forEach(element -> {
 
                 ThreadLocalHolder.put(getFilePath(element));
 
+
+                //lVisitor.scan(classTree,classContext);
+
+
                 Void accept = element.accept(visitor, classContext);
+
+                /*Trees trees = Trees.instance(javacProcessingEnvironment);
+                JCTree tree = (JCTree) trees.getTree(element);
+                scanner.scan(tree);*/
 
                 ThreadLocalHolder.cleanupThread();
                 // JCTree tree = (JCTree) trees.getTree(element);

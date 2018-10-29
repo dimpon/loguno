@@ -121,6 +121,7 @@ public final class HandlersProvider {
 				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerError.class)
 
 				.add(AnnotationHandlerMethodThrows.AnnotationHandlerWholeMethod.class)
+				
 
 		.build();
 

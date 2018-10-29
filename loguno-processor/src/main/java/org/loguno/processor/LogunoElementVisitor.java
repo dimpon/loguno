@@ -1,7 +1,10 @@
 package org.loguno.processor;
 
+import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.Tree;
 import com.sun.source.util.Trees;
+import com.sun.tools.javac.tree.JCTree;
 import org.loguno.Loguno;
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.configuration.ConfiguratorManager;
@@ -25,11 +28,6 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
         this.environment = environment;
     }
 
-    @Override
-    public Void visitPackage(PackageElement e, ClassContext recorder) {
-        //processHandlers(e, recorder);
-        return super.visitPackage(e, recorder);
-    }
 
     @Override
     public Void visitType(TypeElement e, ClassContext classContext) {
@@ -38,6 +36,19 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
         addLoggerToClassContext(e, classContext);
 
         try {
+
+
+
+           /* Trees trees = Trees.instance(environment);
+            ClassTree type = trees.getTree(e);
+
+            LogunoMethodScanner scanner = new LogunoMethodScanner();
+
+            scanner.visitClass(type,classContext);*/
+
+
+
+
             processHandlers(e, classContext);
             return super.visitType(e, classContext);
         } finally {
@@ -88,9 +99,6 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
             Trees trees = Trees.instance(environment);
             MethodTree method = trees.getTree(e);
 
-            //interface
-            //method.getBody()==null;
-
             LogunoMethodVisitor visitor = new LogunoMethodVisitor(handlersProvider);
             visitor.scan(method, classContext);
 
@@ -103,12 +111,7 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
         }
     }
 
-    @Override
-    public Void visitTypeParameter(TypeParameterElement e, ClassContext recorder) {
-        // catches class fields
-        //processHandlers(e, recorder);
-        return super.visitTypeParameter(e, recorder);
-    }
+
 
     private <T extends Element> void processHandlers(T e, ClassContext recorder) {
 
