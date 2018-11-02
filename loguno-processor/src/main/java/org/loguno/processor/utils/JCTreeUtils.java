@@ -16,7 +16,7 @@ import org.loguno.processor.handlers.AnnotationHandler;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import org.loguno.processor.handlers.VoidAnnotation;
-import sun.reflect.annotation.AnnotationParser;
+import org.loguno.processor.utils.annotations.VoidAnnotationImpl;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -41,7 +41,7 @@ public class JCTreeUtils {
 
     public static final String REPEAT_PATTERN = "\\[(.*?)\\]";
 
-    private static VoidAnnotation VOID_ANN = (VoidAnnotation) AnnotationParser.annotationForMap(VoidAnnotation.class, Collections.emptyMap());
+    private static VoidAnnotation VOID_ANN = VoidAnnotationImpl.of();
 
     public <E> void findHandlersAndCall(AnnotationTree annotation, E element, ClassContext classContext) {
 

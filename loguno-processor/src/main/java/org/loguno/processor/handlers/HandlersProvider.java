@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,6 +23,8 @@ public final class HandlersProvider {
 	private final Map<Class<?>, Map<Class<? extends Annotation>, List<AnnotationHandler>>> handlers;
 
 	private final Set<Class<? extends Annotation>> supportedAnnotations;
+
+	private final Map<String, Class<? extends Annotation>>  supportedAnnotationsWithStringNames;
 
 	private static HandlersProvider INSTANCE;
 
@@ -48,6 +51,16 @@ public final class HandlersProvider {
 				.map(Map.Entry::getValue)
 				.flatMap(m -> m.keySet().stream())
 				.collect(Collectors.toSet());
+
+		supportedAnnotationsWithStringNames = new HashMap<>();
+
+		String packageToCut = "org.loguno.";
+		Map<String, Class<? extends Annotation>> ann1 = this.supportedAnnotations.stream().collect(Collectors.toMap(o -> o.getName().replace("$","."), Function.identity()));
+		Map<String, Class<? extends Annotation>> ann2 = this.supportedAnnotations.stream().collect(Collectors.toMap(o -> o.getName().replace("$",".").replace(packageToCut,""), Function.identity()));
+
+		supportedAnnotationsWithStringNames.putAll(ann1);
+		supportedAnnotationsWithStringNames.putAll(ann2);
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,7 +82,7 @@ public final class HandlersProvider {
 	}
 
 	public Optional<Class<? extends Annotation>> getAnnotationClassByName(final String name) {
-		return this.supportedAnnotations.stream().filter(c -> c.getName().endsWith(name)).findAny();
+		return Optional.of(supportedAnnotationsWithStringNames.get(name));
 	}
 
 	@SneakyThrows({ InstantiationException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class })
