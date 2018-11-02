@@ -17,23 +17,23 @@ import javax.annotation.processing.Filer;
 
 public class InstrumentsHolder {
 
-    protected final JavacProcessingEnvironment environment;
+    public final JavacProcessingEnvironment environment;
 
-    protected final Trees trees;
-    protected final Context context;
-    protected final TreeMaker factory;
-    protected final Names names;
+    public final Trees trees;
+    public final Context context;
+    public final TreeMaker factory;
+    public final Names names;
 
-    protected final Symtab symtab;
-    protected final Types types;
-    protected final JavacElements elements;
-    protected final Filer filer;
-    protected Enter enter;
-    protected MemberEnter memberEnter;
-    protected Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
+    public final Symtab symtab;
+    public final Types types;
+    public final JavacElements elements;
+    public final Filer filer;
+    public Enter enter;
+    public MemberEnter memberEnter;
+    public Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
 
 
-    protected InstrumentsHolder(JavacProcessingEnvironment environment) {
+    public InstrumentsHolder(JavacProcessingEnvironment environment) {
         this.environment = environment;
 
         this.trees = Trees.instance(environment);
