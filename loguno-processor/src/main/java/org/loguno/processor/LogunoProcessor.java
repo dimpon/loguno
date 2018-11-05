@@ -12,6 +12,8 @@ import org.loguno.processor.configuration.*;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import org.loguno.processor.handlers.InstrumentsHolder;
+import org.loguno.processor.utils.AnnotationRetriever;
+import org.loguno.processor.utils.AnnotationRetrieverImpl;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -120,17 +122,18 @@ public class LogunoProcessor extends AbstractProcessor {
         Set<Element> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()
                 //.map(o -> (Element) o)
                 .filter(this::isProcess)
-                //.filter(typeElement -> typeElement.getSimpleName().toString().contains("Makaka"))
+                .filter(typeElement -> typeElement.getSimpleName().toString().contains("Makaka"))
 
                 .collect(Collectors.toSet());
 
         final ClassContext classContext = new ClassContext();
+        final AnnotationRetriever retriever = new AnnotationRetrieverImpl();
       /*  final LogunoElementVisitor visitor = new LogunoElementVisitor(javacProcessingEnvironment);
 
         final LogunoTreeScanner scanner = new LogunoTreeScanner(this.holder);
 */
 
-        final LogunoScanner scanner = new LogunoScanner(classContext);
+        final LogunoScanner scanner = new LogunoScanner(classContext,retriever);
 
         //final LogunoScanner scanner = new LogunoScanner();
         try {

@@ -10,5 +10,12 @@ import static java.lang.annotation.ElementType.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(TYPE)
 public @interface Order {
-    int value() default 0;
+	int value() default 0;
+
+	RunOrder runOrder() default RunOrder.BEFORE;
+
+	enum RunOrder {
+		BEFORE,
+		AFTER
+	}
 }

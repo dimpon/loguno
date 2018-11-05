@@ -54,7 +54,7 @@ public class LogunoTreeScanner extends TreeScanner<Void, ClassContext> {
             Annotation anno = AnnotationUtils.createAnnotationInstance(o, annotationClass.get());
 
 
-            /* handlersProvider.getHandlersByElementAndAnnotation(anno.annotationType(), classT).forEach(h -> {
+            /* handlersProvider.getHandlersBeforeByElementAndAnnotation(anno.annotationType(), classT).forEach(h -> {
                   h.process(anno,classT,context);
              });*/
 

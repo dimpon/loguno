@@ -1,10 +1,7 @@
 package org.loguno.processor;
 
-import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.Tree;
 import com.sun.source.util.Trees;
-import com.sun.tools.javac.tree.JCTree;
 import org.loguno.Loguno;
 import org.loguno.processor.configuration.ConfigurationKeys;
 import org.loguno.processor.configuration.ConfiguratorManager;
@@ -121,7 +118,7 @@ public class LogunoElementVisitor extends ElementScanner8<Void, ClassContext> {
                     Arrays.stream(e.getAnnotationsByType(logunoAnnClass))
                             .forEach(annFromElement -> {
                                 handlersProvider
-                                        .getHandlersByElementAndAnnotation(logunoAnnClass, e)
+                                        .getHandlersBeforeByElementAndAnnotation(logunoAnnClass, e)
                                         .forEach(handler -> handler.process(annFromElement, e, recorder));
                             });
                 });

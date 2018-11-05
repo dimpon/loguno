@@ -5,6 +5,7 @@ import org.loguno.processor.handlers.Frameworks;
 import java.lang.annotation.*;
 
 import static java.lang.annotation.ElementType.*;
+import static org.loguno.processor.handlers.Frameworks.DEFAULT;
 
 @Documented
 @Repeatable(Loguno.$List.class)
@@ -25,7 +26,7 @@ public @interface Loguno {
 	@Retention(RetentionPolicy.SOURCE)
 	@Target({TYPE,PACKAGE})
 	@interface Logger {
-		Frameworks value() default Frameworks.SLF4J;
+		Frameworks value() default DEFAULT;
 		String name() default "LOG";
 		boolean lazy() default false;
 	}

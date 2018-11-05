@@ -14,7 +14,7 @@ import static javax.lang.model.element.ElementKind.CLASS;
 import static javax.lang.model.element.NestingKind.MEMBER;
 
 @Handler
-@Order(1)
+@Order(value = 2,runOrder = Order.RunOrder.BEFORE)
 public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger, JCTree.JCClassDecl> {
 
     private static final String loggerClass = "org.slf4j.Logger";

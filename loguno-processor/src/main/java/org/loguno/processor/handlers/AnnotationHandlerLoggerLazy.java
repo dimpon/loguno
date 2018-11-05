@@ -13,8 +13,8 @@ import java.io.PrintWriter;
 /**
  * @author Dmitrii Ponomarev
  */
-@Handler
-@Order(2)
+//@Handler
+@Order(value = 3,runOrder = Order.RunOrder.BEFORE)
 public class AnnotationHandlerLoggerLazy extends AnnotationHandlerBase<Loguno.Logger, TypeElement> {
 
 

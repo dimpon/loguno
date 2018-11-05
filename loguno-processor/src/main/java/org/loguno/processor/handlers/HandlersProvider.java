@@ -64,12 +64,24 @@ public final class HandlersProvider {
     }
 
     @SuppressWarnings("unchecked")
-    public <E> Stream<? extends AnnotationHandler<?, E>> getHandlersByElementAndAnnotation(Class<? extends Annotation> a, E e) {
+    public <E> Stream<? extends AnnotationHandler<?, E>> getHandlersBeforeByElementAndAnnotation(Class<? extends Annotation> a, E e) {
         return handlers
                 .getOrDefault(keyClass(e), Collections.emptyMap())
                 .getOrDefault(a, Collections.emptyList())
                 .stream()
                 .sorted(Comparator.comparing(h -> h.getClass().getAnnotation(Order.class).value()))
+                .filter(h -> h.getClass().getAnnotation(Order.class).runOrder()== Order.RunOrder.BEFORE)
+                .map(h -> (AnnotationHandler<?, E>) h);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <E> Stream<? extends AnnotationHandler<?, E>> getHandlersAfterByElementAndAnnotation(Class<? extends Annotation> a, E e) {
+        return handlers
+                .getOrDefault(keyClass(e), Collections.emptyMap())
+                .getOrDefault(a, Collections.emptyList())
+                .stream()
+                .sorted(Comparator.comparing(h -> h.getClass().getAnnotation(Order.class).value()))
+                .filter(h -> h.getClass().getAnnotation(Order.class).runOrder()== Order.RunOrder.AFTER)
                 .map(h -> (AnnotationHandler<?, E>) h);
     }
 
@@ -92,6 +104,8 @@ public final class HandlersProvider {
         Stream<Class<? extends AnnotationHandler>> ha = Stream.<Class<? extends AnnotationHandler>>builder()
                 .add(AnnotationHandlerLogger.class)
                 .add(AnnotationHandlerLoggerLazy.class)
+                .add(AnnotationHandlerBeforeClass.class)
+                .add(AnnotationHandlerAfterClass.class)
 
                 .add(AnnotationHandlerMethod.AnnotationHandlerLoguno.class)
                 .add(AnnotationHandlerMethod.AnnotationHandlerInfo.class)
