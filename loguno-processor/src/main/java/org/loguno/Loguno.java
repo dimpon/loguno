@@ -23,9 +23,9 @@ public @interface Loguno {
 
 	@Documented
 	@Retention(RetentionPolicy.SOURCE)
-	@Target(TYPE)
+	@Target({TYPE,PACKAGE})
 	@interface Logger {
-		Frameworks value() default Frameworks.NONE;
+		Frameworks value() default Frameworks.SLF4J;
 		String name() default "LOG";
 		boolean lazy() default false;
 	}

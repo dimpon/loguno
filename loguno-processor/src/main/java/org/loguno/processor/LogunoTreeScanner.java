@@ -10,6 +10,7 @@ import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.List;
 import lombok.AllArgsConstructor;
 import org.loguno.Loguno;
+import org.loguno.processor.handlers.AnnotationHandler;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import org.loguno.processor.handlers.InstrumentsHolder;
@@ -19,6 +20,7 @@ import sun.reflect.annotation.AnnotationParser;
 import javax.lang.model.element.TypeElement;
 import java.lang.annotation.Annotation;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * @author Dmitrii Ponomarev
@@ -39,11 +41,22 @@ public class LogunoTreeScanner extends TreeScanner<Void, ClassContext> {
     @Override
     public Void visitClass(ClassTree classTree, ClassContext context) {
 
+        JCTree.JCClassDecl classT = (JCTree.JCClassDecl) classTree;
+
         java.util.List<? extends AnnotationTree> annotations =  classTree.getModifiers().getAnnotations();
-        System.out.println(classTree.getSimpleName());
+
         annotations.forEach(o -> {
-            Type type = ((JCTree.JCAnnotation) o).annotationType.type;
-            System.out.println(type+" "+((JCTree.JCAnnotation) o).annotationType);
+            JCTree atype = ((JCTree.JCAnnotation) o).annotationType;
+            //Type type = atype.type;
+            String annName = (atype!=null)?atype.type.toString():atype.type.toString();
+
+            Optional<Class<? extends Annotation>> annotationClass = handlersProvider.getAnnotationClassByName(annName);
+            Annotation anno = AnnotationUtils.createAnnotationInstance(o, annotationClass.get());
+
+
+            /* handlersProvider.getHandlersByElementAndAnnotation(anno.annotationType(), classT).forEach(h -> {
+                  h.process(anno,classT,context);
+             });*/
 
         });
 

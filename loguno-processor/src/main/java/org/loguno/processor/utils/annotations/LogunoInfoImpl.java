@@ -1,6 +1,7 @@
 package org.loguno.processor.utils.annotations;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -14,9 +15,9 @@ import java.lang.annotation.Annotation;
 @Getter
 @Setter
 @Accessors(chain = true, fluent = true)
-@RequiredArgsConstructor(staticName = "of")
+@NoArgsConstructor
 public class LogunoInfoImpl implements Loguno.INFO {
-	private String[] value;
+	private String[] value = {""};
 
 	@Override
 	public Class<? extends Annotation> annotationType() {

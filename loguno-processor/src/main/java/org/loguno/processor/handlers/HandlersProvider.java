@@ -18,152 +18,147 @@ import java.util.stream.Stream;
  */
 public final class HandlersProvider {
 
-	private static final String HANDLERS_PACKAGE = "org.loguno.processor.handlers";
+    private static final String HANDLERS_PACKAGE = "org.loguno.processor.handlers";
 
-	private final Map<Class<?>, Map<Class<? extends Annotation>, List<AnnotationHandler>>> handlers;
+    private final Map<Class<?>, Map<Class<? extends Annotation>, List<AnnotationHandler>>> handlers;
 
-	private final Set<Class<? extends Annotation>> supportedAnnotations;
+    private final Set<Class<? extends Annotation>> supportedAnnotations;
 
-	private final Map<String, Class<? extends Annotation>>  supportedAnnotationsWithStringNames;
+    private final Map<String, Class<? extends Annotation>> supportedAnnotationsWithStringNames;
 
-	private static HandlersProvider INSTANCE;
+    private static HandlersProvider INSTANCE;
 
-	public static HandlersProvider create(JavacProcessingEnvironment environment) {
-		INSTANCE = new HandlersProvider(environment);
-		return INSTANCE;
-	}
-
-    public static HandlersProvider instance() {
-	    return INSTANCE;
+    public static HandlersProvider create(JavacProcessingEnvironment environment) {
+        INSTANCE = new HandlersProvider(environment);
+        return INSTANCE;
     }
 
-	private HandlersProvider(JavacProcessingEnvironment environment) {
+    public static HandlersProvider instance() {
+        return INSTANCE;
+    }
 
-		List<Class<? extends AnnotationHandler>> allHandlersClasses = getAnnotationHandlersClasses()
-				.collect(Collectors.toList());
+    private HandlersProvider(JavacProcessingEnvironment environment) {
 
-		this.handlers = allHandlersClasses.stream()
-				.map(c -> createHandler(c, environment))
-				.collect(Collectors.groupingBy(AnnotationHandler::getElementClass,
-						Collectors.groupingBy(AnnotationHandler::getAnnotationClass)));
+        List<Class<? extends AnnotationHandler>> allHandlersClasses = getAnnotationHandlersClasses()
+                .collect(Collectors.toList());
 
-		this.supportedAnnotations = this.handlers.entrySet().stream()
-				.map(Map.Entry::getValue)
-				.flatMap(m -> m.keySet().stream())
-				.collect(Collectors.toSet());
+        this.handlers = allHandlersClasses.stream()
+                .map(c -> createHandler(c, environment))
+                .collect(Collectors.groupingBy(AnnotationHandler::getElementClass,
+                        Collectors.groupingBy(AnnotationHandler::getAnnotationClass)));
 
-		supportedAnnotationsWithStringNames = new HashMap<>();
+        this.supportedAnnotations = this.handlers.entrySet().stream()
+                .map(Map.Entry::getValue)
+                .flatMap(m -> m.keySet().stream())
+                .collect(Collectors.toSet());
 
-		String packageToCut = "org.loguno.";
-		Map<String, Class<? extends Annotation>> ann1 = this.supportedAnnotations.stream().collect(Collectors.toMap(o -> o.getName().replace("$","."), Function.identity()));
-		Map<String, Class<? extends Annotation>> ann2 = this.supportedAnnotations.stream().collect(Collectors.toMap(o -> o.getName().replace("$",".").replace(packageToCut,""), Function.identity()));
+        supportedAnnotationsWithStringNames = new HashMap<>();
 
-		supportedAnnotationsWithStringNames.putAll(ann1);
-		supportedAnnotationsWithStringNames.putAll(ann2);
+        String packageToCut = "org.loguno.";
+        Map<String, Class<? extends Annotation>> ann1 = this.supportedAnnotations.stream().collect(Collectors.toMap(o -> o.getName().replace("$", "."), Function.identity()));
+        Map<String, Class<? extends Annotation>> ann2 = this.supportedAnnotations.stream().collect(Collectors.toMap(o -> o.getName().replace("$", ".").replace(packageToCut, ""), Function.identity()));
 
-	}
+        supportedAnnotationsWithStringNames.putAll(ann1);
+        supportedAnnotationsWithStringNames.putAll(ann2);
 
-	@SuppressWarnings("unchecked")
-	public <E> Stream<? extends AnnotationHandler<?, E>> getHandlersByElementAndAnnotation(Class<? extends Annotation> a, E e) {
-		return handlers
-				.getOrDefault(keyClass(e), Collections.emptyMap())
-				.getOrDefault(a, Collections.emptyList())
-				.stream()
-				.sorted(Comparator.comparing(h -> h.getClass().getAnnotation(Order.class).value()))
-				.map(h -> (AnnotationHandler<?, E>) h);
-	}
+    }
 
-	public Map<Class<? extends Annotation>, List<AnnotationHandler>> getHandlersaByElement(Object e) {
-		return handlers.getOrDefault(keyClass(e), Collections.emptyMap());
-	}
+    @SuppressWarnings("unchecked")
+    public <E> Stream<? extends AnnotationHandler<?, E>> getHandlersByElementAndAnnotation(Class<? extends Annotation> a, E e) {
+        return handlers
+                .getOrDefault(keyClass(e), Collections.emptyMap())
+                .getOrDefault(a, Collections.emptyList())
+                .stream()
+                .sorted(Comparator.comparing(h -> h.getClass().getAnnotation(Order.class).value()))
+                .map(h -> (AnnotationHandler<?, E>) h);
+    }
 
-	public Set<Class<? extends Annotation>> supportedAnnotations() {
-		return this.supportedAnnotations;
-	}
+    public Set<Class<? extends Annotation>> supportedAnnotations() {
+        return this.supportedAnnotations;
+    }
 
-	public Optional<Class<? extends Annotation>> getAnnotationClassByName(final String name) {
-		return Optional.of(supportedAnnotationsWithStringNames.get(name));
-	}
+    public Optional<Class<? extends Annotation>> getAnnotationClassByName(final String name) {
+        return Optional.of(supportedAnnotationsWithStringNames.get(name));
+    }
 
-	@SneakyThrows({ InstantiationException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class })
-	private AnnotationHandler createHandler(Class<? extends AnnotationHandler> clazz, JavacProcessingEnvironment environment) {
-		return clazz.getConstructor(JavacProcessingEnvironment.class).newInstance(environment);
-	}
+    @SneakyThrows({InstantiationException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class})
+    private AnnotationHandler createHandler(Class<? extends AnnotationHandler> clazz, JavacProcessingEnvironment environment) {
+        return clazz.getConstructor(JavacProcessingEnvironment.class).newInstance(environment);
+    }
 
-	// todo if performance is slow try https://github.com/atteo/classindex https://github.com/classgraph/classgraph
-	private Stream<Class<? extends AnnotationHandler>> getAnnotationHandlersClasses() {
+    // todo if performance is slow try https://github.com/atteo/classindex https://github.com/classgraph/classgraph
+    private Stream<Class<? extends AnnotationHandler>> getAnnotationHandlersClasses() {
 
-		Stream<Class<? extends AnnotationHandler>> ha = Stream.<Class<? extends AnnotationHandler>>builder()
-				.add(AnnotationHandlerLogger.class)
-				.add(AnnotationHandlerLoggerLazy.class)
+        Stream<Class<? extends AnnotationHandler>> ha = Stream.<Class<? extends AnnotationHandler>>builder()
+                .add(AnnotationHandlerLogger.class)
+                .add(AnnotationHandlerLoggerLazy.class)
 
-				.add(AnnotationHandlerMethod.AnnotationHandlerLoguno.class)
-				.add(AnnotationHandlerMethod.AnnotationHandlerInfo.class)
-				.add(AnnotationHandlerMethod.AnnotationHandlerWarn.class)
-				.add(AnnotationHandlerMethod.AnnotationHandlerDebug.class)
-				.add(AnnotationHandlerMethod.AnnotationHandlerTrace.class)
-				.add(AnnotationHandlerMethod.AnnotationHandlerError.class)
+                .add(AnnotationHandlerMethod.AnnotationHandlerLoguno.class)
+                .add(AnnotationHandlerMethod.AnnotationHandlerInfo.class)
+                .add(AnnotationHandlerMethod.AnnotationHandlerWarn.class)
+                .add(AnnotationHandlerMethod.AnnotationHandlerDebug.class)
+                .add(AnnotationHandlerMethod.AnnotationHandlerTrace.class)
+                .add(AnnotationHandlerMethod.AnnotationHandlerError.class)
 
-				.add(AnnotationHandlerMethodParams.AnnotationHandlerLoguno.class)
-				.add(AnnotationHandlerMethodParams.AnnotationHandlerInfo.class)
-				.add(AnnotationHandlerMethodParams.AnnotationHandlerWarn.class)
-				.add(AnnotationHandlerMethodParams.AnnotationHandlerDebug.class)
-				.add(AnnotationHandlerMethodParams.AnnotationHandlerTrace.class)
-				.add(AnnotationHandlerMethodParams.AnnotationHandlerError.class)
+                .add(AnnotationHandlerMethodParams.AnnotationHandlerLoguno.class)
+                .add(AnnotationHandlerMethodParams.AnnotationHandlerInfo.class)
+                .add(AnnotationHandlerMethodParams.AnnotationHandlerWarn.class)
+                .add(AnnotationHandlerMethodParams.AnnotationHandlerDebug.class)
+                .add(AnnotationHandlerMethodParams.AnnotationHandlerTrace.class)
+                .add(AnnotationHandlerMethodParams.AnnotationHandlerError.class)
 
-				.add(AnnotationHandlerLocalVariable.AnnotationHandlerLoguno.class)
-				.add(AnnotationHandlerLocalVariable.AnnotationHandlerInfo.class)
-				.add(AnnotationHandlerLocalVariable.AnnotationHandlerWarn.class)
-				.add(AnnotationHandlerLocalVariable.AnnotationHandlerDebug.class)
-				.add(AnnotationHandlerLocalVariable.AnnotationHandlerTrace.class)
-				.add(AnnotationHandlerLocalVariable.AnnotationHandlerError.class)
+                .add(AnnotationHandlerLocalVariable.AnnotationHandlerLoguno.class)
+                .add(AnnotationHandlerLocalVariable.AnnotationHandlerInfo.class)
+                .add(AnnotationHandlerLocalVariable.AnnotationHandlerWarn.class)
+                .add(AnnotationHandlerLocalVariable.AnnotationHandlerDebug.class)
+                .add(AnnotationHandlerLocalVariable.AnnotationHandlerTrace.class)
+                .add(AnnotationHandlerLocalVariable.AnnotationHandlerError.class)
 
-				.add(AnnotationHandlerCatch.AnnotationHandlerLoguno.class)
-				.add(AnnotationHandlerCatch.AnnotationHandlerInfo.class)
-				.add(AnnotationHandlerCatch.AnnotationHandlerWarn.class)
-				.add(AnnotationHandlerCatch.AnnotationHandlerDebug.class)
-				.add(AnnotationHandlerCatch.AnnotationHandlerTrace.class)
-				.add(AnnotationHandlerCatch.AnnotationHandlerError.class)
+                .add(AnnotationHandlerCatch.AnnotationHandlerLoguno.class)
+                .add(AnnotationHandlerCatch.AnnotationHandlerInfo.class)
+                .add(AnnotationHandlerCatch.AnnotationHandlerWarn.class)
+                .add(AnnotationHandlerCatch.AnnotationHandlerDebug.class)
+                .add(AnnotationHandlerCatch.AnnotationHandlerTrace.class)
+                .add(AnnotationHandlerCatch.AnnotationHandlerError.class)
 
-				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerPipedExceptions.class)
-				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerLoguno.class)
-				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerInfo.class)
-				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerWarn.class)
-				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerDebug.class)
-				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerTrace.class)
-				.add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerError.class)
+                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerPipedExceptions.class)
+                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerLoguno.class)
+                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerInfo.class)
+                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerWarn.class)
+                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerDebug.class)
+                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerTrace.class)
+                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerError.class)
 
-				.add(AnnotationHandlerMethodThrows.AnnotationHandlerWholeMethod.class)
-				
-
-		.build();
+                .add(AnnotationHandlerMethodThrows.AnnotationHandlerWholeMethod.class)
 
 
-		return ha.filter(c -> !Modifier.isAbstract(c.getModifiers()))
-				.filter(c -> c.isAnnotationPresent(Handler.class));
-	}
+                .build();
 
-	/**
-	 * Finds the interface class which shows the real type of element.
-	 * The class is used as key for getting handlers from {@link HandlersProvider#handlers}
-	 *
-	 * @param e
-	 *            Element of class
-	 * @return class if interface which is subtype of {@link Element}
-	 */
-	@SuppressWarnings("unchecked")
-	private Class<?> keyClass(Object e) {
-		Class<?> clazz = e.getClass();
-		Class<?>[] interfaces = clazz.getInterfaces();
-		for (Class<?> i : interfaces) {
-			if (isClassSubtypeOfElement(i))
-				return i;
-		}
-		return e.getClass();
-	}
 
-	private static boolean isClassSubtypeOfElement(Class<?> clazz) {
-		Set<Class<?>> asSet = new HashSet<>(Arrays.asList(clazz.getInterfaces()));
-		return asSet.contains(Element.class);
-	}
+        return ha.filter(c -> !Modifier.isAbstract(c.getModifiers()))
+                .filter(c -> c.isAnnotationPresent(Handler.class));
+    }
+
+    /**
+     * Finds the interface class which shows the real type of element.
+     * The class is used as key for getting handlers from {@link HandlersProvider#handlers}
+     *
+     * @param e Element of class
+     * @return class if interface which is subtype of {@link Element}
+     */
+    @SuppressWarnings("unchecked")
+    private Class<?> keyClass(Object e) {
+        Class<?> clazz = e.getClass();
+        Class<?>[] interfaces = clazz.getInterfaces();
+        for (Class<?> i : interfaces) {
+            if (isClassSubtypeOfElement(i))
+                return i;
+        }
+        return e.getClass();
+    }
+
+    private static boolean isClassSubtypeOfElement(Class<?> clazz) {
+        Set<Class<?>> asSet = new HashSet<>(Arrays.asList(clazz.getInterfaces()));
+        return asSet.contains(Element.class);
+    }
 }

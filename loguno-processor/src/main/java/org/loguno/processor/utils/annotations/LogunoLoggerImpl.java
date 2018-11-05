@@ -1,6 +1,7 @@
 package org.loguno.processor.utils.annotations;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -15,12 +16,12 @@ import java.lang.annotation.Annotation;
 @Getter
 @Setter
 @Accessors(chain = true, fluent = true)
-@RequiredArgsConstructor(staticName = "of")
+@NoArgsConstructor
 public class LogunoLoggerImpl implements Loguno.Logger {
 
-    private Frameworks value= Frameworks.NONE;
-    private String name="LOG";
-    private boolean lazy= false;
+    private Frameworks value;
+    private String name;
+    private boolean lazy;
 
     @Override
     public Class<? extends Annotation> annotationType() {

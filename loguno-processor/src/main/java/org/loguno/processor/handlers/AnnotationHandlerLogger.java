@@ -15,7 +15,7 @@ import static javax.lang.model.element.NestingKind.MEMBER;
 
 @Handler
 @Order(1)
-public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger, TypeElement> {
+public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger, JCTree.JCClassDecl> {
 
     private static final String loggerClass = "org.slf4j.Logger";
 
@@ -28,22 +28,22 @@ public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger
     }
 
     @Override
-    public void processTree(Loguno.Logger annotation, TypeElement typeElement, ClassContext classContext) {
+    public void processTree(Loguno.Logger annotation, JCTree.JCClassDecl classTree, ClassContext classContext) {
 
         ClassContext.LoggerInfo currentLogger = classContext.getLoggers().getLast();
 
         ////////////////////////////////
 
-        ClassTree classTree = trees.getTree(typeElement);
+        //ClassTree classTree = trees.getTree(typeElement);
 
         boolean isStatic = true;
 
         //inner non-static classes cannnot have static fields
-        if (typeElement.getKind() == CLASS
+        /*if (typeElement.getKind() == CLASS
                 && typeElement.getNestingKind() == MEMBER
                 && !typeElement.getModifiers().contains(Modifier.STATIC)) {
             isStatic = false;
-        }
+        }*/
 
         String factoryClassAndMethod = (currentLogger.isLazy()) ?
                 AnnotationHandlerLogger.lazyFactoryClassAndMethod : AnnotationHandlerLogger.factoryClassAndMethod;

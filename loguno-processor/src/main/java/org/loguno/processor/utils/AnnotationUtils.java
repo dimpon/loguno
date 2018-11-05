@@ -5,55 +5,67 @@ import com.sun.source.tree.ExpressionTree;
 import com.sun.tools.javac.tree.JCTree;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import sun.reflect.annotation.AnnotationParser;
+import org.loguno.Loguno;
+import org.loguno.processor.handlers.VoidAnnotation;
+import org.loguno.processor.utils.annotations.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @UtilityClass
 public class AnnotationUtils {
+
+    private static Map<Class<?>, Class<?>> annotationMapping =
+            new HashMap<Class<?>, Class<?>>() {{
+                put(Loguno.class, LogunoImpl.class);
+                put(Loguno.Logger.class, LogunoLoggerImpl.class);
+                put(Loguno.INFO.class, LogunoInfoImpl.class);
+                put(Loguno.DEBUG.class, LogunoDebugImpl.class);
+                put(Loguno.TRACE.class, LogunoTraceImpl.class);
+                put(Loguno.WARN.class, LogunoWarnImpl.class);
+                put(Loguno.ERROR.class, LogunoErrorImpl.class);
+                put(VoidAnnotation.class, VoidAnnotationImpl.class);
+            }};
 
     /**
      * The method creates the 'real' annotation object based on {@link com.sun.source.tree.AnnotationTree}
      * Now Strings, Strings[], primitives, Enum, Enum[] are supported as annotation member. Classses,  annotations, arrays of primitives are not supported.
      */
+    @SneakyThrows
     @SuppressWarnings("unchecked")
     public <A extends Annotation> A createAnnotationInstance(AnnotationTree annotation, Class<A> annotationType) {
 
-        Map<String, String[]> customValues = createAnnotationArgsMap(annotation);
+        A annot = (A)annotationMapping.get(annotationType).newInstance();
 
-        Map<String, Object> values = new LinkedHashMap<>();
+        Map<String, String[]> customValues = createAnnotationArgsMap(annotation);
 
         // Extract default values from annotation
         for (Method method : annotationType.getDeclaredMethods()) {
-            values.put(method.getName(), method.getDefaultValue());
+
             Class<?> type = method.getReturnType();
+
             if (customValues.containsKey(method.getName())) {
-
-                Object o = castValue(type, customValues.get(method.getName()));
-
+                Object value = castValue(type, customValues.get(method.getName()));
                 if (type.isArray() && !type.getComponentType().isPrimitive()) {
-                    values.put(method.getName(), castToArray(o, type.getComponentType()));
+                    Method method1 = annot.getClass().getMethod(method.getName(), type);
+                    method1.invoke(annot,type.cast(castToArray(value, type.getComponentType())));
                 } else {
-                    values.put(method.getName(), o);
+                    annot.getClass().getMethod(method.getName(),type).invoke(annot,value);
                 }
+            }else{
+                Object dv = method.getDefaultValue();
+                annot.getClass().getMethod(method.getName(),type).invoke(annot,dv);
             }
         }
-
-        return (A) AnnotationParser.annotationForMap(annotationType, values);
+        return annot;
     }
 
     @SuppressWarnings("unchecked")
     private <T> T[] castToArray(Object o, Class<T> clazz) {
         Object[] arr = (Object[]) o;
-
         T[] res = (T[]) Array.newInstance(clazz, arr.length);
-
         for (int i = 0; i < arr.length; i++) {
             res[i] = (T) arr[i];
         }

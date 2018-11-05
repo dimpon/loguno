@@ -41,7 +41,7 @@ public class JCTreeUtils {
 
     public static final String REPEAT_PATTERN = "\\[(.*?)\\]";
 
-    private static VoidAnnotation VOID_ANN = VoidAnnotationImpl.of();
+    private static final VoidAnnotation VOID_ANN = new VoidAnnotationImpl();
 
     public <E> void findHandlersAndCall(AnnotationTree annotation, E element, ClassContext classContext) {
 

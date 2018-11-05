@@ -15,10 +15,7 @@ import org.loguno.processor.handlers.InstrumentsHolder;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.NestingKind;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.util.List;
@@ -67,8 +64,14 @@ public class LogunoProcessor extends AbstractProcessor {
     }
 
     private String getFilePath(Element file) {
-        JavaFileObject sourcefile = ((Symbol.ClassSymbol) file).sourcefile;
-        return sourcefile.getName();
+        if(file instanceof TypeElement) {
+            JavaFileObject sourcefile = ((Symbol.ClassSymbol) file).sourcefile;
+            return sourcefile.getName();
+        }
+        if(file instanceof PackageElement){
+            return ((Symbol.PackageSymbol) file).fullname.toString();
+        }
+        throw new IllegalArgumentException(file.toString());
     }
 
     private String getPropertiesPotentialPath(Element file) {
@@ -95,8 +98,6 @@ public class LogunoProcessor extends AbstractProcessor {
         Boolean enable = conf.getProperty(ConfigurationKeys.ENABLE, rootPath);
 
 
-
-
         if (!enable)
             return false;
 
@@ -116,16 +117,20 @@ public class LogunoProcessor extends AbstractProcessor {
         //Set<? extends Element> elementsAnnotatedWith = roundEnvironment.getElementsAnnotatedWith(Loguno.class);
 
 
-        Set<TypeElement> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()
-                .map(o -> (TypeElement) o)
-                .filter(typeElement -> typeElement.getSimpleName().toString().contains("Makaka"))
-                .filter(o -> o.getNestingKind() == NestingKind.TOP_LEVEL)
+        Set<Element> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()
+                //.map(o -> (Element) o)
+                .filter(this::isProcess)
+                //.filter(typeElement -> typeElement.getSimpleName().toString().contains("Makaka"))
+
                 .collect(Collectors.toSet());
 
         final ClassContext classContext = new ClassContext();
-        final LogunoElementVisitor visitor = new LogunoElementVisitor(javacProcessingEnvironment);
+      /*  final LogunoElementVisitor visitor = new LogunoElementVisitor(javacProcessingEnvironment);
 
         final LogunoTreeScanner scanner = new LogunoTreeScanner(this.holder);
+*/
+
+        final LogunoScanner scanner = new LogunoScanner(classContext);
 
         //final LogunoScanner scanner = new LogunoScanner();
         try {
@@ -134,11 +139,9 @@ public class LogunoProcessor extends AbstractProcessor {
                 ThreadLocalHolder.put(getFilePath(element));
 
 
-
                 JCTree tree = javacProcessingEnvironment.getElementUtils().getTree(element);
 
-                Env<AttrContext> classEnv = holder.enter.getClassEnv((Symbol.TypeSymbol) element);
-
+                //Env<AttrContext> classEnv = holder.enter.getClassEnv((Symbol.TypeSymbol) element);
 
 
                 //List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
@@ -149,7 +152,10 @@ public class LogunoProcessor extends AbstractProcessor {
                 //Void accept = element.accept(visitor, classContext);
 
 
-                scanner.scan(tree, null);
+                //scanner.scan(tree, null);
+                //trans.translate(tree);
+
+                scanner.scan(tree);
 
 
                 ThreadLocalHolder.cleanupThread();
@@ -173,6 +179,18 @@ public class LogunoProcessor extends AbstractProcessor {
         System.out.println("exec time, Millis:" + (end - start));
 
         return true;
+    }
+
+    private boolean isProcess(Element e) {
+        if (e.getKind() == ElementKind.PACKAGE)
+            return true;
+
+        if (e.getKind() == ElementKind.CLASS) {
+            return !((TypeElement) e).getNestingKind().isNested();
+        }
+
+        return false;
+
     }
 }
 
