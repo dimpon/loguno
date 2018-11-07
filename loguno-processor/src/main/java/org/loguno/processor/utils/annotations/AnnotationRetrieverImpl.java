@@ -1,9 +1,10 @@
-package org.loguno.processor.utils;
+package org.loguno.processor.utils.annotations;
 
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.ModifiersTree;
 import com.sun.tools.javac.tree.JCTree;
 import org.loguno.processor.handlers.HandlersProvider;
+import org.loguno.processor.utils.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;

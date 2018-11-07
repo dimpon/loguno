@@ -19,9 +19,9 @@ public class AnnotationHandlerBeforeClass extends AnnotationHandlerBase<Loguno.L
     }
 
     @Override
-    public void processTree(Loguno.Logger annotation, JCTree.JCClassDecl element, ClassContext classContext) {
+    public void processTree(Loguno.Logger annotation, JCTree.JCClassDecl classDecl, ClassContext classContext) {
 
-        classContext.getClasses().addLast(element.name.toString());
+        classContext.getClasses().addLast(classDecl.name.toString());
 
 
 

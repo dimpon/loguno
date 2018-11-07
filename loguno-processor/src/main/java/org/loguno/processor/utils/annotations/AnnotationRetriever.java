@@ -1,4 +1,4 @@
-package org.loguno.processor.utils;
+package org.loguno.processor.utils.annotations;
 
 import com.sun.source.tree.ModifiersTree;
 import com.sun.tools.javac.tree.JCTree;

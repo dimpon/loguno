@@ -2,6 +2,7 @@ package org.loguno.processor.handlers;
 
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import lombok.SneakyThrows;
+import org.loguno.processor.utils.ScanPackageUtils;
 
 import javax.lang.model.element.Element;
 import java.lang.annotation.Annotation;
@@ -99,9 +100,18 @@ public final class HandlersProvider {
     }
 
     // todo if performance is slow try https://github.com/atteo/classindex https://github.com/classgraph/classgraph
+    @SuppressWarnings("unchecked")
     private Stream<Class<? extends AnnotationHandler>> getAnnotationHandlersClasses() {
+        List<Class<? extends AnnotationHandler>> collect = ScanPackageUtils.getHandlersClasses()
+                .filter(c -> !Modifier.isAbstract(c.getModifiers()))
+                .filter(c -> c.isAnnotationPresent(Handler.class))
+                .map(c -> (Class<? extends AnnotationHandler>) c)
+                .collect(Collectors.toList());
 
-        Stream<Class<? extends AnnotationHandler>> ha = Stream.<Class<? extends AnnotationHandler>>builder()
+        return collect.stream();
+
+
+      /*  Stream<Class<? extends AnnotationHandler>> ha = Stream.<Class<? extends AnnotationHandler>>builder()
                 .add(AnnotationHandlerLogger.class)
                 .add(AnnotationHandlerLoggerLazy.class)
                 .add(AnnotationHandlerBeforeClass.class)
@@ -147,10 +157,10 @@ public final class HandlersProvider {
 
 
                 .build();
+*/
 
-
-        return ha.filter(c -> !Modifier.isAbstract(c.getModifiers()))
-                .filter(c -> c.isAnnotationPresent(Handler.class));
+        /*return ha.filter(c -> !Modifier.isAbstract(c.getModifiers()))
+                .filter(c -> c.isAnnotationPresent(Handler.class));*/
     }
 
     /**

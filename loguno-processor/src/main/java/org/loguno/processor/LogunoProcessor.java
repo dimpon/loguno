@@ -1,10 +1,6 @@
 package org.loguno.processor;
 
-import com.sun.source.tree.ClassTree;
-import com.sun.source.util.Trees;
 import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.comp.AttrContext;
-import com.sun.tools.javac.comp.Env;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import org.loguno.Loguno;
@@ -12,15 +8,14 @@ import org.loguno.processor.configuration.*;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import org.loguno.processor.handlers.InstrumentsHolder;
-import org.loguno.processor.utils.AnnotationRetriever;
-import org.loguno.processor.utils.AnnotationRetrieverImpl;
+import org.loguno.processor.utils.annotations.AnnotationRetriever;
+import org.loguno.processor.utils.annotations.AnnotationRetrieverImpl;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 

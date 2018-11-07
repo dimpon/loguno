@@ -28,7 +28,7 @@ public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger
     }
 
     @Override
-    public void processTree(Loguno.Logger annotation, JCTree.JCClassDecl classTree, ClassContext classContext) {
+    public void processTree(Loguno.Logger annotation, JCTree.JCClassDecl classDecl, ClassContext classContext) {
 
         ClassContext.LoggerInfo currentLogger = classContext.getLoggers().getLast();
 
@@ -53,18 +53,18 @@ public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger
                 .factory(factory)
                 .elements(elements)
                 .names(names)
-                .classTree(classTree)
+                .classTree(classDecl)
                 .loggerName(currentLogger.getLoggerName())
                 .factoryClassAndMethod(factoryClassAndMethod)
                 .loggerClass(loggerClass)
-                .topLevelClass(classTree.getSimpleName().toString())
+                .topLevelClass(classDecl.getSimpleName().toString())
                 .modifier(Flags.PRIVATE)
                 .modifier(((isStatic) ? Flags.STATIC : 0))
                 .modifier(Flags.FINAL)
                 .build()
                 .create();
 
-        JCTree.JCClassDecl classDecl = (JCTree.JCClassDecl) classTree;
+        //JCTree.JCClassDecl classDecl = (JCTree.JCClassDecl) classDecl;
 
         classDecl.defs = classDecl.defs.prepend(logVar1);
 

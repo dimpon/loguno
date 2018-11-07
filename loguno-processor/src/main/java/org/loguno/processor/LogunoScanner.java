@@ -7,8 +7,7 @@ import lombok.AllArgsConstructor;
 import org.loguno.processor.handlers.AnnotationHandler;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
-import org.loguno.processor.handlers.Order;
-import org.loguno.processor.utils.AnnotationRetriever;
+import org.loguno.processor.utils.annotations.AnnotationRetriever;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
