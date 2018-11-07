@@ -1,5 +1,6 @@
 package org.loguno.processor.handlers;
 
+import com.sun.tools.javac.code.Symbol;
 import org.loguno.Loguno;
 import com.sun.source.tree.ClassTree;
 import com.sun.tools.javac.code.Flags;
@@ -32,18 +33,19 @@ public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger
 
         ClassContext.LoggerInfo currentLogger = classContext.getLoggers().getLast();
 
-        ////////////////////////////////
 
-        //ClassTree classTree = trees.getTree(typeElement);
+        Symbol.ClassSymbol sym = classDecl.sym;
+
+
 
         boolean isStatic = true;
 
         //inner non-static classes cannnot have static fields
-        /*if (typeElement.getKind() == CLASS
-                && typeElement.getNestingKind() == MEMBER
-                && !typeElement.getModifiers().contains(Modifier.STATIC)) {
+        if (sym.getKind() == CLASS
+                && sym.getNestingKind() == MEMBER
+                && !sym.getModifiers().contains(Modifier.STATIC)) {
             isStatic = false;
-        }*/
+        }
 
         String factoryClassAndMethod = (currentLogger.isLazy()) ?
                 AnnotationHandlerLogger.lazyFactoryClassAndMethod : AnnotationHandlerLogger.factoryClassAndMethod;
@@ -67,6 +69,5 @@ public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger
         //JCTree.JCClassDecl classDecl = (JCTree.JCClassDecl) classDecl;
 
         classDecl.defs = classDecl.defs.prepend(logVar1);
-
     }
 }

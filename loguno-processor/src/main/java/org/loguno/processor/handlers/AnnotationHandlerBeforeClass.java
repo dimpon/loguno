@@ -1,5 +1,6 @@
 package org.loguno.processor.handlers;
 
+import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
 import org.loguno.Loguno;
@@ -21,8 +22,9 @@ public class AnnotationHandlerBeforeClass extends AnnotationHandlerBase<Loguno.L
     @Override
     public void processTree(Loguno.Logger annotation, JCTree.JCClassDecl classDecl, ClassContext classContext) {
 
-        classContext.getClasses().addLast(classDecl.name.toString());
+        Symbol.ClassSymbol sym = classDecl.sym;
 
+        classContext.getClasses().addLast(sym.fullname.toString());
 
 
         Frameworks loggerFramework = annotation.value();

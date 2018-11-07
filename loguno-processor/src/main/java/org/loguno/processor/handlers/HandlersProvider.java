@@ -91,7 +91,7 @@ public final class HandlersProvider {
     }
 
     public Optional<Class<? extends Annotation>> getAnnotationClassByName(final String name) {
-        return Optional.of(supportedAnnotationsWithStringNames.get(name));
+        return Optional.ofNullable(supportedAnnotationsWithStringNames.get(name));
     }
 
     @SneakyThrows({InstantiationException.class, IllegalAccessException.class, NoSuchMethodException.class, InvocationTargetException.class})

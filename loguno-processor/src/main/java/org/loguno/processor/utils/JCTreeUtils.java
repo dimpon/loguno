@@ -73,10 +73,16 @@ public class JCTreeUtils {
 
 
     private boolean isMethodConstructorWithSuper(ExecutableElement method, JCTree.JCBlock body) {
-        return (method.getKind() == ElementKind.CONSTRUCTOR &&
-                body.stats.size() > 0 &&
-                body.stats.get(0) != null &&
-                body.stats.get(0).toString().contains("super"));
+
+        if (method != null)
+            return (method.getKind() == ElementKind.CONSTRUCTOR &&
+                    body.stats.size() > 0 &&
+                    body.stats.get(0) != null &&
+                    body.stats.get(0).toString().contains("super"));
+        else
+            return (body.stats.size() > 0 &&
+                    body.stats.get(0) != null &&
+                    body.stats.get(0).toString().contains("super"));
     }
 
     public com.sun.tools.javac.util.List<JCTree.JCStatement> generateNewMethodBody(ExecutableElement method, Trees trees, JCTree.JCStatement methodCall) {
@@ -84,7 +90,16 @@ public class JCTreeUtils {
         MethodTree methodTree = trees.getTree(method);
         JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
 
-        if (JCTreeUtils.isMethodConstructorWithSuper(method, body)) {
+        return generateNewMethodBody(methodTree, methodCall);
+    }
+
+    public com.sun.tools.javac.util.List<JCTree.JCStatement> generateNewMethodBody(MethodTree methodTree, JCTree.JCStatement methodCall) {
+
+
+        JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
+        JCTree.JCMethodDecl methodDecl = (JCTree.JCMethodDecl) methodTree;
+
+        if (JCTreeUtils.isMethodConstructorWithSuper(methodDecl.sym, body)) {
 
             ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
             bodyNew.append(body.stats.get(0));
@@ -119,9 +134,6 @@ public class JCTreeUtils {
         return message.replace(CLASS_PATTERN, context.getClasses().getLast())
                 .replace(METHOD_PATTERN, context.getMethods().getLast());
     }
-
-
-
 
 
 }

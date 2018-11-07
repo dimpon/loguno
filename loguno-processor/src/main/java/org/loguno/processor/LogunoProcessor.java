@@ -100,20 +100,6 @@ public class LogunoProcessor extends AbstractProcessor {
 
 
 
-        /*Set<? extends Element> rootElements = roundEnvironment.getRootElements();
-
-        rootElements.forEach(o -> {
-            TypeElement e =((TypeElement) o);
-            NestingKind nestingKind = e.getNestingKind();
-            Loguno.Logger a = e.getAnnotation(Loguno.Logger.class);
-        });
-
-        Set<? extends Element> elementsAnnotatedWith = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class);
-*/
-
-        //Set<? extends Element> elementsAnnotatedWith = roundEnvironment.getElementsAnnotatedWith(Loguno.class);
-
-
         Set<Element> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()
                 //.map(o -> (Element) o)
                 .filter(this::isProcess)
@@ -123,43 +109,18 @@ public class LogunoProcessor extends AbstractProcessor {
 
         final ClassContext classContext = new ClassContext();
         final AnnotationRetriever retriever = new AnnotationRetrieverImpl();
-      /*  final LogunoElementVisitor visitor = new LogunoElementVisitor(javacProcessingEnvironment);
-
-        final LogunoTreeScanner scanner = new LogunoTreeScanner(this.holder);
-*/
 
         final LogunoScanner scanner = new LogunoScanner(classContext,retriever);
 
-        //final LogunoScanner scanner = new LogunoScanner();
         try {
             elements.forEach(element -> {
 
                 ThreadLocalHolder.put(getFilePath(element));
-
-
                 JCTree tree = javacProcessingEnvironment.getElementUtils().getTree(element);
-
-                //Env<AttrContext> classEnv = holder.enter.getClassEnv((Symbol.TypeSymbol) element);
-
-
-                //List<? extends AnnotationMirror> annotationMirrors = element.getAnnotationMirrors();
-
-                //lVisitor.scan(classTree,classContext);
-
-
-                //Void accept = element.accept(visitor, classContext);
-
-
-                //scanner.scan(tree, null);
-                //trans.translate(tree);
-
                 scanner.scan(tree);
 
-
                 ThreadLocalHolder.cleanupThread();
-                // JCTree tree = (JCTree) trees.getTree(element);
-                //tree.accept(scanner);
-                //tree.accept(translator);
+
             });
         } catch (Exception e) {
             System.out.println(classContext.toString());
