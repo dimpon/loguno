@@ -57,7 +57,7 @@ public class LogunoScanner extends TreeScanner {
     @Override
     public void visitVarDef(JCTree.JCVariableDecl jcVariableDecl) {
         //class field
-        if(jcVariableDecl.sym!=null && jcVariableDecl.sym.getKind()==ElementKind.FIELD)
+        if (jcVariableDecl.sym != null && jcVariableDecl.sym.getKind() == ElementKind.FIELD)
             return;
 
 
@@ -80,25 +80,33 @@ public class LogunoScanner extends TreeScanner {
     }
 
     private void findHandlersBeforeAndExecute(List<Annotation> annotations, Object e) {
-        annotations.add(VOID_ANN);
+
+        HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(VOID_ANN.annotationType(), e)
+                .forEach(h -> {
+                    h.process(VOID_ANN, e, classContext);
+                });
+
         annotations.forEach(ann -> {
-            Stream<? extends AnnotationHandler<?, Object>> handlers = HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(ann.annotationType(), e);
-            List<? extends AnnotationHandler<?, Object>> collect = handlers.collect(Collectors.toList());
-            collect.forEach(h -> {
-                h.process(ann, e, classContext);
-            });
+            HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(ann.annotationType(), e)
+                    .forEach(h -> {
+                        h.process(ann, e, classContext);
+                    });
         });
     }
 
     private void findHandlersAfterAndExecute(List<Annotation> annotations, Object e) {
-        annotations.add(VOID_ANN);
+
         annotations.forEach(ann -> {
-            Stream<? extends AnnotationHandler<?, Object>> handlers = HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(ann.annotationType(), e);
-            List<? extends AnnotationHandler<?, Object>> collect = handlers.collect(Collectors.toList());
-            collect.forEach(h -> {
-                h.process(ann, e, classContext);
-            });
+            HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(ann.annotationType(), e)
+                    .forEach(h -> {
+                        h.process(ann, e, classContext);
+                    });
         });
+
+        HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(VOID_ANN.annotationType(), e)
+                .forEach(h -> {
+                    h.process(VOID_ANN, e, classContext);
+                });
     }
 
 }
