@@ -14,8 +14,7 @@ import java.io.PrintWriter;
 /**
  * @author Dmitrii Ponomarev
  */
-@Handler
-@Order(value = 3,runOrder = Order.RunOrder.BEFORE)
+@Handler(value = Handler.RunOrder.BEFORE,order = 3)
 public class AnnotationHandlerLoggerLazy extends AnnotationHandlerBase<Loguno.Logger, JCTree.JCClassDecl> {
 
 

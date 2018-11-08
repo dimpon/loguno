@@ -70,8 +70,8 @@ public final class HandlersProvider {
                 .getOrDefault(keyClass(e), Collections.emptyMap())
                 .getOrDefault(a, Collections.emptyList())
                 .stream()
-                .sorted(Comparator.comparing(h -> h.getClass().getAnnotation(Order.class).value()))
-                .filter(h -> h.getClass().getAnnotation(Order.class).runOrder()== Order.RunOrder.BEFORE)
+                .sorted(Comparator.comparing(h -> h.getClass().getAnnotation(Handler.class).order()))
+                .filter(h -> h.getClass().getAnnotation(Handler.class).value()== Handler.RunOrder.BEFORE)
                 .map(h -> (AnnotationHandler<?, E>) h);
     }
 
@@ -81,8 +81,8 @@ public final class HandlersProvider {
                 .getOrDefault(keyClass(e), Collections.emptyMap())
                 .getOrDefault(a, Collections.emptyList())
                 .stream()
-                .sorted(Comparator.comparing(h -> h.getClass().getAnnotation(Order.class).value()))
-                .filter(h -> h.getClass().getAnnotation(Order.class).runOrder()== Order.RunOrder.AFTER)
+                .sorted(Comparator.comparing(h -> h.getClass().getAnnotation(Handler.class).order()))
+                .filter(h -> h.getClass().getAnnotation(Handler.class).value()== Handler.RunOrder.AFTER)
                 .map(h -> (AnnotationHandler<?, E>) h);
     }
 

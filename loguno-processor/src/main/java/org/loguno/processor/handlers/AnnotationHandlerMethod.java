@@ -14,14 +14,9 @@ import org.loguno.processor.utils.JCTreeUtils;
 import javax.lang.model.element.ElementKind;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.loguno.processor.configuration.ConfigurationKeys.*;
-import static org.loguno.processor.utils.JCTreeUtils.*;
 
 public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends AnnotationHandlerBase<A, E> {
 
@@ -29,8 +24,7 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
         super(environment);
     }
 
-    @Handler
-    @Order(runOrder = Order.RunOrder.BEFORE,value = 0)
+    @Handler(value = Handler.RunOrder.BEFORE,order = 1)
     public static class AnnotationHandlerBefore extends AnnotationHandlerMethod<VoidAnnotation, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerBefore(JavacProcessingEnvironment environment) {
@@ -43,8 +37,7 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
         }
     }
 
-    @Handler
-    @Order(runOrder = Order.RunOrder.AFTER,value = 0)
+    @Handler(value = Handler.RunOrder.AFTER,order = 1)
     public static class AnnotationHandlerAfter extends AnnotationHandlerMethod<VoidAnnotation, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerAfter(JavacProcessingEnvironment environment) {
@@ -58,7 +51,6 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerLoguno extends AnnotationHandlerMethod<Loguno, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {
@@ -73,7 +65,6 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerDebug extends AnnotationHandlerMethod<Loguno.DEBUG, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
@@ -87,7 +78,6 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerInfo extends AnnotationHandlerMethod<Loguno.INFO, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
@@ -101,7 +91,6 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerError extends AnnotationHandlerMethod<Loguno.ERROR, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerError(JavacProcessingEnvironment environment) {
@@ -115,7 +104,6 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerTrace extends AnnotationHandlerMethod<Loguno.TRACE, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
@@ -129,7 +117,6 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerWarn extends AnnotationHandlerMethod<Loguno.WARN, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {

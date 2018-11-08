@@ -25,7 +25,6 @@ public abstract class AnnotationHandlerMethodThrows <A extends Annotation, E> ex
      * this method is invoke for every method.
      */
     //@Handler
-    @Order
     public static class AnnotationHandlerWholeMethod extends AnnotationHandlerMethod<VoidAnnotation, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerWholeMethod(JavacProcessingEnvironment environment) {
@@ -48,7 +47,6 @@ public abstract class AnnotationHandlerMethodThrows <A extends Annotation, E> ex
             String e = "e";
             ListBuffer<JCTree.JCCatch> catches = new ListBuffer<>();
 
-            //java.util.List<AnnotationHandlerPipedExceptionsCatch.JCStatementHolder> holders = new ArrayList<>();
 
             for (JCTree.JCExpression oneException:aThrows) {
 
@@ -88,31 +86,6 @@ public abstract class AnnotationHandlerMethodThrows <A extends Annotation, E> ex
                             null//factory.Block(0,com.sun.tools.javac.util.List.<JCTree.JCStatement>nil())
 
                     ));
-
-
-            //String method = conf.getProperty(ConfigurationKeys.LOG_METHOD_DEFAULT);
-
-
-
-            /*JCTree.JCModifiers jcModifiers = factory.Modifiers(0);
-            Name ee = names.fromString("e");
-            JCTree.JCExpression excepType = expressionBuilder.createJCExpression("Exception");
-
-            JCTree.JCVariableDecl var = factory.at(((JCTree) element).pos).VarDef(jcModifiers, ee, excepType, null);
-
-            JCTree.JCStatement throww = factory.Throw(factory.Ident(elements.getName("e")));
-
-            element.getBody().stats=com.sun.tools.javac.util.List.<JCTree.JCStatement>of(
-                    factory.Try(
-                            factory.Block(0, element.getBody().stats),
-
-                            com.sun.tools.javac.util.List.<JCTree.JCCatch>of(factory.Catch(var,
-                                    factory.Block(0,com.sun.tools.javac.util.List.<JCTree.JCStatement>of(throww))
-                                    )),
-                            null//factory.Block(0,com.sun.tools.javac.util.List.<JCTree.JCStatement>nil())
-
-                    ));*/
-
         }
     }
 }

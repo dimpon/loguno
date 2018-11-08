@@ -12,8 +12,7 @@ import javax.lang.model.element.TypeElement;
 /**
  * @author Dmitrii Ponomarev
  */
-@Handler
-@Order(value = 1,runOrder = Order.RunOrder.BEFORE)
+@Handler(value = Handler.RunOrder.BEFORE,order = 1)
 public class AnnotationHandlerBeforeClass extends AnnotationHandlerBase<Loguno.Logger, JCTree.JCClassDecl>  {
     public AnnotationHandlerBeforeClass(JavacProcessingEnvironment environment) {
         super(environment);

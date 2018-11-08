@@ -19,7 +19,6 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerLoguno extends AnnotationHandlerCatch<Loguno, JCTree.JCCatch> {
 
         public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {
@@ -34,7 +33,6 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerInfo extends AnnotationHandlerCatch<Loguno.INFO, JCTree.JCCatch> {
 
         public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
@@ -48,7 +46,6 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerTrace extends AnnotationHandlerCatch<Loguno.TRACE, JCTree.JCCatch> {
 
         public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
@@ -62,7 +59,6 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerDebug extends AnnotationHandlerCatch<Loguno.DEBUG, JCTree.JCCatch> {
 
         public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
@@ -76,7 +72,6 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerWarn extends AnnotationHandlerCatch<Loguno.WARN, JCTree.JCCatch> {
 
         public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
@@ -90,7 +85,6 @@ public abstract class AnnotationHandlerCatch<A extends Annotation, E> extends An
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerError extends AnnotationHandlerCatch<Loguno.ERROR, JCTree.JCCatch> {
 
         public AnnotationHandlerError(JavacProcessingEnvironment environment) {

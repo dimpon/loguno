@@ -30,7 +30,6 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerPipedExceptions extends AnnotationHandlerPipedExceptionsCatch<VoidAnnotation, PipedExceptionsHolder> {
 
         public AnnotationHandlerPipedExceptions(JavacProcessingEnvironment environment) {
@@ -79,7 +78,6 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerDebug extends AnnotationHandlerPipedExceptionsCatch<Loguno.DEBUG, JCStatementHolder> {
 
         public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
@@ -93,7 +91,6 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerInfo extends AnnotationHandlerPipedExceptionsCatch<Loguno.INFO, JCStatementHolder> {
 
         public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
@@ -107,7 +104,6 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerTrace extends AnnotationHandlerPipedExceptionsCatch<Loguno.TRACE, JCStatementHolder> {
 
         public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
@@ -121,7 +117,6 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerWarn extends AnnotationHandlerPipedExceptionsCatch<Loguno.WARN, JCStatementHolder> {
 
         public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
@@ -135,7 +130,6 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerError extends AnnotationHandlerPipedExceptionsCatch<Loguno.ERROR, JCStatementHolder> {
 
         public AnnotationHandlerError(JavacProcessingEnvironment environment) {
@@ -149,7 +143,6 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerLoguno extends AnnotationHandlerPipedExceptionsCatch<Loguno, JCStatementHolder> {
 
         public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {

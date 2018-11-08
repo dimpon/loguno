@@ -24,7 +24,6 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerWarn extends AnnotationHandlerLocalVariable<Loguno.WARN, JCTree.JCVariableDecl> {
 
         public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
@@ -38,7 +37,6 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerError extends AnnotationHandlerLocalVariable<Loguno.ERROR, JCTree.JCVariableDecl> {
 
         public AnnotationHandlerError(JavacProcessingEnvironment environment) {
@@ -52,7 +50,6 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerDebug extends AnnotationHandlerLocalVariable<Loguno.DEBUG, JCTree.JCVariableDecl> {
 
         public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
@@ -67,7 +64,6 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
 
     /////////////////
     @Handler
-    @Order
     public static class AnnotationHandlerTrace extends AnnotationHandlerLocalVariable<Loguno.TRACE, JCTree.JCVariableDecl> {
 
         public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
@@ -81,7 +77,6 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerInfo extends AnnotationHandlerLocalVariable<Loguno.INFO, JCTree.JCVariableDecl> {
 
         public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
@@ -95,7 +90,6 @@ public abstract class AnnotationHandlerLocalVariable<A extends Annotation, E> ex
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerLoguno extends AnnotationHandlerLocalVariable<Loguno, JCTree.JCVariableDecl> {
 
         public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {

@@ -82,15 +82,11 @@ public class LogunoScanner extends TreeScanner {
     private void findHandlersBeforeAndExecute(List<Annotation> annotations, Object e) {
 
         HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(VOID_ANN.annotationType(), e)
-                .forEach(h -> {
-                    h.process(VOID_ANN, e, classContext);
-                });
+                .forEach(h -> h.process(VOID_ANN, e, classContext));
 
         annotations.forEach(ann -> {
             HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(ann.annotationType(), e)
-                    .forEach(h -> {
-                        h.process(ann, e, classContext);
-                    });
+                    .forEach(h -> h.process(ann, e, classContext));
         });
     }
 
@@ -98,15 +94,11 @@ public class LogunoScanner extends TreeScanner {
 
         annotations.forEach(ann -> {
             HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(ann.annotationType(), e)
-                    .forEach(h -> {
-                        h.process(ann, e, classContext);
-                    });
+                    .forEach(h -> h.process(ann, e, classContext));
         });
 
         HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(VOID_ANN.annotationType(), e)
-                .forEach(h -> {
-                    h.process(VOID_ANN, e, classContext);
-                });
+                .forEach(h -> h.process(VOID_ANN, e, classContext));
     }
 
 }

@@ -14,8 +14,7 @@ import javax.lang.model.element.*;
 import static javax.lang.model.element.ElementKind.CLASS;
 import static javax.lang.model.element.NestingKind.MEMBER;
 
-@Handler
-@Order(value = 2,runOrder = Order.RunOrder.BEFORE)
+@Handler(value = Handler.RunOrder.BEFORE,order = 2)
 public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger, JCTree.JCClassDecl> {
 
     private static final String loggerClass = "org.slf4j.Logger";
@@ -35,8 +34,6 @@ public class AnnotationHandlerLogger extends AnnotationHandlerBase<Loguno.Logger
 
 
         Symbol.ClassSymbol sym = classDecl.sym;
-
-
 
         boolean isStatic = true;
 

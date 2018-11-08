@@ -29,7 +29,6 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerTrace extends AnnotationHandlerMethodParams<Loguno.TRACE, VariableElement> {
 
         public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
@@ -43,7 +42,6 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerDebug extends AnnotationHandlerMethodParams<Loguno.DEBUG, VariableElement> {
 
         public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
@@ -57,7 +55,6 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerInfo extends AnnotationHandlerMethodParams<Loguno.INFO, VariableElement> {
 
         public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
@@ -71,7 +68,6 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerWarn extends AnnotationHandlerMethodParams<Loguno.WARN, VariableElement> {
 
         public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
@@ -85,7 +81,6 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerError extends AnnotationHandlerMethodParams<Loguno.ERROR, VariableElement> {
 
         public AnnotationHandlerError(JavacProcessingEnvironment environment) {
@@ -99,7 +94,6 @@ public abstract class AnnotationHandlerMethodParams<A extends Annotation, E> ext
     }
 
     @Handler
-    @Order
     public static class AnnotationHandlerLoguno extends AnnotationHandlerMethodParams<Loguno, VariableElement> {
 
         public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {

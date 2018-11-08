@@ -10,17 +10,19 @@ import org.loguno.processor.handlers.Frameworks;
 // @Loguno()
 // @Loguno("aaa")
 // @org.loguno.Loguno.INFO()
-@NoArgsConstructor(onConstructor_ = @Loguno)
-@Getter(onMethod_ = { @Loguno, @Loguno.TRACE })
-@Setter(onMethod_ = { @Loguno, @Loguno.TRACE })
+//@NoArgsConstructor(onConstructor_ = @Loguno)
+//@Getter(onMethod_ = { @Loguno, @Loguno.TRACE })
+//@Setter(onMethod_ = { @Loguno, @Loguno.TRACE })
 public class Makaka extends Animal {
 
 	private String ccc;
 
+/*
 	@Loguno
 	public Makaka(String a) {
 		super(a);
 	}
+*/
 
 	/*
 	 * @Loguno
@@ -49,7 +51,9 @@ public class Makaka extends Animal {
 	 * }
 	 */
 
-	public static void main(String[] args) {
-		new Makaka();
-	}
+	public void dodo(@Loguno String a1){
+
+    }
+
+
 }

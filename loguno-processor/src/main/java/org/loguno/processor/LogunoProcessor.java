@@ -37,26 +37,9 @@ public class LogunoProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
-        ScanPackageUtils.messager = processingEnv.getMessager();
-
-
-
-
-
-
         this.javacProcessingEnvironment = (JavacProcessingEnvironment) processingEnv;
         this.holder = new InstrumentsHolder(javacProcessingEnvironment);
         HandlersProvider.create(this.javacProcessingEnvironment);
-
-        Options instance = Options.instance(javacProcessingEnvironment.getContext());
-
-        String s = instance.get("-sourcepath");
-
-        System.out.printf(""+s);
-
-        javacProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.NOTE,""+s);
-
-
 
 
 
@@ -78,62 +61,45 @@ public class LogunoProcessor extends AbstractProcessor {
 */
     }
 
-    private String getFilePath(Element file) {
-        if(file instanceof TypeElement) {
-            JavaFileObject sourcefile = ((Symbol.ClassSymbol) file).sourcefile;
-            return sourcefile.getName();
-        }
-        if(file instanceof PackageElement){
-            return ((Symbol.PackageSymbol) file).fullname.toString();
-        }
-        throw new IllegalArgumentException(file.toString());
-    }
-
-    private String getPropertiesPotentialPath(Element file) {
-        String name = getFilePath(file);
-        return name.substring(0, name.lastIndexOf("src"));
-    }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
 
         long start = System.currentTimeMillis();
-
-        if (annotations.isEmpty() || roundEnvironment.getRootElements().isEmpty()) {
-            return false;
-        }
-
-        Set<? extends Element> rootElements = roundEnvironment.getRootElements();
-
-        Element firstFile = rootElements.stream().findFirst().orElseGet(() -> null);
-
-        String rootPath = getPropertiesPotentialPath(firstFile);
-
-
-        Boolean enable = conf.getProperty(ConfigurationKeys.ENABLE, rootPath);
-
-
-        if (!enable)
-            return false;
-
-
-
-        Set<Element> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()
-                //.map(o -> (Element) o)
-                .filter(this::isProcess)
-                .filter(typeElement -> typeElement.getSimpleName().toString().contains("Makaka"))
-
-                .collect(Collectors.toSet());
-
-        final ClassContext classContext = new ClassContext();
-        final AnnotationRetriever retriever = new AnnotationRetrieverImpl();
-
-        final LogunoScanner scanner = new LogunoScanner(classContext,retriever);
-
         try {
+            if (annotations.isEmpty() || roundEnvironment.getRootElements().isEmpty()) {
+                return false;
+            }
+
+            Set<? extends Element> rootElements = roundEnvironment.getRootElements();
+
+            Element firstFile = rootElements.stream().findFirst().orElse(null);
+
+            String rootPath = PathUtils.getPropertiesPotentialPath(firstFile);
+
+            Boolean enable = conf.getProperty(ConfigurationKeys.ENABLE, rootPath);
+
+
+            if (!enable)
+                return false;
+
+
+            Set<Element> elements = roundEnvironment.getElementsAnnotatedWith(Loguno.Logger.class).stream()
+                    //.map(o -> (Element) o)
+                    .filter(this::isProcess)
+                    .filter(typeElement -> typeElement.getSimpleName().toString().contains("Makaka"))
+
+                    .collect(Collectors.toSet());
+
+            final ClassContext classContext = new ClassContext();
+            final AnnotationRetriever retriever = new AnnotationRetrieverImpl();
+
+            final LogunoScanner scanner = new LogunoScanner(classContext, retriever);
+
+
             elements.forEach(element -> {
 
-                ThreadLocalHolder.put(getFilePath(element));
+                ThreadLocalHolder.put(PathUtils.getFilePath(element));
                 JCTree tree = javacProcessingEnvironment.getElementUtils().getTree(element);
                 scanner.scan(tree);
 
@@ -141,7 +107,6 @@ public class LogunoProcessor extends AbstractProcessor {
 
             });
         } catch (Exception e) {
-            System.out.println(classContext.toString());
             e.printStackTrace();
             javacProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, e.getMessage());
         }

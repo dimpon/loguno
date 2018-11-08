@@ -7,8 +7,7 @@ import org.loguno.Loguno;
 /**
  * @author Dmitrii Ponomarev
  */
-@Handler
-@Order(value = 1,runOrder = Order.RunOrder.AFTER)
+@Handler(value = Handler.RunOrder.AFTER,order = 1)
 public class AnnotationHandlerAfterClass extends AnnotationHandlerBase<Loguno.Logger, JCTree.JCClassDecl>  {
     public AnnotationHandlerAfterClass(JavacProcessingEnvironment environment) {
         super(environment);
