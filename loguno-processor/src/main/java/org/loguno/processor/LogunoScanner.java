@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.loguno.processor.utils.JCTreeUtils.VOID_ANN;
+
 @AllArgsConstructor
 public class LogunoScanner extends TreeScanner {
 
@@ -78,18 +80,22 @@ public class LogunoScanner extends TreeScanner {
     }
 
     private void findHandlersBeforeAndExecute(List<Annotation> annotations, Object e) {
+        annotations.add(VOID_ANN);
         annotations.forEach(ann -> {
             Stream<? extends AnnotationHandler<?, Object>> handlers = HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(ann.annotationType(), e);
-            handlers.forEach(h -> {
+            List<? extends AnnotationHandler<?, Object>> collect = handlers.collect(Collectors.toList());
+            collect.forEach(h -> {
                 h.process(ann, e, classContext);
             });
         });
     }
 
     private void findHandlersAfterAndExecute(List<Annotation> annotations, Object e) {
+        annotations.add(VOID_ANN);
         annotations.forEach(ann -> {
             Stream<? extends AnnotationHandler<?, Object>> handlers = HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(ann.annotationType(), e);
-            handlers.forEach(h -> {
+            List<? extends AnnotationHandler<?, Object>> collect = handlers.collect(Collectors.toList());
+            collect.forEach(h -> {
                 h.process(ann, e, classContext);
             });
         });

@@ -30,6 +30,34 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
     }
 
     @Handler
+    @Order(runOrder = Order.RunOrder.BEFORE,value = 0)
+    public static class AnnotationHandlerBefore extends AnnotationHandlerMethod<VoidAnnotation, JCTree.JCMethodDecl> {
+
+        public AnnotationHandlerBefore(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(VoidAnnotation annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
+            classContext.getMethods().addLast(element.getName().toString());
+        }
+    }
+
+    @Handler
+    @Order(runOrder = Order.RunOrder.AFTER,value = 0)
+    public static class AnnotationHandlerAfter extends AnnotationHandlerMethod<VoidAnnotation, JCTree.JCMethodDecl> {
+
+        public AnnotationHandlerAfter(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(VoidAnnotation annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
+            classContext.getMethods().removeLast();
+        }
+    }
+
+    @Handler
     @Order
     public static class AnnotationHandlerLoguno extends AnnotationHandlerMethod<Loguno, JCTree.JCMethodDecl> {
 
@@ -116,9 +144,6 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
 
     void doRealJob(String[] value, String logMethod, JCTree.JCMethodDecl methodTree, ClassContext classContext) {
 
-
-        classContext.getMethods().addLast(methodTree.getName().toString());
-
         //MethodTree methodTree = trees.getTree(element);
 
         String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
@@ -152,8 +177,6 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
         JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
 
         body.stats = JCTreeUtils.generateNewMethodBody(methodTree, methodCall);
-
-        classContext.getMethods().removeLast();
 
     }
 

@@ -24,7 +24,7 @@ public abstract class AnnotationHandlerMethodThrows <A extends Annotation, E> ex
     /**
      * this method is invoke for every method.
      */
-    @Handler
+    //@Handler
     @Order
     public static class AnnotationHandlerWholeMethod extends AnnotationHandlerMethod<VoidAnnotation, JCTree.JCMethodDecl> {
 
