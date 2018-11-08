@@ -3,11 +3,13 @@ package org.loguno.processor;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
 import com.sun.tools.javac.tree.JCTree;
+import com.sun.tools.javac.util.Options;
 import org.loguno.Loguno;
 import org.loguno.processor.configuration.*;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
 import org.loguno.processor.handlers.InstrumentsHolder;
+import org.loguno.processor.utils.ScanPackageUtils;
 import org.loguno.processor.utils.annotations.AnnotationRetriever;
 import org.loguno.processor.utils.annotations.AnnotationRetrieverImpl;
 
@@ -35,9 +37,25 @@ public class LogunoProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
+        ScanPackageUtils.messager = processingEnv.getMessager();
+
+
+
+
+
+
         this.javacProcessingEnvironment = (JavacProcessingEnvironment) processingEnv;
         this.holder = new InstrumentsHolder(javacProcessingEnvironment);
         HandlersProvider.create(this.javacProcessingEnvironment);
+
+        Options instance = Options.instance(javacProcessingEnvironment.getContext());
+
+        String s = instance.get("-sourcepath");
+
+        System.out.printf(""+s);
+
+        javacProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.NOTE,""+s);
+
 
 
 
