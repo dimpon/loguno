@@ -12,6 +12,7 @@ import org.loguno.processor.utils.annotations.AnnotationRetriever;
 
 import javax.lang.model.element.ElementKind;
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,17 +35,10 @@ public class LogunoScanner extends TreeScanner {
     public void visitClassDef(final JCTree.JCClassDecl jcClassDecl) {
         List<Annotation> annotations = annotationRetriever.getTreeAnnotations(jcClassDecl.getModifiers()).collect(Collectors.toList());
         findHandlersBeforeAndExecute(annotations, jcClassDecl);
-        this.visitClassDefFurther(jcClassDecl);
+        super.visitClassDef(jcClassDecl);
         findHandlersAfterAndExecute(annotations, jcClassDecl);
     }
 
-    private void visitClassDefFurther(JCTree.JCClassDecl var1) {
-        //this.scan((JCTree)var1.mods);
-        //this.scan(var1.typarams);
-        //this.scan((JCTree)var1.extending);
-        //this.scan(var1.implementing);
-        super.scan(var1.defs);
-    }
 
     @Override
     public void visitMethodDef(JCTree.JCMethodDecl jcMethodDecl) {
@@ -57,16 +51,39 @@ public class LogunoScanner extends TreeScanner {
     @Override
     public void visitVarDef(JCTree.JCVariableDecl jcVariableDecl) {
         //class field
-        if (jcVariableDecl.sym != null && jcVariableDecl.sym.getKind() == ElementKind.FIELD)
-            return;
 
+        ClassContext.VarZone last = classContext.getWhereIam().getLast();
 
-        //super.visitVarDef(jcVariableDecl);
+        switch (last){
+            case CLASS:
+                break;
+            case METHOD:
+                visitMethodParam(jcVariableDecl);
+                break;
+            case BLOCK:
+                visitLocalVariable(jcVariableDecl);
+                break;
+
+        }
+
+    }
+
+    private void visitMethodParam(JCTree.JCVariableDecl jcVariableDecl){
+        List<Annotation> annotations = annotationRetriever.getTreeAnnotations(jcVariableDecl.getModifiers()).collect(Collectors.toList());
+        findHandlersBeforeAndExecute(annotations, jcVariableDecl);
+        super.visitVarDef(jcVariableDecl);
+        findHandlersAfterAndExecute(annotations, jcVariableDecl);
+    }
+
+    private void visitLocalVariable(JCTree.JCVariableDecl jcVariableDecl){
+        super.visitVarDef(jcVariableDecl);
     }
 
     @Override
     public void visitBlock(JCTree.JCBlock jcBlock) {
+        findHandlersBeforeAndExecute(Collections.emptyList(), jcBlock);
         super.visitBlock(jcBlock);
+        findHandlersAfterAndExecute(Collections.emptyList(), jcBlock);
     }
 
     @Override

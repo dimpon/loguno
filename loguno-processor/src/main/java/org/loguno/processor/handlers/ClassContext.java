@@ -1,6 +1,7 @@
 package org.loguno.processor.handlers;
 
 import com.sun.source.tree.BlockTree;
+import com.sun.source.tree.MethodTree;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,8 @@ public class ClassContext {
     private LinkedList<String> classes = new LinkedList<>();
     private LinkedList<String> methods = new LinkedList<>();
     private LinkedList<BlockTree> blocks = new LinkedList<>();
+    private LinkedList<MethodTree> methodsBlocks = new LinkedList<>();
+    private LinkedList<VarZone> whereIam = new LinkedList<>();
 
     private Map<Frameworks, Boolean> lazyLoggerIsGenerated = new EnumMap<>(Frameworks.class);
 
@@ -29,6 +32,13 @@ public class ClassContext {
 
     void lazyLoggerGenerated(Frameworks logger) {
         lazyLoggerIsGenerated.put(logger, true);
+    }
+
+
+    public enum VarZone{
+        CLASS,
+        METHOD,
+        BLOCK;
     }
 
     @Getter

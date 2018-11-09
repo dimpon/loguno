@@ -25,7 +25,37 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
     }
 
     @Handler(value = Handler.RunOrder.BEFORE,order = 1)
-    public static class AnnotationHandlerBefore extends AnnotationHandlerMethod<VoidAnnotation, JCTree.JCMethodDecl> {
+    public static class AnnotationHandlerBlockBefore extends AnnotationHandlerBase<VoidAnnotation, JCTree.JCBlock> {
+
+        public AnnotationHandlerBlockBefore(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(VoidAnnotation annotation, JCTree.JCBlock element, ClassContext classContext) {
+            classContext.getBlocks().add(element);
+            classContext.getWhereIam().addLast(ClassContext.VarZone.BLOCK);
+
+        }
+    }
+
+    @Handler(value = Handler.RunOrder.AFTER,order = 1)
+    public static class AnnotationHandlerBlockAfter extends AnnotationHandlerBase<VoidAnnotation, JCTree.JCBlock> {
+
+        public AnnotationHandlerBlockAfter(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(VoidAnnotation annotation, JCTree.JCBlock element, ClassContext classContext) {
+            classContext.getBlocks().removeLast();
+            classContext.getWhereIam().removeLast();
+        }
+    }
+
+
+    @Handler(value = Handler.RunOrder.BEFORE,order = 1)
+    public static class AnnotationHandlerBefore extends AnnotationHandlerBase<VoidAnnotation, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerBefore(JavacProcessingEnvironment environment) {
             super(environment);
@@ -34,11 +64,13 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
         @Override
         public void processTree(VoidAnnotation annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
             classContext.getMethods().addLast(element.getName().toString());
+            classContext.getMethodsBlocks().addLast(element);
+            classContext.getWhereIam().addLast(ClassContext.VarZone.METHOD);
         }
     }
 
     @Handler(value = Handler.RunOrder.AFTER,order = 1)
-    public static class AnnotationHandlerAfter extends AnnotationHandlerMethod<VoidAnnotation, JCTree.JCMethodDecl> {
+    public static class AnnotationHandlerAfter extends AnnotationHandlerBase<VoidAnnotation, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerAfter(JavacProcessingEnvironment environment) {
             super(environment);
@@ -47,6 +79,8 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
         @Override
         public void processTree(VoidAnnotation annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
             classContext.getMethods().removeLast();
+            classContext.getMethodsBlocks().removeLast();
+            classContext.getWhereIam().removeLast();
         }
     }
 

@@ -86,10 +86,7 @@ public class JCTreeUtils {
     }
 
     public com.sun.tools.javac.util.List<JCTree.JCStatement> generateNewMethodBody(ExecutableElement method, Trees trees, JCTree.JCStatement methodCall) {
-
         MethodTree methodTree = trees.getTree(method);
-        JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
-
         return generateNewMethodBody(methodTree, methodCall);
     }
 

@@ -7,7 +7,7 @@ import org.loguno.Loguno;
 /**
  * @author Dmitrii Ponomarev
  */
-@Handler(value = Handler.RunOrder.AFTER,order = 1)
+@Handler(value = Handler.RunOrder.AFTER,order = 10)
 public class AnnotationHandlerAfterClass extends AnnotationHandlerBase<Loguno.Logger, JCTree.JCClassDecl>  {
     public AnnotationHandlerAfterClass(JavacProcessingEnvironment environment) {
         super(environment);
@@ -17,5 +17,6 @@ public class AnnotationHandlerAfterClass extends AnnotationHandlerBase<Loguno.Lo
     public void processTree(Loguno.Logger annotation, JCTree.JCClassDecl element, ClassContext classContext) {
         classContext.getLoggers().removeLast();
         classContext.getClasses().removeLast();
+        classContext.getWhereIam().removeLast();
     }
 }

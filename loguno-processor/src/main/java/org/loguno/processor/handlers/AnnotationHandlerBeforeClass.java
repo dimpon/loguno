@@ -35,6 +35,8 @@ public class AnnotationHandlerBeforeClass extends AnnotationHandlerBase<Loguno.L
         ClassContext.LoggerInfo currentLogger = ClassContext.LoggerInfo.of(loggerFramework, annotation.name(), annotation.lazy());
         classContext.getLoggers().addLast(currentLogger);
 
+        classContext.getWhereIam().addLast(ClassContext.VarZone.CLASS);
+
     }
 
 }
