@@ -17,6 +17,5 @@ public class AnnotationHandlerAfterClass extends AnnotationHandlerBase<Loguno.Lo
     public void processTree(Loguno.Logger annotation, JCTree.JCClassDecl element, ClassContext classContext) {
         classContext.getLoggers().removeLast();
         classContext.getClasses().removeLast();
-        classContext.getWhereIam().removeLast();
     }
 }

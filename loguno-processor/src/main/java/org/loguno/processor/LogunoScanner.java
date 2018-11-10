@@ -5,17 +5,20 @@ package org.loguno.processor;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.tree.TreeScanner;
 import lombok.AllArgsConstructor;
-import org.loguno.processor.handlers.AnnotationHandler;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.loguno.processor.handlers.ClassContext;
 import org.loguno.processor.handlers.HandlersProvider;
+import org.loguno.processor.utils.JCTreeUtils;
 import org.loguno.processor.utils.annotations.AnnotationRetriever;
 
-import javax.lang.model.element.ElementKind;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.loguno.processor.utils.JCTreeUtils.VOID_ANN;
 
@@ -52,38 +55,52 @@ public class LogunoScanner extends TreeScanner {
     public void visitVarDef(JCTree.JCVariableDecl jcVariableDecl) {
         //class field
 
-        ClassContext.VarZone last = classContext.getWhereIam().getLast();
+        JCTree owner = classContext.getVarOwner(jcVariableDecl);
 
-        switch (last){
-            case CLASS:
-                break;
-            case METHOD:
-                visitMethodParam(jcVariableDecl);
-                break;
-            case BLOCK:
-                visitLocalVariable(jcVariableDecl);
-                break;
-
+        if (owner instanceof JCTree.JCBlock) {
+            visitBlockVariable(jcVariableDecl, super::visitVarDef);
+        } else if(owner instanceof JCTree.JCClassDecl) {
+            super.visitVarDef(jcVariableDecl);
+        } else if(JCTreeUtils.hasBody(owner)) {
+            visitParenthesesVariable(jcVariableDecl, super::visitVarDef);
+        }else {
+            super.visitVarDef(jcVariableDecl);
         }
-
     }
 
-    private void visitMethodParam(JCTree.JCVariableDecl jcVariableDecl){
-        List<Annotation> annotations = annotationRetriever.getTreeAnnotations(jcVariableDecl.getModifiers()).collect(Collectors.toList());
-        findHandlersBeforeAndExecute(annotations, jcVariableDecl);
-        super.visitVarDef(jcVariableDecl);
-        findHandlersAfterAndExecute(annotations, jcVariableDecl);
+    private void visitParenthesesVariable(JCTree.JCVariableDecl variable, Consumer<JCTree.JCVariableDecl> scanFurther) {
+
+        JCTree owner = classContext.getVarOwner(variable);
+
+        JCTree.JCStatement body = JCTreeUtils.getBody(owner);
+        VarInParentheses block = VarInParentheses.of().parentheses(owner).variable(variable).block(body);
+
+        List<Annotation> annotations = annotationRetriever.getTreeAnnotations(variable.getModifiers()).collect(Collectors.toList());
+        findHandlersBeforeAndExecute(annotations, block);
+        scanFurther.accept(variable);
+        findHandlersAfterAndExecute(annotations, block);
     }
 
-    private void visitLocalVariable(JCTree.JCVariableDecl jcVariableDecl){
-        super.visitVarDef(jcVariableDecl);
+    private void visitBlockVariable(JCTree.JCVariableDecl variable, Consumer<JCTree.JCVariableDecl> scanFurther) {
+        JCTree owner = classContext.getVarOwner(variable);
+        VarInBlock block = VarInBlock.of().variable(variable).block((JCTree.JCBlock) owner);
+
+        List<Annotation> annotations = annotationRetriever.getTreeAnnotations(variable.getModifiers()).collect(Collectors.toList());
+
+        findHandlersBeforeAndExecute(annotations, block);
+        scanFurther.accept(variable);
+        findHandlersAfterAndExecute(annotations, block);
+
     }
 
     @Override
     public void visitBlock(JCTree.JCBlock jcBlock) {
-        findHandlersBeforeAndExecute(Collections.emptyList(), jcBlock);
         super.visitBlock(jcBlock);
-        findHandlersAfterAndExecute(Collections.emptyList(), jcBlock);
+    }
+
+    @Override
+    public void visitLambda(JCTree.JCLambda var1) {
+        super.visitLambda(var1);
     }
 
     @Override
@@ -94,6 +111,13 @@ public class LogunoScanner extends TreeScanner {
     @Override
     public void visitCatch(JCTree.JCCatch jcCatch) {
         super.visitCatch(jcCatch);
+    }
+
+    @Override
+    public void scan(JCTree tree) {
+        classContext.getBreadcrumb().addLast(tree);
+        super.scan(tree);
+        classContext.getBreadcrumb().removeLast();
     }
 
     private void findHandlersBeforeAndExecute(List<Annotation> annotations, Object e) {
@@ -116,6 +140,25 @@ public class LogunoScanner extends TreeScanner {
 
         HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(VOID_ANN.annotationType(), e)
                 .forEach(h -> h.process(VOID_ANN, e, classContext));
+    }
+
+    @NoArgsConstructor(staticName = "of")
+    @Setter
+    @Getter
+    @Accessors(fluent = true, chain = true)
+    public static class VarInBlock {
+        JCTree.JCVariableDecl variable;
+        JCTree.JCBlock block;
+    }
+
+    @NoArgsConstructor(staticName = "of")
+    @Setter
+    @Getter
+    @Accessors(fluent = true, chain = true)
+    public static class VarInParentheses {
+        JCTree.JCVariableDecl variable;
+        JCTree parentheses;
+        JCTree.JCStatement block;
     }
 
 }

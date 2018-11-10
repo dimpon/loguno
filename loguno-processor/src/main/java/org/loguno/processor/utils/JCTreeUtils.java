@@ -6,6 +6,7 @@ import com.sun.source.tree.Tree;
 import com.sun.source.util.Trees;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.ListBuffer;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.loguno.processor.configuration.Configuration;
 import org.loguno.processor.configuration.ConfigurationKey;
@@ -19,9 +20,11 @@ import org.loguno.processor.utils.annotations.VoidAnnotationImpl;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.loguno.processor.configuration.ConfigurationKeys.CLASS_PATTERN;
@@ -72,22 +75,43 @@ public class JCTreeUtils {
     }
 
 
+    public boolean hasBody(final JCTree element) {
+        Class bodyClass = JCTree.JCBlock.class;
+        Class staClass = JCTree.JCStatement.class;
+        Field[] declaredFields = element.getClass().getDeclaredFields();
+
+        return Arrays.stream(declaredFields)
+                .filter(field -> field.getName().equals("body"))
+                .filter(field -> field.getType().equals(bodyClass) || field.getType().equals(staClass))
+                .findAny().isPresent();
+    }
+
+    @SneakyThrows
+    public JCTree.JCStatement getBody(final JCTree element) {
+        Class bodyClass = JCTree.JCBlock.class;
+        Class staClass = JCTree.JCStatement.class;
+        Field[] declaredFields = element.getClass().getDeclaredFields();
+
+        Field body = Arrays.stream(declaredFields)
+                .filter(field -> field.getName().equals("body"))
+                .filter(field -> field.getType().equals(bodyClass) || field.getType().equals(staClass))
+                .findFirst().orElseThrow(() -> {
+                    throw new RuntimeException("No body field in " + element);
+                });
+        return (JCTree.JCStatement) body.get(element);
+    }
+
     private boolean isMethodConstructorWithSuper(ExecutableElement method, JCTree.JCBlock body) {
 
         if (method != null)
             return (method.getKind() == ElementKind.CONSTRUCTOR &&
                     body.stats.size() > 0 &&
                     body.stats.get(0) != null &&
-                    body.stats.get(0).toString().contains("super"));
+                    body.stats.get(0).toString().startsWith("super("));
         else
             return (body.stats.size() > 0 &&
                     body.stats.get(0) != null &&
-                    body.stats.get(0).toString().contains("super"));
-    }
-
-    public com.sun.tools.javac.util.List<JCTree.JCStatement> generateNewMethodBody(ExecutableElement method, Trees trees, JCTree.JCStatement methodCall) {
-        MethodTree methodTree = trees.getTree(method);
-        return generateNewMethodBody(methodTree, methodCall);
+                    body.stats.get(0).toString().startsWith("super("));
     }
 
     public com.sun.tools.javac.util.List<JCTree.JCStatement> generateNewMethodBody(MethodTree methodTree, JCTree.JCStatement methodCall) {
@@ -110,6 +134,27 @@ public class JCTreeUtils {
         } else {
             return body.stats.prepend(methodCall);
         }
+    }
+
+    public com.sun.tools.javac.util.List<JCTree.JCStatement> generateNewBody(JCTree parentheses, JCTree.JCStatement block, JCTree.JCStatement methodCall) {
+        JCTree.JCBlock body = (JCTree.JCBlock) block;
+
+        if (parentheses instanceof JCTree.JCMethodDecl) {
+            JCTree.JCMethodDecl methodDecl = (JCTree.JCMethodDecl) parentheses;
+            if (JCTreeUtils.isMethodConstructorWithSuper(methodDecl.sym, body)) {
+
+                ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
+                bodyNew.append(body.stats.get(0));
+                bodyNew.append(methodCall);
+
+                for (int i = 1; i < body.stats.size(); i++) {
+                    bodyNew.append(body.stats.get(i));
+                }
+
+                return bodyNew.toList();
+            }
+        }
+        return body.stats.prepend(methodCall);
     }
 
     public String message(String[] valueFromAnn, ConfigurationKey<String> key, ClassContext context) {
