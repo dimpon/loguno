@@ -84,9 +84,9 @@ public class LogunoProcessor extends AbstractProcessor {
 					.collect(Collectors.toSet());
 
 			final ClassContext classContext = new ClassContext();
-			final AnnotationRetriever retriever = new AnnotationRetrieverImpl();
 
-			final LogunoScanner scanner = new LogunoScanner(classContext, retriever);
+
+			final LogunoScanner scanner = new LogunoScanner(classContext, holder.retriever);
 
 			elements.forEach(element -> {
 

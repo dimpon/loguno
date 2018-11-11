@@ -121,12 +121,13 @@ public class LogunoMethodVisitor extends TreeScanner<Void, ClassContext> {
     @Override
     public Void visitBlock(BlockTree block, ClassContext classContext) {
 
-        try {
+        /*try {
             classContext.getBlocks().add(block);
             return super.visitBlock(block, classContext);
         } finally {
             classContext.getBlocks().removeLast();
-        }
+        }*/
+        return super.visitBlock(block, classContext);
     }
 
 

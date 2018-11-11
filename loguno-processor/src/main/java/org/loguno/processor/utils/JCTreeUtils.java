@@ -114,27 +114,6 @@ public class JCTreeUtils {
                     body.stats.get(0).toString().startsWith("super("));
     }
 
-    public com.sun.tools.javac.util.List<JCTree.JCStatement> generateNewMethodBody(MethodTree methodTree, JCTree.JCStatement methodCall) {
-
-
-        JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
-        JCTree.JCMethodDecl methodDecl = (JCTree.JCMethodDecl) methodTree;
-
-        if (JCTreeUtils.isMethodConstructorWithSuper(methodDecl.sym, body)) {
-
-            ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
-            bodyNew.append(body.stats.get(0));
-            bodyNew.append(methodCall);
-
-            for (int i = 1; i < body.stats.size(); i++) {
-                bodyNew.append(body.stats.get(i));
-            }
-
-            return bodyNew.toList();
-        } else {
-            return body.stats.prepend(methodCall);
-        }
-    }
 
     public com.sun.tools.javac.util.List<JCTree.JCStatement> generateNewBody(JCTree parentheses, JCTree.JCStatement block, JCTree.JCStatement methodCall) {
         JCTree.JCBlock body = (JCTree.JCBlock) block;

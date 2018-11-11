@@ -196,10 +196,15 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
     @Setter
     @Getter
     public static class JCStatementHolder {
+        private JCTree.JCAnnotatedType exceptionType;
         private JCTree element;
         private String exceptionName;
 
         ListBuffer<JCTree.JCStatement> $logMethods = new ListBuffer<>();
+
+        public ListBuffer<JCTree.JCStatement> getLogMethods() {
+            return $logMethods;
+        }
 
         void add(JCTree.JCStatement method) {
             $logMethods.append(method);

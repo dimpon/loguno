@@ -106,8 +106,7 @@ public abstract class AnnotationHandlerParenthesesVariables<A extends Annotation
 
     void doRealJob(String[] value, String logMethod, LogunoScanner.VarInParentheses element, ClassContext classContext) {
 
-        String message = JCTreeUtils.message(value, ConfigurationKeys.METHODPARAM_MESSAGE_PATTERN_DEFAULT, classContext);
-
+        String message = JCTreeUtils.message(value, ConfigurationKeys.LOCVAR_MESSAGE_PATTERN_DEFAULT, classContext);
 
         JCTree.JCBlock block =(JCTree.JCBlock) element.block();
         JCTree parentheses = element.parentheses();

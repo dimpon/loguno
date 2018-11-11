@@ -47,8 +47,31 @@ public class LogunoScanner extends TreeScanner {
     public void visitMethodDef(JCTree.JCMethodDecl jcMethodDecl) {
         List<Annotation> annotations = annotationRetriever.getTreeAnnotations(jcMethodDecl.getModifiers()).collect(Collectors.toList());
         findHandlersBeforeAndExecute(annotations, jcMethodDecl);
-        super.visitMethodDef(jcMethodDecl);
+        this.visitMethodDefAmended(jcMethodDecl);
         findHandlersAfterAndExecute(annotations, jcMethodDecl);
+    }
+
+    /**
+     * this method is a copy of {@link com.sun.tools.javac.tree.TreeScanner#visitMethodDef}
+     * but part for visiting throws part is amended
+     */
+    public void visitMethodDefAmended(JCTree.JCMethodDecl var1) {
+        this.scan((JCTree) var1.mods);
+        this.scan((JCTree) var1.restype);
+        this.scan(var1.typarams);
+        this.scan((JCTree) var1.recvparam);
+        this.scan(var1.params);
+        this.visitMethodThrows(var1.thrown);
+        this.scan((JCTree) var1.defaultValue);
+        this.scan((JCTree) var1.body);
+    }
+
+    private void visitMethodThrows(com.sun.tools.javac.util.List<JCTree.JCExpression> thrown) {
+
+        ThrowsOfMethod throwsOfMethod = ThrowsOfMethod.of().thrown(thrown);
+        findHandlersBeforeAndExecute(Collections.emptyList(), throwsOfMethod);
+        this.scan(thrown);
+        findHandlersAfterAndExecute(Collections.emptyList(), throwsOfMethod);
     }
 
     @Override
@@ -59,11 +82,13 @@ public class LogunoScanner extends TreeScanner {
 
         if (owner instanceof JCTree.JCBlock) {
             visitBlockVariable(jcVariableDecl, super::visitVarDef);
-        } else if(owner instanceof JCTree.JCClassDecl) {
+        } else if (owner instanceof JCTree.JCClassDecl) {
             super.visitVarDef(jcVariableDecl);
-        } else if(JCTreeUtils.hasBody(owner)) {
+        } else if (owner instanceof JCTree.JCCatch) {
+            super.visitVarDef(jcVariableDecl);
+        } else if (JCTreeUtils.hasBody(owner)) {
             visitParenthesesVariable(jcVariableDecl, super::visitVarDef);
-        }else {
+        } else {
             super.visitVarDef(jcVariableDecl);
         }
     }
@@ -94,19 +119,10 @@ public class LogunoScanner extends TreeScanner {
     }
 
     @Override
-    public void visitBlock(JCTree.JCBlock jcBlock) {
-        super.visitBlock(jcBlock);
+    public void visitThrow(JCTree.JCThrow var1) {
+        super.visitThrow(var1);
     }
 
-    @Override
-    public void visitLambda(JCTree.JCLambda var1) {
-        super.visitLambda(var1);
-    }
-
-    @Override
-    public void visitLabelled(JCTree.JCLabeledStatement jcLabeledStatement) {
-        super.visitLabelled(jcLabeledStatement);
-    }
 
     @Override
     public void visitCatch(JCTree.JCCatch jcCatch) {
@@ -120,23 +136,22 @@ public class LogunoScanner extends TreeScanner {
         classContext.getBreadcrumb().removeLast();
     }
 
+
     private void findHandlersBeforeAndExecute(List<Annotation> annotations, Object e) {
 
         HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(VOID_ANN.annotationType(), e)
                 .forEach(h -> h.process(VOID_ANN, e, classContext));
 
-        annotations.forEach(ann -> {
-            HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(ann.annotationType(), e)
-                    .forEach(h -> h.process(ann, e, classContext));
-        });
+        annotations.forEach(ann ->
+                HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(ann.annotationType(), e)
+                        .forEach(h -> h.process(ann, e, classContext)));
     }
 
     private void findHandlersAfterAndExecute(List<Annotation> annotations, Object e) {
 
-        annotations.forEach(ann -> {
-            HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(ann.annotationType(), e)
-                    .forEach(h -> h.process(ann, e, classContext));
-        });
+        annotations.forEach(ann ->
+                HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(ann.annotationType(), e)
+                        .forEach(h -> h.process(ann, e, classContext)));
 
         HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(VOID_ANN.annotationType(), e)
                 .forEach(h -> h.process(VOID_ANN, e, classContext));
@@ -160,5 +175,15 @@ public class LogunoScanner extends TreeScanner {
         JCTree parentheses;
         JCTree.JCStatement block;
     }
+
+    @NoArgsConstructor(staticName = "of")
+    @Setter
+    @Getter
+    @Accessors(fluent = true, chain = true)
+    public static class ThrowsOfMethod {
+        private com.sun.tools.javac.util.List<JCTree.JCExpression> thrown;
+    }
+
+
 
 }

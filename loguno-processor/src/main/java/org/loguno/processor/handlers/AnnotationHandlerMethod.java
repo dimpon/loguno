@@ -133,7 +133,8 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
 
     void doRealJob(String[] value, String logMethod, JCTree.JCMethodDecl methodTree, ClassContext classContext) {
 
-        //MethodTree methodTree = trees.getTree(element);
+        if (methodTree.getBody().stats == null)
+            return;
 
         String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
 

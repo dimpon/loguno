@@ -21,8 +21,8 @@ public class ClassContext {
     private LinkedList<LoggerInfo> loggers = new LinkedList<>();
     private LinkedList<String> classes = new LinkedList<>();
     private LinkedList<String> methods = new LinkedList<>();
-    private LinkedList<BlockTree> blocks = new LinkedList<>();
-    private LinkedList<MethodTree> methodsBlocks = new LinkedList<>();
+    //private LinkedList<BlockTree> blocks = new LinkedList<>();
+   // private LinkedList<MethodTree> methodsBlocks = new LinkedList<>();
 
     private LinkedList<JCTree> breadcrumb = new LinkedList<>();
 

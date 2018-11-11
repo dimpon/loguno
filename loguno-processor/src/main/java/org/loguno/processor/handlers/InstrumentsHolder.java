@@ -12,6 +12,8 @@ import com.sun.tools.javac.util.Context;
 import com.sun.tools.javac.util.Names;
 import org.loguno.processor.configuration.Configuration;
 import org.loguno.processor.configuration.ConfiguratorManager;
+import org.loguno.processor.utils.annotations.AnnotationRetriever;
+import org.loguno.processor.utils.annotations.AnnotationRetrieverImpl;
 
 import javax.annotation.processing.Filer;
 
@@ -31,6 +33,7 @@ public class InstrumentsHolder {
     public Enter enter;
     public MemberEnter memberEnter;
     public Configuration conf = ConfiguratorManager.getInstance().getConfiguration();
+    public final AnnotationRetriever retriever = new AnnotationRetrieverImpl();
 
 
     public InstrumentsHolder(JavacProcessingEnvironment environment) {

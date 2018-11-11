@@ -111,56 +111,6 @@ public final class HandlersProvider {
         return collect.stream();
 
 
-      /*  Stream<Class<? extends AnnotationHandler>> ha = Stream.<Class<? extends AnnotationHandler>>builder()
-                .add(AnnotationHandlerLogger.class)
-                .add(AnnotationHandlerLoggerLazy.class)
-                .add(AnnotationHandlerBeforeClass.class)
-                .add(AnnotationHandlerAfterClass.class)
-
-                .add(AnnotationHandlerMethod.AnnotationHandlerLoguno.class)
-                .add(AnnotationHandlerMethod.AnnotationHandlerInfo.class)
-                .add(AnnotationHandlerMethod.AnnotationHandlerWarn.class)
-                .add(AnnotationHandlerMethod.AnnotationHandlerDebug.class)
-                .add(AnnotationHandlerMethod.AnnotationHandlerTrace.class)
-                .add(AnnotationHandlerMethod.AnnotationHandlerError.class)
-
-                .add(AnnotationHandlerParenthesesVariables.AnnotationHandlerLoguno.class)
-                .add(AnnotationHandlerParenthesesVariables.AnnotationHandlerInfo.class)
-                .add(AnnotationHandlerParenthesesVariables.AnnotationHandlerWarn.class)
-                .add(AnnotationHandlerParenthesesVariables.AnnotationHandlerDebug.class)
-                .add(AnnotationHandlerParenthesesVariables.AnnotationHandlerTrace.class)
-                .add(AnnotationHandlerParenthesesVariables.AnnotationHandlerError.class)
-
-                .add(AnnotationHandlerBlockVariable.AnnotationHandlerLoguno.class)
-                .add(AnnotationHandlerBlockVariable.AnnotationHandlerInfo.class)
-                .add(AnnotationHandlerBlockVariable.AnnotationHandlerWarn.class)
-                .add(AnnotationHandlerBlockVariable.AnnotationHandlerDebug.class)
-                .add(AnnotationHandlerBlockVariable.AnnotationHandlerTrace.class)
-                .add(AnnotationHandlerBlockVariable.AnnotationHandlerError.class)
-
-                .add(AnnotationHandlerCatch.AnnotationHandlerLoguno.class)
-                .add(AnnotationHandlerCatch.AnnotationHandlerInfo.class)
-                .add(AnnotationHandlerCatch.AnnotationHandlerWarn.class)
-                .add(AnnotationHandlerCatch.AnnotationHandlerDebug.class)
-                .add(AnnotationHandlerCatch.AnnotationHandlerTrace.class)
-                .add(AnnotationHandlerCatch.AnnotationHandlerError.class)
-
-                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerPipedExceptions.class)
-                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerLoguno.class)
-                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerInfo.class)
-                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerWarn.class)
-                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerDebug.class)
-                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerTrace.class)
-                .add(AnnotationHandlerPipedExceptionsCatch.AnnotationHandlerError.class)
-
-                .add(AnnotationHandlerMethodThrows.AnnotationHandlerWholeMethod.class)
-
-
-                .build();
-*/
-
-        /*return ha.filter(c -> !Modifier.isAbstract(c.getModifiers()))
-                .filter(c -> c.isAnnotationPresent(Handler.class));*/
     }
 
     /**
