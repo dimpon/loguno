@@ -25,6 +25,8 @@ public class ConfigurationImpl implements Configuration {
 
     private Map<String, Properties> properties = new HashMap<>();
 
+    private String rootPath;
+
 
     public ConfigurationImpl() {
         loadDefaultProperties();
@@ -94,14 +96,15 @@ public class ConfigurationImpl implements Configuration {
 
     @Override
     public <T> T getProperty(ConfigurationKey<T> key, String rootPath) {
+        this.rootPath = rootPath;
         loadPropertyAndPutItToMap(rootPath, ROOT);
         return getProperty(key);
     }
 
     private void scanPackagesTillStopSym(String pa) {
-        while (!pa.endsWith(STOP_SYM)) {
+        while (!pa.equals(rootPath) && !((pa + File.separator).equals(rootPath))) {
             pa = pa.substring(0, pa.lastIndexOf(File.separator));
-            if(properties.containsKey(pa))
+            if (properties.containsKey(pa))
                 break;
             loadPropertyAndPutItToMap(pa);
         }

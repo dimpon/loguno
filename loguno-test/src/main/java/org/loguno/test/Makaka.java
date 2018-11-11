@@ -67,9 +67,13 @@ public class Makaka extends Animal {
      */
 
     public String someMe() throws @Loguno @Loguno.TRACE @Loguno.WARN IllegalArgumentException,  NullPointerException{
-        IntStream.range(1,10).forEach(value -> {
+        try {
+            aaa();
+        } catch (@Loguno NullPointerException | @Loguno.ERROR IllegalArgumentException e) {
 
-        });
+        } catch (@Loguno Exception eee) {
+
+        }
 
         return "ok";
     }
@@ -110,13 +114,7 @@ public class Makaka extends Animal {
 
         }
 
-        try {
-            aaa();
-        } catch (@Loguno NullPointerException | @Loguno.ERROR IllegalArgumentException e) {
 
-        } catch (@Loguno Exception eee) {
-
-        }
 
         try (@Loguno Stream<String> lines = aa.stream()) {
 

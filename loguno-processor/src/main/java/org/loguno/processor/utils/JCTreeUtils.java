@@ -1,9 +1,5 @@
 package org.loguno.processor.utils;
 
-import com.sun.source.tree.AnnotationTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.util.Trees;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.ListBuffer;
 import lombok.SneakyThrows;
@@ -11,21 +7,16 @@ import lombok.experimental.UtilityClass;
 import org.loguno.processor.configuration.Configuration;
 import org.loguno.processor.configuration.ConfigurationKey;
 import org.loguno.processor.configuration.ConfiguratorManager;
-import org.loguno.processor.handlers.AnnotationHandler;
 import org.loguno.processor.handlers.ClassContext;
-import org.loguno.processor.handlers.HandlersProvider;
 import org.loguno.processor.handlers.VoidAnnotation;
 import org.loguno.processor.utils.annotations.VoidAnnotationImpl;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.loguno.processor.configuration.ConfigurationKeys.CLASS_PATTERN;
 import static org.loguno.processor.configuration.ConfigurationKeys.METHOD_PATTERN;
@@ -40,29 +31,6 @@ public class JCTreeUtils {
 
     public static final VoidAnnotation VOID_ANN = new VoidAnnotationImpl();
 
-    public <E> void findHandlersAndCall(AnnotationTree annotation, E element, ClassContext classContext) {
-
-        final HandlersProvider handlersProvider = HandlersProvider.instance();
-        Tree annotationType = annotation.getAnnotationType();
-        String className = annotationType.toString().replace(".", "$");
-        Optional<Class<? extends Annotation>> annClass = handlersProvider.getAnnotationClassByName(className);
-
-        if (annClass.isPresent()) {
-            Stream<? extends AnnotationHandler<?, E>> handlers = handlersProvider.getHandlersBeforeByElementAndAnnotation(annClass.get(), element);
-            Annotation annotationObj = AnnotationUtils.createAnnotationInstance(annotation, annClass.get());
-            handlers.forEach(handler -> {
-                handler.process(annotationObj, element, classContext);
-            });
-        }
-    }
-
-    public <E> void findVoidHandlersAndCall(E element, ClassContext classContext) {
-        final HandlersProvider handlersProvider = HandlersProvider.instance();
-        Stream<? extends AnnotationHandler<?, E>> handlers = handlersProvider.getHandlersBeforeByElementAndAnnotation(VoidAnnotation.class, element);
-        handlers.forEach(handler -> {
-            handler.process(JCTreeUtils.VOID_ANN, element, classContext);
-        });
-    }
 
     public String getRepeatPart(String messagePattern) {
         Pattern p = Pattern.compile(REPEAT_PATTERN);
@@ -101,7 +69,7 @@ public class JCTreeUtils {
         return (JCTree.JCStatement) body.get(element);
     }
 
-    private boolean isMethodConstructorWithSuper(ExecutableElement method, JCTree.JCBlock body) {
+    private boolean isConstructorWithSuper(ExecutableElement method, JCTree.JCBlock body) {
 
         if (method != null)
             return (method.getKind() == ElementKind.CONSTRUCTOR &&
@@ -120,7 +88,7 @@ public class JCTreeUtils {
 
         if (parentheses instanceof JCTree.JCMethodDecl) {
             JCTree.JCMethodDecl methodDecl = (JCTree.JCMethodDecl) parentheses;
-            if (JCTreeUtils.isMethodConstructorWithSuper(methodDecl.sym, body)) {
+            if (JCTreeUtils.isConstructorWithSuper(methodDecl.sym, body)) {
 
                 ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
                 bodyNew.append(body.stats.get(0));

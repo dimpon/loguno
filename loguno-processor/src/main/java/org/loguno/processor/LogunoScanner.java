@@ -115,18 +115,16 @@ public class LogunoScanner extends TreeScanner {
         findHandlersBeforeAndExecute(annotations, block);
         scanFurther.accept(variable);
         findHandlersAfterAndExecute(annotations, block);
-
-    }
-
-    @Override
-    public void visitThrow(JCTree.JCThrow var1) {
-        super.visitThrow(var1);
     }
 
 
     @Override
     public void visitCatch(JCTree.JCCatch jcCatch) {
+        CatchBlock throwsOfMethod = CatchBlock.of().aCatch(jcCatch);
+        findHandlersBeforeAndExecute(Collections.emptyList(), throwsOfMethod);
         super.visitCatch(jcCatch);
+        findHandlersAfterAndExecute(Collections.emptyList(), throwsOfMethod);
+
     }
 
     @Override
@@ -183,6 +181,15 @@ public class LogunoScanner extends TreeScanner {
     public static class ThrowsOfMethod {
         private com.sun.tools.javac.util.List<JCTree.JCExpression> thrown;
     }
+
+    @NoArgsConstructor(staticName = "of")
+    @Setter
+    @Getter
+    @Accessors(fluent = true, chain = true)
+    public static class CatchBlock {
+        private JCTree.JCCatch aCatch;
+    }
+
 
 
 

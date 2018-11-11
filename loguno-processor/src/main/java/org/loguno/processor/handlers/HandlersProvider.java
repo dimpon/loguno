@@ -109,8 +109,6 @@ public final class HandlersProvider {
                 .collect(Collectors.toList());
 
         return collect.stream();
-
-
     }
 
     /**

@@ -7,6 +7,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
+import java.io.File;
 
 @UtilityClass
 public class PathUtils {
@@ -17,7 +18,8 @@ public class PathUtils {
             return sourcefile.getName();
         }
         if(file instanceof PackageElement){
-            return ((Symbol.PackageSymbol) file).fullname.toString();
+            JavaFileObject sourcefile = ((Symbol.PackageSymbol) file).package_info.sourcefile;
+            return sourcefile.getName();
         }
         throw new IllegalArgumentException(file.toString());
     }
@@ -25,7 +27,7 @@ public class PathUtils {
     public String getPropertiesPotentialPath(Element file) {
         String name = getFilePath(file);
         String qName = ((Symbol.ClassSymbol) file).getQualifiedName().toString();
-        String stopName =  qName.replace(".", "\\");
+        String stopName =  qName.replace(".", File.separator);
         return name.substring(0, name.lastIndexOf(stopName));
     }
 }

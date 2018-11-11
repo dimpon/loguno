@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author Dmitrii Ponomarev
@@ -37,33 +38,36 @@ public abstract class AnnotationHandlerPipedExceptionsCatch<A extends Annotation
         }
 
         @Override
-        public void processTree(VoidAnnotation annotation, PipedExceptionsHolder peHolder, ClassContext classContext) {
+        public void processTree(VoidAnnotation annotation, PipedExceptionsHolder pipedExceptionsHolder, ClassContext classContext) {
 
-            final String e = peHolder.varName;
-            final CatchTree catchTree = peHolder.element;
+            final String e = pipedExceptionsHolder.varName;
+            final CatchTree catchTree = pipedExceptionsHolder.element;
             final JCTree.JCBlock block = (JCTree.JCBlock) catchTree.getBlock();
 
-            peHolder.$exceptions.forEach((key, value) -> {
+            pipedExceptionsHolder.$exceptions.forEach((key, annotationsTree) -> {
 
-                if (value == null || value.isEmpty())
+                if (annotationsTree == null || annotationsTree.isEmpty())
                     return;
 
                 final JCStatementHolder holder = JCStatementHolder.of()
                         .element(block)
                         .exceptionName(e);
 
-                value.forEach(ann -> {
-                    JCTreeUtils.findHandlersAndCall(ann, holder, classContext);
-                });
+                Stream<? extends Annotation> annotations = retriever.getTreeAnnotations(annotationsTree);
+
+                annotations.forEach(ann ->
+                        HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(ann.annotationType(), holder)
+                                .forEach(h -> h.process(ann, holder, classContext)));
+
 
                 JCTree.JCStatement body;
 
-                if (holder.$logMethods.size() == 0) {
+                if (holder.getLogMethods().size() == 0) {
                     body = null;
                 } else if (holder.$logMethods.size() > 1) {
-                    body = factory.at(block.pos()).Block(0, holder.$logMethods.toList());
+                    body = factory.at(block.pos()).Block(0, holder.getLogMethods().toList());
                 } else {
-                    body = holder.$logMethods.first();
+                    body = holder.getLogMethods().first();
                 }
 
                 JCTree.JCIdent except = factory.Ident(elements.getName(e));

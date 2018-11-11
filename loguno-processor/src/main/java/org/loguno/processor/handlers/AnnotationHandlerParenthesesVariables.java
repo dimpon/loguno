@@ -105,10 +105,14 @@ public abstract class AnnotationHandlerParenthesesVariables<A extends Annotation
 
 
     void doRealJob(String[] value, String logMethod, LogunoScanner.VarInParentheses element, ClassContext classContext) {
+        String message = null;
 
-        String message = JCTreeUtils.message(value, ConfigurationKeys.LOCVAR_MESSAGE_PATTERN_DEFAULT, classContext);
-
-        JCTree.JCBlock block =(JCTree.JCBlock) element.block();
+        if (element.parentheses() instanceof JCTree.JCMethodDecl) {
+            message = JCTreeUtils.message(value, ConfigurationKeys.METHODPARAM_MESSAGE_PATTERN_DEFAULT, classContext);
+        } else {
+            message = JCTreeUtils.message(value, ConfigurationKeys.LOCVAR_MESSAGE_PATTERN_DEFAULT, classContext);
+        }
+        JCTree.JCBlock block = (JCTree.JCBlock) element.block();
         JCTree parentheses = element.parentheses();
         JCTree.JCVariableDecl variable = element.variable();
 
@@ -128,13 +132,11 @@ public abstract class AnnotationHandlerParenthesesVariables<A extends Annotation
                 .create();
 
 
-
         //ExecutableElement methodElement = (ExecutableElement) element.getEnclosingElement();
 
         //MethodTree methodTree = (MethodTree) trees.getTree(element.getEnclosingElement());
 
 
-
-        block.stats = JCTreeUtils.generateNewBody(parentheses,block, methodCall);
+        block.stats = JCTreeUtils.generateNewBody(parentheses, block, methodCall);
     }
 }
