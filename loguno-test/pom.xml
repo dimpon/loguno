@@ -4,12 +4,12 @@
     <parent>
         <artifactId>loguno-parent</artifactId>
         <groupId>org.loguno</groupId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.3</version>
     </parent>
 
 
     <artifactId>loguno-test</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.3</version>
     <packaging>jar</packaging>
 
     <name>loguno-test</name>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.loguno</groupId>
             <artifactId>loguno-processor</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>0.0.3</version>
             <scope>compile</scope>
         </dependency>
 
