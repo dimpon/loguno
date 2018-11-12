@@ -1,10 +1,5 @@
 package org.loguno.processor.utils;
 
-import com.sun.source.tree.AnnotationTree;
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.Tree;
-import com.sun.source.util.Trees;
 import com.sun.tools.javac.tree.JCTree;
 import com.sun.tools.javac.util.ListBuffer;
 import lombok.SneakyThrows;
@@ -12,20 +7,16 @@ import lombok.experimental.UtilityClass;
 import org.loguno.processor.configuration.Configuration;
 import org.loguno.processor.configuration.ConfigurationKey;
 import org.loguno.processor.configuration.ConfiguratorManager;
-import org.loguno.processor.handlers.AnnotationHandler;
 import org.loguno.processor.handlers.ClassContext;
-import org.loguno.processor.handlers.HandlersProvider;
 import org.loguno.processor.handlers.VoidAnnotation;
-import sun.reflect.annotation.AnnotationParser;
+import org.loguno.processor.utils.annotations.VoidAnnotationImpl;
 
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static org.loguno.processor.configuration.ConfigurationKeys.CLASS_PATTERN;
 import static org.loguno.processor.configuration.ConfigurationKeys.METHOD_PATTERN;
@@ -38,31 +29,8 @@ public class JCTreeUtils {
 
     public static final String REPEAT_PATTERN = "\\[(.*?)\\]";
 
-    private static VoidAnnotation VOID_ANN = (VoidAnnotation)AnnotationParser.annotationForMap(VoidAnnotation.class, Collections.emptyMap());
+    public static final VoidAnnotation VOID_ANN = new VoidAnnotationImpl();
 
-    public <E> void findHandlersAndCall(AnnotationTree annotation, E element, ClassContext classContext) {
-
-        final HandlersProvider handlersProvider = HandlersProvider.instance();
-        Tree annotationType = annotation.getAnnotationType();
-        String className = annotationType.toString().replace(".", "$");
-        Optional<Class<? extends Annotation>> annClass = handlersProvider.getAnnotationClassByName(className);
-
-        if (annClass.isPresent()) {
-            Stream<? extends AnnotationHandler<?, E>> handlers = handlersProvider.getHandlersByElementAndAnnotation(annClass.get(), element);
-            Annotation annotationObj = JCTreeUtils.createAnnotationInstance(annotation, annClass.get());
-            handlers.forEach(handler -> {
-                handler.process(annotationObj, element, classContext);
-            });
-        }
-    }
-
-    public <E> void findVoidHandlersAndCall(E element, ClassContext classContext) {
-        final HandlersProvider handlersProvider = HandlersProvider.instance();
-        Stream<? extends AnnotationHandler<?, E>> handlers = handlersProvider.getHandlersByElementAndAnnotation(VoidAnnotation.class, element);
-        handlers.forEach(handler -> {
-            handler.process(JCTreeUtils.VOID_ANN, element, classContext);
-        });
-    }
 
     public String getRepeatPart(String messagePattern) {
         Pattern p = Pattern.compile(REPEAT_PATTERN);
@@ -75,32 +43,65 @@ public class JCTreeUtils {
     }
 
 
-    private boolean isMethodConstructorWithSuper(ExecutableElement method, JCTree.JCBlock body) {
-        return (method.getKind() == ElementKind.CONSTRUCTOR &&
-                body.stats.size() > 0 &&
-                body.stats.get(0) != null &&
-                body.stats.get(0).toString().contains("super"));
+    public boolean hasBody(final JCTree element) {
+        Class bodyClass = JCTree.JCBlock.class;
+        Class staClass = JCTree.JCStatement.class;
+        Field[] declaredFields = element.getClass().getDeclaredFields();
+
+        return Arrays.stream(declaredFields)
+                .filter(field -> field.getName().equals("body"))
+                .filter(field -> field.getType().equals(bodyClass) || field.getType().equals(staClass))
+                .findAny().isPresent();
     }
 
-    public com.sun.tools.javac.util.List<JCTree.JCStatement> generateNewMethodBody(ExecutableElement method, Trees trees, JCTree.JCStatement methodCall) {
+    @SneakyThrows
+    public JCTree.JCStatement getBody(final JCTree element) {
+        Class bodyClass = JCTree.JCBlock.class;
+        Class staClass = JCTree.JCStatement.class;
+        Field[] declaredFields = element.getClass().getDeclaredFields();
 
-        MethodTree methodTree = trees.getTree(method);
-        JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
+        Field body = Arrays.stream(declaredFields)
+                .filter(field -> field.getName().equals("body"))
+                .filter(field -> field.getType().equals(bodyClass) || field.getType().equals(staClass))
+                .findFirst().orElseThrow(() -> {
+                    throw new RuntimeException("No body field in " + element);
+                });
+        return (JCTree.JCStatement) body.get(element);
+    }
 
-        if (JCTreeUtils.isMethodConstructorWithSuper(method, body)) {
+    private boolean isConstructorWithSuper(ExecutableElement method, JCTree.JCBlock body) {
 
-            ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
-            bodyNew.append(body.stats.get(0));
-            bodyNew.append(methodCall);
+        if (method != null)
+            return (method.getKind() == ElementKind.CONSTRUCTOR &&
+                    body.stats.size() > 0 &&
+                    body.stats.get(0) != null &&
+                    body.stats.get(0).toString().startsWith("super("));
+        else
+            return (body.stats.size() > 0 &&
+                    body.stats.get(0) != null &&
+                    body.stats.get(0).toString().startsWith("super("));
+    }
 
-            for (int i = 1; i < body.stats.size(); i++) {
-                bodyNew.append(body.stats.get(i));
+
+    public com.sun.tools.javac.util.List<JCTree.JCStatement> generateNewBody(JCTree parentheses, JCTree.JCStatement block, JCTree.JCStatement methodCall) {
+        JCTree.JCBlock body = (JCTree.JCBlock) block;
+
+        if (parentheses instanceof JCTree.JCMethodDecl) {
+            JCTree.JCMethodDecl methodDecl = (JCTree.JCMethodDecl) parentheses;
+            if (JCTreeUtils.isConstructorWithSuper(methodDecl.sym, body)) {
+
+                ListBuffer<JCTree.JCStatement> bodyNew = new ListBuffer<>();
+                bodyNew.append(body.stats.get(0));
+                bodyNew.append(methodCall);
+
+                for (int i = 1; i < body.stats.size(); i++) {
+                    bodyNew.append(body.stats.get(i));
+                }
+
+                return bodyNew.toList();
             }
-
-            return bodyNew.toList();
-        } else {
-            return body.stats.prepend(methodCall);
         }
+        return body.stats.prepend(methodCall);
     }
 
     public String message(String[] valueFromAnn, ConfigurationKey<String> key, ClassContext context) {
@@ -123,101 +124,5 @@ public class JCTreeUtils {
                 .replace(METHOD_PATTERN, context.getMethods().getLast());
     }
 
-    /**
-     * The method creates the 'real' annotation object based on {@link com.sun.source.tree.AnnotationTree}
-     * Now Strings, Strings[] and primitives are supported as annotation member. Classses, enums, annotations are not supported.
-     */
-    @SuppressWarnings("unchecked")
-    public <A extends Annotation> A createAnnotationInstance(AnnotationTree annotation, Class<A> annotationType) {
-
-        Map<String, String[]> customValues = createAnnotationArgsMap(annotation);
-
-        Map<String, Object> values = new LinkedHashMap<>();
-
-        // Extract default values from annotation
-        for (Method method : annotationType.getDeclaredMethods()) {
-            values.put(method.getName(), method.getDefaultValue());
-            Class<?> type = method.getReturnType();
-            if (customValues.containsKey(method.getName())) {
-                Object o = castValue(type, customValues.get(method.getName()));
-                values.put(method.getName(), o);
-            }
-        }
-
-        return (A) AnnotationParser.annotationForMap(annotationType, values);
-    }
-
-    @SneakyThrows
-    private Object castValue(Class<?> clazz, String... value) {
-
-        if (clazz.isPrimitive()) {
-            switch (clazz.getName()) {
-                case "boolean":
-                    return Boolean.valueOf(value[0]);
-                case "int":
-                    return Integer.valueOf(value[0]);
-                case "long":
-                    return Long.valueOf(value[0]);
-                case "double":
-                    return Double.valueOf(value[0]);
-                case "float":
-                    return Float.valueOf(value[0]);
-                case "byte":
-                    return Byte.valueOf(value[0]);
-            }
-        }
-
-        if (clazz.isEnum()) {
-            throw new UnsupportedOperationException();
-        }
-
-        if (clazz.isArray()) {
-            return value;
-        }
-
-        return value[0];
-    }
-
-    private Map<String, String[]> createAnnotationArgsMap(AnnotationTree annotation) {
-        List<? extends ExpressionTree> arguments = annotation.getArguments();
-
-        Map<String, String[]> values = new LinkedHashMap<>();
-
-        for (ExpressionTree argument : arguments) {
-            if (argument instanceof JCTree.JCAssign) {
-                JCTree.JCAssign aArgument = (JCTree.JCAssign) argument;
-                String name = ((JCTree.JCIdent) aArgument.lhs).getName().toString();
-                values.put(name, castElement(aArgument.rhs));
-            } else {
-                values.put("value", castElement(argument));
-            }
-        }
-        return values;
-    }
-
-
-    private String[] castElement(ExpressionTree argument) {
-
-        String[] result = new String[0];
-
-        if (argument instanceof JCTree.JCLiteral) {
-            JCTree.JCLiteral aArgument = (JCTree.JCLiteral) argument;
-            result = new String[]{aArgument.getValue().toString()};
-
-        } else if (argument instanceof JCTree.JCFieldAccess) {
-            JCTree.JCFieldAccess aArgument = (JCTree.JCFieldAccess) argument;
-            result = new String[]{aArgument.toString()};
-
-        } else if (argument instanceof JCTree.JCNewArray) {
-            JCTree.JCNewArray aArgument = (JCTree.JCNewArray) argument;
-
-            result = aArgument.elems.stream()
-                    .map(JCTreeUtils::castElement)
-                    .flatMap(Arrays::stream)
-                    .toArray(String[]::new);
-        }
-
-        return result;
-    }
 
 }

@@ -1,294 +1,196 @@
 package org.loguno.processor;
 
 //import com.sun.source.util.TreeScanner;
+
 import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.TreeInfo;
 import com.sun.tools.javac.tree.TreeScanner;
-import com.sun.tools.javac.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.loguno.processor.handlers.ClassContext;
+import org.loguno.processor.handlers.HandlersProvider;
+import org.loguno.processor.utils.JCTreeUtils;
+import org.loguno.processor.utils.annotations.AnnotationRetriever;
 
+import java.lang.annotation.Annotation;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static org.loguno.processor.utils.JCTreeUtils.VOID_ANN;
+
+@AllArgsConstructor
 public class LogunoScanner extends TreeScanner {
-    @Override
-    public void scan(JCTree jcTree) {
-        super.scan(jcTree);
-    }
 
-    @Override
-    public void scan(List<? extends JCTree> list) {
-        super.scan(list);
-    }
+    final private ClassContext classContext;
+
+    private AnnotationRetriever annotationRetriever;
 
     @Override
     public void visitTopLevel(JCTree.JCCompilationUnit jcCompilationUnit) {
-        super.visitTopLevel(jcCompilationUnit);
+        // visit package
     }
 
     @Override
-    public void visitImport(JCTree.JCImport jcImport) {
-        super.visitImport(jcImport);
-    }
-
-    @Override
-    public void visitClassDef(JCTree.JCClassDecl jcClassDecl) {
+    public void visitClassDef(final JCTree.JCClassDecl jcClassDecl) {
+        List<Annotation> annotations = annotationRetriever.getTreeAnnotations(jcClassDecl.getModifiers()).collect(Collectors.toList());
+        findHandlersBeforeAndExecute(annotations, jcClassDecl);
         super.visitClassDef(jcClassDecl);
+        findHandlersAfterAndExecute(annotations, jcClassDecl);
     }
+
 
     @Override
     public void visitMethodDef(JCTree.JCMethodDecl jcMethodDecl) {
-        super.visitMethodDef(jcMethodDecl);
+        List<Annotation> annotations = annotationRetriever.getTreeAnnotations(jcMethodDecl.getModifiers()).collect(Collectors.toList());
+        findHandlersBeforeAndExecute(annotations, jcMethodDecl);
+        this.visitMethodDefAmended(jcMethodDecl);
+        findHandlersAfterAndExecute(annotations, jcMethodDecl);
+    }
+
+    /**
+     * this method is a copy of {@link com.sun.tools.javac.tree.TreeScanner#visitMethodDef}
+     * but part for visiting throws part is amended
+     */
+    public void visitMethodDefAmended(JCTree.JCMethodDecl var1) {
+        this.scan((JCTree) var1.mods);
+        this.scan((JCTree) var1.restype);
+        this.scan(var1.typarams);
+        this.scan((JCTree) var1.recvparam);
+        this.scan(var1.params);
+        this.visitMethodThrows(var1.thrown);
+        this.scan((JCTree) var1.defaultValue);
+        this.scan((JCTree) var1.body);
+    }
+
+    private void visitMethodThrows(com.sun.tools.javac.util.List<JCTree.JCExpression> thrown) {
+
+        ThrowsOfMethod throwsOfMethod = ThrowsOfMethod.of().thrown(thrown);
+        findHandlersBeforeAndExecute(Collections.emptyList(), throwsOfMethod);
+        this.scan(thrown);
+        findHandlersAfterAndExecute(Collections.emptyList(), throwsOfMethod);
     }
 
     @Override
     public void visitVarDef(JCTree.JCVariableDecl jcVariableDecl) {
-        super.visitVarDef(jcVariableDecl);
+        //class field
+
+        JCTree owner = classContext.getVarOwner(jcVariableDecl);
+
+        if (owner instanceof JCTree.JCBlock) {
+            visitBlockVariable(jcVariableDecl, super::visitVarDef);
+        } else if (owner instanceof JCTree.JCClassDecl) {
+            super.visitVarDef(jcVariableDecl);
+        } else if (owner instanceof JCTree.JCCatch) {
+            super.visitVarDef(jcVariableDecl);
+        } else if (JCTreeUtils.hasBody(owner)) {
+            visitParenthesesVariable(jcVariableDecl, super::visitVarDef);
+        } else {
+            super.visitVarDef(jcVariableDecl);
+        }
     }
 
-    @Override
-    public void visitSkip(JCTree.JCSkip jcSkip) {
-        super.visitSkip(jcSkip);
+    private void visitParenthesesVariable(JCTree.JCVariableDecl variable, Consumer<JCTree.JCVariableDecl> scanFurther) {
+
+        JCTree owner = classContext.getVarOwner(variable);
+
+        JCTree.JCStatement body = JCTreeUtils.getBody(owner);
+        VarInParentheses block = VarInParentheses.of().parentheses(owner).variable(variable).block(body);
+
+        List<Annotation> annotations = annotationRetriever.getTreeAnnotations(variable.getModifiers()).collect(Collectors.toList());
+        findHandlersBeforeAndExecute(annotations, block);
+        scanFurther.accept(variable);
+        findHandlersAfterAndExecute(annotations, block);
     }
 
-    @Override
-    public void visitBlock(JCTree.JCBlock jcBlock) {
-        super.visitBlock(jcBlock);
+    private void visitBlockVariable(JCTree.JCVariableDecl variable, Consumer<JCTree.JCVariableDecl> scanFurther) {
+        JCTree owner = classContext.getVarOwner(variable);
+        VarInBlock block = VarInBlock.of().variable(variable).block((JCTree.JCBlock) owner);
+
+        List<Annotation> annotations = annotationRetriever.getTreeAnnotations(variable.getModifiers()).collect(Collectors.toList());
+
+        findHandlersBeforeAndExecute(annotations, block);
+        scanFurther.accept(variable);
+        findHandlersAfterAndExecute(annotations, block);
     }
 
-    @Override
-    public void visitDoLoop(JCTree.JCDoWhileLoop jcDoWhileLoop) {
-        super.visitDoLoop(jcDoWhileLoop);
-    }
-
-    @Override
-    public void visitWhileLoop(JCTree.JCWhileLoop jcWhileLoop) {
-        super.visitWhileLoop(jcWhileLoop);
-    }
-
-    @Override
-    public void visitForLoop(JCTree.JCForLoop jcForLoop) {
-        super.visitForLoop(jcForLoop);
-    }
-
-    @Override
-    public void visitForeachLoop(JCTree.JCEnhancedForLoop jcEnhancedForLoop) {
-        super.visitForeachLoop(jcEnhancedForLoop);
-    }
-
-    @Override
-    public void visitLabelled(JCTree.JCLabeledStatement jcLabeledStatement) {
-        super.visitLabelled(jcLabeledStatement);
-    }
-
-    @Override
-    public void visitSwitch(JCTree.JCSwitch jcSwitch) {
-        super.visitSwitch(jcSwitch);
-    }
-
-    @Override
-    public void visitCase(JCTree.JCCase jcCase) {
-        super.visitCase(jcCase);
-    }
-
-    @Override
-    public void visitSynchronized(JCTree.JCSynchronized jcSynchronized) {
-        super.visitSynchronized(jcSynchronized);
-    }
-
-    @Override
-    public void visitTry(JCTree.JCTry jcTry) {
-        super.visitTry(jcTry);
-    }
 
     @Override
     public void visitCatch(JCTree.JCCatch jcCatch) {
+        CatchBlock throwsOfMethod = CatchBlock.of().aCatch(jcCatch);
+        findHandlersBeforeAndExecute(Collections.emptyList(), throwsOfMethod);
         super.visitCatch(jcCatch);
+        findHandlersAfterAndExecute(Collections.emptyList(), throwsOfMethod);
+
     }
 
     @Override
-    public void visitConditional(JCTree.JCConditional jcConditional) {
-        super.visitConditional(jcConditional);
+    public void scan(JCTree tree) {
+        classContext.getBreadcrumb().addLast(tree);
+        super.scan(tree);
+        classContext.getBreadcrumb().removeLast();
     }
 
-    @Override
-    public void visitIf(JCTree.JCIf jcIf) {
-        super.visitIf(jcIf);
+
+    private void findHandlersBeforeAndExecute(List<Annotation> annotations, Object e) {
+
+        HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(VOID_ANN.annotationType(), e)
+                .forEach(h -> h.process(VOID_ANN, e, classContext));
+
+        annotations.forEach(ann ->
+                HandlersProvider.instance().getHandlersBeforeByElementAndAnnotation(ann.annotationType(), e)
+                        .forEach(h -> h.process(ann, e, classContext)));
     }
 
-    @Override
-    public void visitExec(JCTree.JCExpressionStatement jcExpressionStatement) {
-        super.visitExec(jcExpressionStatement);
+    private void findHandlersAfterAndExecute(List<Annotation> annotations, Object e) {
+
+        annotations.forEach(ann ->
+                HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(ann.annotationType(), e)
+                        .forEach(h -> h.process(ann, e, classContext)));
+
+        HandlersProvider.instance().getHandlersAfterByElementAndAnnotation(VOID_ANN.annotationType(), e)
+                .forEach(h -> h.process(VOID_ANN, e, classContext));
     }
 
-    @Override
-    public void visitBreak(JCTree.JCBreak jcBreak) {
-        super.visitBreak(jcBreak);
+    @NoArgsConstructor(staticName = "of")
+    @Setter
+    @Getter
+    @Accessors(fluent = true, chain = true)
+    public static class VarInBlock {
+        JCTree.JCVariableDecl variable;
+        JCTree.JCBlock block;
     }
 
-    @Override
-    public void visitContinue(JCTree.JCContinue jcContinue) {
-        super.visitContinue(jcContinue);
+    @NoArgsConstructor(staticName = "of")
+    @Setter
+    @Getter
+    @Accessors(fluent = true, chain = true)
+    public static class VarInParentheses {
+        JCTree.JCVariableDecl variable;
+        JCTree parentheses;
+        JCTree.JCStatement block;
     }
 
-    @Override
-    public void visitReturn(JCTree.JCReturn jcReturn) {
-        super.visitReturn(jcReturn);
+    @NoArgsConstructor(staticName = "of")
+    @Setter
+    @Getter
+    @Accessors(fluent = true, chain = true)
+    public static class ThrowsOfMethod {
+        private com.sun.tools.javac.util.List<JCTree.JCExpression> thrown;
     }
 
-    @Override
-    public void visitThrow(JCTree.JCThrow jcThrow) {
-        super.visitThrow(jcThrow);
+    @NoArgsConstructor(staticName = "of")
+    @Setter
+    @Getter
+    @Accessors(fluent = true, chain = true)
+    public static class CatchBlock {
+        private JCTree.JCCatch aCatch;
     }
 
-    @Override
-    public void visitAssert(JCTree.JCAssert jcAssert) {
-        super.visitAssert(jcAssert);
-    }
 
-    @Override
-    public void visitApply(JCTree.JCMethodInvocation jcMethodInvocation) {
-        super.visitApply(jcMethodInvocation);
-    }
 
-    @Override
-    public void visitNewClass(JCTree.JCNewClass jcNewClass) {
-        super.visitNewClass(jcNewClass);
-    }
 
-    @Override
-    public void visitNewArray(JCTree.JCNewArray jcNewArray) {
-        super.visitNewArray(jcNewArray);
-    }
-
-    @Override
-    public void visitLambda(JCTree.JCLambda jcLambda) {
-        super.visitLambda(jcLambda);
-    }
-
-    @Override
-    public void visitParens(JCTree.JCParens jcParens) {
-        super.visitParens(jcParens);
-    }
-
-    @Override
-    public void visitAssign(JCTree.JCAssign jcAssign) {
-        super.visitAssign(jcAssign);
-    }
-
-    @Override
-    public void visitAssignop(JCTree.JCAssignOp jcAssignOp) {
-        super.visitAssignop(jcAssignOp);
-    }
-
-    @Override
-    public void visitUnary(JCTree.JCUnary jcUnary) {
-        super.visitUnary(jcUnary);
-    }
-
-    @Override
-    public void visitBinary(JCTree.JCBinary jcBinary) {
-        super.visitBinary(jcBinary);
-    }
-
-    @Override
-    public void visitTypeCast(JCTree.JCTypeCast jcTypeCast) {
-        super.visitTypeCast(jcTypeCast);
-    }
-
-    @Override
-    public void visitTypeTest(JCTree.JCInstanceOf jcInstanceOf) {
-        super.visitTypeTest(jcInstanceOf);
-    }
-
-    @Override
-    public void visitIndexed(JCTree.JCArrayAccess jcArrayAccess) {
-        super.visitIndexed(jcArrayAccess);
-    }
-
-    @Override
-    public void visitSelect(JCTree.JCFieldAccess jcFieldAccess) {
-        super.visitSelect(jcFieldAccess);
-    }
-
-    @Override
-    public void visitReference(JCTree.JCMemberReference jcMemberReference) {
-        super.visitReference(jcMemberReference);
-    }
-
-    @Override
-    public void visitIdent(JCTree.JCIdent jcIdent) {
-        super.visitIdent(jcIdent);
-    }
-
-    @Override
-    public void visitLiteral(JCTree.JCLiteral jcLiteral) {
-        super.visitLiteral(jcLiteral);
-    }
-
-    @Override
-    public void visitTypeIdent(JCTree.JCPrimitiveTypeTree jcPrimitiveTypeTree) {
-        super.visitTypeIdent(jcPrimitiveTypeTree);
-    }
-
-    @Override
-    public void visitTypeArray(JCTree.JCArrayTypeTree jcArrayTypeTree) {
-        super.visitTypeArray(jcArrayTypeTree);
-    }
-
-    @Override
-    public void visitTypeApply(JCTree.JCTypeApply jcTypeApply) {
-        super.visitTypeApply(jcTypeApply);
-    }
-
-    @Override
-    public void visitTypeUnion(JCTree.JCTypeUnion jcTypeUnion) {
-        super.visitTypeUnion(jcTypeUnion);
-    }
-
-    @Override
-    public void visitTypeIntersection(JCTree.JCTypeIntersection jcTypeIntersection) {
-        super.visitTypeIntersection(jcTypeIntersection);
-    }
-
-    @Override
-    public void visitTypeParameter(JCTree.JCTypeParameter jcTypeParameter) {
-        super.visitTypeParameter(jcTypeParameter);
-    }
-
-    @Override
-    public void visitWildcard(JCTree.JCWildcard jcWildcard) {
-        super.visitWildcard(jcWildcard);
-    }
-
-    @Override
-    public void visitTypeBoundKind(JCTree.TypeBoundKind typeBoundKind) {
-        super.visitTypeBoundKind(typeBoundKind);
-    }
-
-    @Override
-    public void visitModifiers(JCTree.JCModifiers jcModifiers) {
-        super.visitModifiers(jcModifiers);
-    }
-
-    @Override
-    public void visitAnnotation(JCTree.JCAnnotation jcAnnotation) {
-        super.visitAnnotation(jcAnnotation);
-    }
-
-    @Override
-    public void visitAnnotatedType(JCTree.JCAnnotatedType jcAnnotatedType) {
-        super.visitAnnotatedType(jcAnnotatedType);
-    }
-
-    @Override
-    public void visitErroneous(JCTree.JCErroneous jcErroneous) {
-        super.visitErroneous(jcErroneous);
-    }
-
-    @Override
-    public void visitLetExpr(JCTree.LetExpr letExpr) {
-        super.visitLetExpr(letExpr);
-    }
-
-    @Override
-    public void visitTree(JCTree jcTree) {
-        super.visitTree(jcTree);
-    }
 }

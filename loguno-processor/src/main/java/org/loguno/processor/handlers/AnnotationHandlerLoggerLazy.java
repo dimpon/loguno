@@ -1,6 +1,7 @@
 package org.loguno.processor.handlers;
 
 import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+import com.sun.tools.javac.tree.JCTree;
 import lombok.SneakyThrows;
 import org.loguno.Loguno;
 
@@ -13,9 +14,8 @@ import java.io.PrintWriter;
 /**
  * @author Dmitrii Ponomarev
  */
-@Handler
-@Order(2)
-public class AnnotationHandlerLoggerLazy extends AnnotationHandlerBase<Loguno.Logger, TypeElement> {
+@Handler(value = Handler.RunOrder.AFTER,order = 3)
+public class AnnotationHandlerLoggerLazy extends AnnotationHandlerBase<Loguno.Logger, JCTree.JCClassDecl> {
 
 
     private static final String lazyFactoryClass = "org.loguno.lazy.LazyLoggerFactorySlf4j";
@@ -26,7 +26,7 @@ public class AnnotationHandlerLoggerLazy extends AnnotationHandlerBase<Loguno.Lo
 
     @SneakyThrows(IOException.class)
     @Override
-    public void processTree(Loguno.Logger annotation, TypeElement typeElement, ClassContext classContext) {
+    public void processTree(Loguno.Logger annotation, JCTree.JCClassDecl classDecl, ClassContext classContext) {
 
         if (!classContext.getLoggers().getLast().isLazy())
             return;

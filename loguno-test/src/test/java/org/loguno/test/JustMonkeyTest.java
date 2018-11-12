@@ -32,12 +32,12 @@ public class JustMonkeyTest {
                 .info("org.loguno.test.JustMonkey.<init> Method parameter {}={}", "a", "Gumpa");
 
         verify(mock, times(1))
-                .info("org.loguno.test.JustMonkey.<init> Method is called. Parameter {}={},Parameter {}={}", "a", "Gumpa", "b", "Gambiya");
+                .info("Just Method is called. Hokuspokus! Parameter {}={},Parameter {}={}", "a", "Gumpa", "b", "Gambiya");
 
         ape.hiApe(2);
 
         verify(mock, times(1))
-                .info("org.loguno.test.JustMonkey.hiApe Method is called. Parameter {}={}", "i", 2);
+                .info("Just Method is called. Hokuspokus! Parameter {}={}", "i", 2);
 
         verify(mock, times(1))
                 .info("org.loguno.test.JustMonkey.hiApe Local variable {}={}", "u", 4);

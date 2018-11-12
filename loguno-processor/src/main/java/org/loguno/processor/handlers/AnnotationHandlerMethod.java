@@ -13,16 +13,11 @@ import org.loguno.processor.utils.JCLogMethodBuilder;
 import org.loguno.processor.utils.JCTreeUtils;
 
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
+
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.loguno.processor.configuration.ConfigurationKeys.*;
-import static org.loguno.processor.utils.JCTreeUtils.*;
 
 public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends AnnotationHandlerBase<A, E> {
 
@@ -30,94 +25,116 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
         super(environment);
     }
 
+
+    @Handler(value = Handler.RunOrder.BEFORE, order = 1)
+    public static class AnnotationHandlerBefore extends AnnotationHandlerBase<VoidAnnotation, JCTree.JCMethodDecl> {
+
+        public AnnotationHandlerBefore(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(VoidAnnotation annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
+            classContext.getMethods().addLast(element.getName().toString());
+        }
+    }
+
+    @Handler(value = Handler.RunOrder.AFTER, order = 1)
+    public static class AnnotationHandlerAfter extends AnnotationHandlerBase<VoidAnnotation, JCTree.JCMethodDecl> {
+
+        public AnnotationHandlerAfter(JavacProcessingEnvironment environment) {
+            super(environment);
+        }
+
+        @Override
+        public void processTree(VoidAnnotation annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
+            classContext.getMethods().removeLast();
+        }
+    }
+
     @Handler
-    @Order
-    public static class AnnotationHandlerLoguno extends AnnotationHandlerMethod<Loguno, ExecutableElement> {
+    public static class AnnotationHandlerLoguno extends AnnotationHandlerMethod<Loguno, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerLoguno(JavacProcessingEnvironment environment) {
             super(environment);
         }
 
         @Override
-        public void processTree(Loguno annotation, ExecutableElement element, ClassContext classContext) {
+        public void processTree(Loguno annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
             String method = conf.getProperty(ConfigurationKeys.LOG_METHOD_DEFAULT);
             doRealJob(annotation.value(), method, element, classContext);
         }
     }
 
     @Handler
-    @Order
-    public static class AnnotationHandlerDebug extends AnnotationHandlerMethod<Loguno.DEBUG, ExecutableElement> {
+    public static class AnnotationHandlerDebug extends AnnotationHandlerMethod<Loguno.DEBUG, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerDebug(JavacProcessingEnvironment environment) {
             super(environment);
         }
 
         @Override
-        public void processTree(Loguno.DEBUG annotation, ExecutableElement element, ClassContext classContext) {
+        public void processTree(Loguno.DEBUG annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
             doRealJob(annotation.value(), "debug", element, classContext);
         }
     }
 
     @Handler
-    @Order
-    public static class AnnotationHandlerInfo extends AnnotationHandlerMethod<Loguno.INFO, ExecutableElement> {
+    public static class AnnotationHandlerInfo extends AnnotationHandlerMethod<Loguno.INFO, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerInfo(JavacProcessingEnvironment environment) {
             super(environment);
         }
 
         @Override
-        public void processTree(Loguno.INFO annotation, ExecutableElement element, ClassContext classContext) {
+        public void processTree(Loguno.INFO annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
             doRealJob(annotation.value(), "info", element, classContext);
         }
     }
 
     @Handler
-    @Order
-    public static class AnnotationHandlerError extends AnnotationHandlerMethod<Loguno.ERROR, ExecutableElement> {
+    public static class AnnotationHandlerError extends AnnotationHandlerMethod<Loguno.ERROR, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerError(JavacProcessingEnvironment environment) {
             super(environment);
         }
 
         @Override
-        public void processTree(Loguno.ERROR annotation, ExecutableElement element, ClassContext classContext) {
+        public void processTree(Loguno.ERROR annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
             doRealJob(annotation.value(), "error", element, classContext);
         }
     }
 
     @Handler
-    @Order
-    public static class AnnotationHandlerTrace extends AnnotationHandlerMethod<Loguno.TRACE, ExecutableElement> {
+    public static class AnnotationHandlerTrace extends AnnotationHandlerMethod<Loguno.TRACE, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerTrace(JavacProcessingEnvironment environment) {
             super(environment);
         }
 
         @Override
-        public void processTree(Loguno.TRACE annotation, ExecutableElement element, ClassContext classContext) {
+        public void processTree(Loguno.TRACE annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
             doRealJob(annotation.value(), "trace", element, classContext);
         }
     }
 
     @Handler
-    @Order
-    public static class AnnotationHandlerWarn extends AnnotationHandlerMethod<Loguno.WARN, ExecutableElement> {
+    public static class AnnotationHandlerWarn extends AnnotationHandlerMethod<Loguno.WARN, JCTree.JCMethodDecl> {
 
         public AnnotationHandlerWarn(JavacProcessingEnvironment environment) {
             super(environment);
         }
 
         @Override
-        public void processTree(Loguno.WARN annotation, ExecutableElement element, ClassContext classContext) {
+        public void processTree(Loguno.WARN annotation, JCTree.JCMethodDecl element, ClassContext classContext) {
             doRealJob(annotation.value(), "warn", element, classContext);
         }
     }
 
-    void doRealJob(String[] value, String logMethod, ExecutableElement element, ClassContext classContext) {
+    void doRealJob(String[] value, String logMethod, JCTree.JCMethodDecl methodTree, ClassContext classContext) {
 
-        MethodTree methodTree = trees.getTree(element);
+        if (methodTree.getBody().stats == null)
+            return;
 
         String loggerVariable = classContext.getLoggers().getLast().getLoggerName();
 
@@ -147,10 +164,9 @@ public abstract class AnnotationHandlerMethod<A extends Annotation, E> extends A
 
         JCTree.JCStatement methodCall = builder.create();
 
-        JCTree.JCBlock body = (JCTree.JCBlock) methodTree.getBody();
+        JCTree.JCBlock body = methodTree.getBody();
 
-        body.stats = JCTreeUtils.generateNewMethodBody(element, trees, methodCall);
-
+        body.stats = JCTreeUtils.generateNewBody(methodTree, body, methodCall);
 
     }
 

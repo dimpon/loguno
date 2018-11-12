@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * @author Dmitrii Ponomarev
  */
-//@Loguno.Logger(name="LOOGER",lazy = true)//(name = "LOGGER", lazy = true)
+@Loguno.Logger(name="LOOGER",lazy = true)//(name = "LOGGER", lazy = true)
 //@Loguno.Logger(Frameworks.SLF4J);
 public class PositiveCat extends Animal {
 
