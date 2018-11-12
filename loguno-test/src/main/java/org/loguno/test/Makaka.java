@@ -102,7 +102,7 @@ public class Makaka extends Animal {
         @Loguno
         Function<String, String> fun = (a) -> {
             @Loguno
-            int bx = 6;
+            int counter = 6;
             return a;
         };
 

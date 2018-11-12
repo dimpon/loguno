@@ -15,7 +15,7 @@ Just add maven dependency:
 <dependency>
     <groupId>org.loguno</groupId>
     <artifactId>loguno-processor</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -38,7 +38,7 @@ Then, put annotation @Loguno.Logger on class level and put annotation @Loguno on
 ### Why someone needs it?
 
 When we write a code we want to concentrate on main task. Secondary aspects shouldn't distract us.
-But reality is different. For example logging. We write logging commands, everywhere and they intertwine our program.
+But reality is different. For example logging. We write logging commands, everywhere and they intertwine our code.
 "I'm entering in the method...", "The input parameters are...", "The local variable is...", "The exception is caught.." and so on and so on.
 Forget it. See the few samples:
 
@@ -48,7 +48,7 @@ You write:
 public void launchRocket(String planet, int crew, Date timeOfArrival){
 }
 
-After compiling:
+Loguno gerenates:
 public void launchRocket(String planet, int crew, Date timeOfArrival) {
     LOG.info("We're going to Mars. Parameter:{}={},Parameter:{}={},Parameter:{}={}", "planet", planet, "crew", crew, "timeOfArrival", timeOfArrival);
 }
@@ -59,7 +59,7 @@ You write:
 public void launchRocket(@Loguno String planet, int crew, Date timeOfArrival){
 }
 
-After compiling:
+Loguno gerenates:
 public void launchRocket(String planet, int crew, Date timeOfArrival) {
     LOG.info("org.loguno.test.SpaceMonkey.launchRocket Method parameter {}={}", "planet", planet);
 }
@@ -73,13 +73,35 @@ public void hiAlien(int i){
     int u =2+i;
 }
 
-After compiling:
+Loguno gerenates:
 public void hiAlien(int i) {
     LOG.info("org.loguno.test.SpaceMonkey.hiAlien Method is called. Parameter {}={}", "i", i);
     int u = 2 + i;
     LOG.info("org.loguno.test.SpaceMonkey.hiAlien Local variable {}={}", "u", u);
 }
 ```
+Annotate local variables everywhere:
+```java
+List<String> aa = new ArrayList();
+for (@Loguno String o : aa) {
+:
+}
+:
+:
+@Loguno
+Function<String, String> fun = (a) -> {
+    @Loguno
+    Object counter = a;
+    return a;
+};
+:
+:
+try (@Loguno Stream<String> lines = dir.stream()) {
+:
+}
+```
+...and Loguno injects logging commands!
+
 Exceptions handling:
 ```java
 You write:
@@ -106,6 +128,7 @@ public void monkeyJump() {
     try {
         jump();
     } catch (@Loguno.INFO("monkey gets hurt") FallDownException e) {
+        :
     }
 }
 
