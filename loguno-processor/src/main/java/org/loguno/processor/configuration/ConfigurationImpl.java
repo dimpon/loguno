@@ -103,6 +103,9 @@ public class ConfigurationImpl implements Configuration {
 
     private void scanPackagesTillStopSym(String pa) {
         while (!pa.equals(rootPath) && !((pa + File.separator).equals(rootPath))) {
+            if(pa.lastIndexOf(File.separator)==-1)
+                break;
+
             pa = pa.substring(0, pa.lastIndexOf(File.separator));
             if (properties.containsKey(pa))
                 break;

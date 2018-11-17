@@ -19,9 +19,9 @@ import java.util.stream.Stream;
 // @Loguno()
 // @Loguno("aaa")
 // @org.loguno.Loguno.INFO()
-//@NoArgsConstructor(onConstructor_ = @Loguno)
-//@Getter(onMethod_ = {@Loguno, @Loguno.TRACE})
-//@Setter(onMethod_ = {@Loguno, @Loguno.TRACE})
+@lombok.NoArgsConstructor(onConstructor_ = @Loguno)
+@lombok.Getter(onMethod_ = {@Loguno, @Loguno.TRACE})
+@lombok.Setter(onMethod_ = {@Loguno, @Loguno.TRACE})
 public class Makaka extends Animal {
 
     private String ccc;

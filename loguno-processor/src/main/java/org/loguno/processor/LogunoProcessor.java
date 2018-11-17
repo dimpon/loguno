@@ -46,6 +46,7 @@ public class LogunoProcessor extends AbstractProcessor {
 
 			Element fElement = roundEnvironment.getRootElements().stream().findFirst().orElseThrow(() -> new RuntimeException("No elements to compile."));
 			String rootPath = PathUtils.getPropertiesPotentialPath(fElement);
+			javacProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.NOTE,"Root path:"+rootPath);
 			Boolean enable = conf.getProperty(ConfigurationKeys.ENABLE, rootPath);
 
 			if (!enable)
