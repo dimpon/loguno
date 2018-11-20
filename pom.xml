@@ -27,7 +27,6 @@
         </developer>
     </developers>
 
-
     <scm>
         <connection>scm:git:https://github.com/dimpon/loguno.git</connection>
         <developerConnection>scm:git:https://github.com/dimpon/loguno.git</developerConnection>
