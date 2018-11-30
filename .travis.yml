@@ -6,8 +6,11 @@ jobs:
       install: true
     - script: echo "Running unit tests (2)"
       install: true
-    - stage: GitHub Release
-      script: echo "Deploying to GitHub releases ..."
+    - stage: Compile loguno-test
+      jdk:
+        - oraclejdk8
+        - oraclejdk9
+      script: echo "Compile loguno-test..." & cd loguno-test & mvn clean compile
       install: true
 
 #jdk:
