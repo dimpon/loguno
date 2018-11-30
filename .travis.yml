@@ -8,8 +8,10 @@ jobs:
       install: true
     - stage: Compile loguno-test
       language: java
-      jdk: oraclejdk8
-      script: echo "Compile loguno-test..." & cd loguno-test & mvn clean compile
+      jdk: oraclejdk9
+      - script: echo "Compile loguno-test..."
+      - cd loguno-test
+      - mvn clean compile
       install: true
 
 #jdk:

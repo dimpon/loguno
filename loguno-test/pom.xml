@@ -8,6 +8,10 @@
     </parent>
 
 
+
+    <description>Tests for Loguno.</description>
+    <inceptionYear>2018</inceptionYear>
+
     <artifactId>loguno-test</artifactId>
     <version>0.0.4-SNAPSHOT</version>
     <packaging>jar</packaging>
