@@ -75,7 +75,7 @@
     </dependencies>
 
 
-    <build>
+    <!--<build>
         <plugins>
            <plugin>
                 <groupId>org.eluder.coveralls</groupId>
@@ -97,7 +97,7 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 
     <profiles>
         <profile>
