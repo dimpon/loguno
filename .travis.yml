@@ -7,8 +7,6 @@ jobs:
     - script: echo "Running unit tests (2)"
       install: true
     - stage: Compile loguno-test
-      jdk:
-        - oraclejdk8
       script: echo "Compile loguno-test..." & cd loguno-test & mvn clean compile
       install: true
 
