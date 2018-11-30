@@ -11,17 +11,27 @@ jobs:
       - cd loguno-processor
       - pwd
       - mvn clean install
-      install: true
-    - stage: Compile loguno-test
-      language: java
-      jdk: oraclejdk9
-      script:
-      - echo "Compile loguno-test..."
-      - pwd
+      - cd ..
       - cd loguno-test
-      - pwd
+      - jdk_switcher use oraclejdk9
+      - echo "Compile loguno-test by java 9..."
       - mvn clean compile
       install: true
+
+
+
+
+
+#    - stage: Compile loguno-test
+#      language: java
+#      jdk: oraclejdk9
+#      script:
+#      - echo "Compile loguno-test..."
+#      - pwd
+#      - cd loguno-test
+#      - pwd
+#      - mvn clean compile
+#      install: true
 
 
 
