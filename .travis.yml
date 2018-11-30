@@ -10,8 +10,8 @@ jobs:
       language: java
       jdk: oraclejdk9
       - script: echo "Compile loguno-test..."
-      - cd loguno-test
-      - mvn clean compile
+      - script: cd loguno-test
+      - script: mvn clean compile
       install: true
 
 #jdk:
