@@ -53,10 +53,10 @@
     </properties>
 
 
-    <modules>
+    <!--<modules>
         <module>loguno-processor</module>
         <module>loguno-test</module>
-    </modules>
+    </modules>-->
 
 
     <dependencies>
