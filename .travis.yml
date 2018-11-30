@@ -3,9 +3,12 @@ language: java
 jobs:
   include:
     - script: echo "Running unit tests (1)"
+      install: true
     - script: echo "Running unit tests (2)"
+      install: true
     - stage: GitHub Release
       script: echo "Deploying to GitHub releases ..."
+      install: true
 
 #jdk:
 # - oraclejdk8
