@@ -7,7 +7,7 @@
     <version>0.0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Loguno</name>
+    <name>Loguno parent</name>
     <url>https://github.com/dimpon/loguno</url>
     <description>Library for injecting logging commands into java code during compiling.</description>
     <inceptionYear>2018</inceptionYear>
