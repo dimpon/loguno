@@ -20,7 +20,7 @@ jobs:
         - cd loguno-test
         - jdk_switcher use oraclejdk9
         - echo "Compile loguno-test by java 9..."
-        - mvn compile
+        - mvn test
       install: true
 
 #

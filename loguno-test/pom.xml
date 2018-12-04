@@ -39,7 +39,8 @@
             <groupId>org.loguno</groupId>
             <artifactId>loguno-processor</artifactId>
             <version>0.0.4-SNAPSHOT</version>
-            <scope>compile</scope>
+            <scope>system</scope>
+            <systemPath>${basedir}/../loguno-processor/target/loguno-processor-0.0.3.jar</systemPath>
         </dependency>
 
         <dependency>
