@@ -10,7 +10,7 @@ jobs:
     - stage: Compile loguno-processor
       language: java
       jdk: oraclejdk8
-      script: loguno-processor/mvn clean install && loguno-test/mvn clean compile
+      script: cd loguno-processor && mvn clean install && cd .. && cd loguno-test && loguno-test/mvn clean compile
       install: true
 
 #
