@@ -10,21 +10,20 @@ jobs:
     - stage: Compile loguno-processor
       language: java
       jdk: oraclejdk8
-      script:
-      - echo "Compile loguno-processor..."
-      - pwd
-      - cd loguno-processor
-      - pwd
-      - mvn clean install
-      - cd ..
-      - cd loguno-test
-      - jdk_switcher use oraclejdk9
-      - echo "Compile loguno-test by java 9..."
-      - mvn clean compile
+      script: loguno-processor/mvn clean install && loguno-test/mvn clean compile
       install: true
 
-
-
+#
+#- echo "Compile loguno-processor..."
+#      - pwd
+#      - cd loguno-processor
+#      - pwd
+#      - mvn clean install
+#      - cd ..
+#      - cd loguno-test
+#      - jdk_switcher use oraclejdk9
+#      - echo "Compile loguno-test by java 9..."
+#      - mvn clean compile
 
 
 #    - stage: Compile loguno-test
